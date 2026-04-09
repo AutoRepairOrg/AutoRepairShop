@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoRepairShop.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AutoRepairShop.Infrastructure.Data
@@ -6,6 +7,12 @@ namespace AutoRepairShop.Infrastructure.Data
     public class AppDbContext : DbContext
     {
         public DbSet<Customer> Customers => Set<Customer>();
+        public DbSet<Service> Services => Set<Service>();
+        public DbSet<ServiceOrder> ServiceOrders => Set<ServiceOrder>();
+        public DbSet<ServiceOrderItem> ServiceOrderItems => Set<ServiceOrderItem>();
+        public DbSet<Supply> Supplies => Set<Supply>();
+        public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+
 
         public AppDbContext(DbContextOptions<AppDbContext> options) 
             : base(options) 
@@ -14,27 +21,9 @@ namespace AutoRepairShop.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var documentConverter = new ValueConverter<Document, string>(
-                document => document.Value,         
-                value => new Document(value));
-
-            modelBuilder.Entity<Customer>(entity =>
-            {
-                entity.HasKey(c => c.Id);
-
-                entity.Property(c => c.Name)
-                .IsRequired()
-                .HasMaxLength(150);
-
-                entity.Property(c => c.Document)
-                .IsRequired()
-                .HasMaxLength(20);
-
-                entity.Property(c => c.Document)
-                .HasConversion(documentConverter)
-                .HasColumnName("Document")
-                .IsRequired();
-            });
+            modelBuilder.ApplyConfigurationsFromAssembly(
+                 typeof(AppDbContext).Assembly
+            );
         }
     }
 }

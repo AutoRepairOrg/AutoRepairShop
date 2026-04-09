@@ -1,0 +1,31 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System.Reflection.Emit;
+
+namespace AutoRepairShop.Infrastructure.Data.Configurations
+{
+    public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
+    {
+        public void Configure(EntityTypeBuilder<Customer> builder)
+        {
+            var documentConverter = new ValueConverter<Document, string>(
+                document => document.Value,
+                value => new Document(value));
+
+            builder.ToTable("Customers");
+
+            builder.HasKey(c => c.Id);
+
+            builder.Property(c => c.Name)
+            .IsRequired()
+            .HasMaxLength(150);
+
+            builder.Property(c => c.Document)
+            .HasConversion(documentConverter)
+            .HasColumnName("Document")
+            .IsRequired();
+           
+        }
+    }
+}
