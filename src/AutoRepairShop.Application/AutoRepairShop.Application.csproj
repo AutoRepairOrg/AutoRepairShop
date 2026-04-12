@@ -10,4 +10,9 @@
     <ProjectReference Include="..\AutoRepairShop.Domain\AutoRepairShop.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\ServiceOrder\" />
+    <Folder Include="Mapping\" />
+  </ItemGroup>
+
 </Project>
