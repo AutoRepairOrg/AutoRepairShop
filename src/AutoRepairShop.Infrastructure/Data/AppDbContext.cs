@@ -26,4 +26,4 @@ namespace AutoRepairShop.Infrastructure.Data
             );
         }
     }
-}
+} 

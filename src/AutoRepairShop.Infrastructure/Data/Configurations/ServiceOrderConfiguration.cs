@@ -36,10 +36,10 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
 
             builder.Property(x => x.FinishedAt);
 
-            builder.HasMany<ServiceOrderItem>("_items")
-                   .WithOne()
-                   .HasForeignKey("ServiceOrderId")
-                   .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany<ServiceOrderItem>(x => x.Items)
+               .WithOne()
+               .HasForeignKey("ServiceOrderId")
+               .OnDelete(DeleteBehavior.Cascade);
 
             builder.Navigation(x => x.Items)
                    .UsePropertyAccessMode(PropertyAccessMode.Field);
