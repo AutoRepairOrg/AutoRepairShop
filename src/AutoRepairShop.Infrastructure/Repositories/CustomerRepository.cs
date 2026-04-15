@@ -1,4 +1,5 @@
-﻿using AutoRepairShop.Domain.Interfaces.Repositories;
+﻿using AutoRepairShop.Domain.Entities;
+using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +40,11 @@ namespace AutoRepairShop.Infrastructure.Repositories
         {
             _context.Customers.Update(entity);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Customer?> GetByUserNameAsync(string username)
+        {
+            return await _context.Customers.FirstOrDefaultAsync(c => c.Username == username);
         }
     }
 }

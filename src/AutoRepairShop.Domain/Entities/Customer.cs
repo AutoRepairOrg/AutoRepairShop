@@ -1,12 +1,13 @@
 ﻿using AutoRepairShop.Domain.Exceptions;
-using System.Numerics;
+using AutoRepairShop.Domain.Interfaces;
 
-public class Customer
+namespace AutoRepairShop.Domain.Entities;
+public class Customer : IUser
 {
-    public Guid Id { get; private set; }
     public string Name { get; private set; }
     public Document Document { get; private set; }
     public string Phone { get; private set; }
+    public Guid Id { get; private set; }
     public string Username { get; private set; }
     public string Password { get; private set; }
 
