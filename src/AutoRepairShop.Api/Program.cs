@@ -1,11 +1,22 @@
+using AutoRepairShop.Api.Middlewares;
+using AutoRepairShop.Application.Interfaces.Services;
+using AutoRepairShop.Application.Mapping;
+using AutoRepairShop.Application.Services;
+using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
+using AutoRepairShop.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// MVC
 builder.Services.AddControllers();
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -13,20 +24,45 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );
 
-#region Dependency Injection
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(CustomerProfile).Assembly);
 
-#endregion
+// Dependency Injection
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 var app = builder.Build();
 
+// Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AutoRepairShop"));
+    app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+    var retry = 10;
+    while (retry > 0)
+    {
+        try
+        {
+            db.Database.Migrate();
+            break;
+        }
+        catch (Exception ex)
+        {
+            retry--;
+            Console.WriteLine("Erro ao aplicar migrations. Tentando novamente...");
+            Thread.Sleep(3000);
+        }
+    }
+}
+
+app.UseMiddleware<ExceptionMiddleware>();
+app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();

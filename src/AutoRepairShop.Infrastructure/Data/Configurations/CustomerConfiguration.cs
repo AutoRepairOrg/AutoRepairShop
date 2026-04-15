@@ -11,7 +11,7 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
         {
             var documentConverter = new ValueConverter<Document, string>(
                 document => document.Value,
-                value => new Document(value));
+                value => Document.Create(value));
 
             builder.ToTable("Customers");
 

@@ -1,8 +1,10 @@
-﻿public sealed class Document
+﻿using AutoRepairShop.Domain.Exceptions;
+
+public sealed class Document
 {
-    public string Value { get; set; }
+    public string Value { get; }
     public Document() { }
-    public Document(string value)
+    private Document(string value)
     {
         Value = value;
     }
@@ -10,7 +12,7 @@
     public static Document Create(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
-            throw new ArgumentException("Document is required");
+            throw new DomainException("Document is required");
 
         var digits = OnlyDigits(input);
 
@@ -20,7 +22,7 @@
         if (digits.Length == 14 && IsValidCnpj(digits))
             return new Document(digits);
 
-        throw new ArgumentException("Invalid CPF or CNPJ");
+        throw new DomainException("Invalid CPF or CNPJ");
     }
 
     private static string OnlyDigits(string value)
