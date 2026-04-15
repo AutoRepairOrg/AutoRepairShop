@@ -1,6 +1,8 @@
 using AutoRepairShop.Api.Middlewares;
+using AutoRepairShop.Application.Interfaces;
 using AutoRepairShop.Application.Interfaces.Services;
 using AutoRepairShop.Application.Mapping;
+using AutoRepairShop.Application.Security;
 using AutoRepairShop.Application.Services;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
@@ -30,6 +32,8 @@ builder.Services.AddAutoMapper(typeof(CustomerProfile).Assembly);
 // Dependency Injection
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();
 

@@ -12,8 +12,7 @@ namespace AutoRepairShop.Application.Mapping
                   opt => opt.MapFrom(src => src.Document.Value));
 
             CreateMap<UpdateCustomerRequest, Customer>()
-                .ForMember(dest => dest.Document,
-                  opt => opt.MapFrom(src => Document.Create(src.Document)));
+                .ForMember(dest => dest.Document, opt => opt.Ignore());
         }
     }
 }

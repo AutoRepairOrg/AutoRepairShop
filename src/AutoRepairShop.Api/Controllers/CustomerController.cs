@@ -21,7 +21,21 @@ namespace AutoRepairShop.Api.Controllers
         {
             var result = await _customerService.GetAllAsync();
             return Ok(result);
-        } 
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CustomerResponse>> GetById([FromRoute] Guid id)
+        {
+            var result = await _customerService.GetByIdAsync(id);
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<CustomerResponse>> Delete([FromRoute] Guid id)
+        {
+            await _customerService.DeleteAsync(id);
+            return Ok();
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCustomerRequest request)
@@ -29,7 +43,21 @@ namespace AutoRepairShop.Api.Controllers
             try
             {
                 var result = await _customerService.CreateAsync(request);
-                return CreatedAtAction("Create", new { id = result.Id }, result);
+                return Ok(result);
+            }
+            catch (DomainException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] UpdateCustomerRequest request)
+        {
+            try
+            {
+                var result = await _customerService.UpdateAsync(request);
+                return Ok(result);
             }
             catch (DomainException ex)
             {

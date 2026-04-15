@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoRepairShop.Application.DTOs.Customer;
+using AutoRepairShop.Application.Interfaces;
 using AutoRepairShop.Application.Interfaces.Services;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 
@@ -9,23 +10,28 @@ namespace AutoRepairShop.Application.Services
     {
         private readonly ICustomerRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IPasswordHasher _passwordHasher;
 
         public CustomerService(
             ICustomerRepository repository,
-            IMapper mapper)
+            IMapper mapper,
+            IPasswordHasher passwordHasher)
         {
             _repository = repository;
             _mapper = mapper;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<CustomerResponse> CreateAsync(CreateCustomerRequest request)
         {
+            var hash = _passwordHasher.Hash(request.Password);
+
             var customer = new Customer(
                 request.Name,
                 Document.Create(request.Document),
                 request.Phone,
                 request.Username,
-                request.Password
+                hash
             );
 
             await _repository.AddAsync(customer);
@@ -33,9 +39,14 @@ namespace AutoRepairShop.Application.Services
             return _mapper.Map<CustomerResponse>(customer);
         }
 
-        public Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+           var result = await _repository.GetByIdAsync(id);
+
+            if (result == null)
+                throw new Exception("Customer not found.");
+
+            await _repository.DeleteAsync(result);
         }
 
         public async Task<IEnumerable<CustomerResponse>> GetAllAsync()
@@ -44,14 +55,32 @@ namespace AutoRepairShop.Application.Services
             return _mapper.Map<IEnumerable<CustomerResponse>>(result);
         }
 
-        public Task<CustomerResponse> GetByIdAsync(Guid id)
+        public async Task<CustomerResponse> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+           var result = await _repository.GetByIdAsync(id);
+           return _mapper.Map<CustomerResponse>(result);
         }
 
-        public Task<CustomerResponse> UpdateAsync(UpdateCustomerRequest request)
+        public async Task<CustomerResponse> UpdateAsync(UpdateCustomerRequest request)
         {
-            throw new NotImplementedException();
+            var result = await _repository.GetByIdAsync(request.Id);
+
+            if (result == null)
+                throw new Exception("Customer not found.");
+
+            //TODO: Criação de exceções específicas/customizadas
+
+            var hash = _passwordHasher.Hash(request.Password);
+
+            result.Update(
+                request.Name,
+                request.Phone,
+                request.Username,
+                hash);
+
+            await _repository.UpdateAsync(result);
+
+            return _mapper.Map<CustomerResponse>(result);
         }
     }
 }

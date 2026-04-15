@@ -27,7 +27,7 @@ public class Customer
 
         ChangePhone(phone);
         ChangeUserName(username);
-        ChangePassword(password);
+        Password = password;
     }
 
     public void Update(string name, string phone, string username, string password)
@@ -35,7 +35,7 @@ public class Customer
         ChangeName(name);
         ChangePhone(phone);
         ChangeUserName(username);
-        ChangePassword(password);
+        Password = password;
     }
 
     private void ChangeName(string name)
@@ -68,16 +68,6 @@ public class Customer
 
         Username = userName;
 
-        //TODO: Validar quantidade de caracteres 
-    }
-
-    private void ChangePassword(string password)
-    {
-        if (string.IsNullOrWhiteSpace(password))
-            throw new DomainException("Password is required");
-
-        Password = password;
-
-        //TODO: Validar quantidade de caracteres e segurança de senha
+        //TODO: Validar quantidade de caracteres, validação de senha 
     }
 }
