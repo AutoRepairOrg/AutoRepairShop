@@ -4,7 +4,7 @@ public sealed class Document
 {
     public string Value { get; }
     public Document() { }
-    private Document(string value)
+    public Document(string value)
     {
         Value = value;
     }

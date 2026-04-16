@@ -22,34 +22,44 @@ namespace AutoRepairShop.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("AutoRepairShop.Domain.Entities.ServiceOrderItem", b =>
+            modelBuilder.Entity("AutoRepairShop.Domain.Entities.Admin", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ServiceOrderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("SupplyId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ServiceOrderId");
+                    b.ToTable("Admins");
 
-                    b.HasIndex("SupplyId");
-
-                    b.ToTable("ServiceOrderItem", (string)null);
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Department = "Sistema",
+                            Name = "Admin Master",
+                            Password = "$2a$11$47kGy1CVaWAxx48uhR6HYOIBv8FF1InEXcHLZOutpHMuVGZCWotKG",
+                            Username = "admin"
+                        });
                 });
 
-            modelBuilder.Entity("Customer", b =>
+            modelBuilder.Entity("AutoRepairShop.Domain.Entities.Customer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -80,6 +90,68 @@ namespace AutoRepairShop.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Customers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Document = "12345678901",
+                            Name = "Cliente Demo",
+                            Password = "$2a$11$47kGy1CVaWAxx48uhR6HYOIBv8FF1InEXcHLZOutpHMuVGZCWotKG",
+                            Phone = "51999999999",
+                            Username = "customer"
+                        });
+                });
+
+            modelBuilder.Entity("AutoRepairShop.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("AutoRepairShop.Domain.Entities.ServiceOrderItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ServiceOrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SupplyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceOrderId");
+
+                    b.HasIndex("SupplyId");
+
+                    b.ToTable("ServiceOrderItem", (string)null);
                 });
 
             modelBuilder.Entity("Service", b =>
@@ -211,7 +283,7 @@ namespace AutoRepairShop.Infrastructure.Migrations
 
             modelBuilder.Entity("ServiceOrder", b =>
                 {
-                    b.HasOne("Customer", null)
+                    b.HasOne("AutoRepairShop.Domain.Entities.Customer", null)
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -232,7 +304,7 @@ namespace AutoRepairShop.Infrastructure.Migrations
 
             modelBuilder.Entity("Vehicle", b =>
                 {
-                    b.HasOne("Customer", null)
+                    b.HasOne("AutoRepairShop.Domain.Entities.Customer", null)
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)

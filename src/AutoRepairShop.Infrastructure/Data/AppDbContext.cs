@@ -25,6 +25,43 @@ namespace AutoRepairShop.Infrastructure.Data
             modelBuilder.ApplyConfigurationsFromAssembly(
                  typeof(AppDbContext).Assembly
             );
+
+            SeedAdmins(modelBuilder);
+            SeedCustomers(modelBuilder);
         }
+
+        private void SeedCustomers(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Customer>().HasData(
+                new Customer
+                {
+                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                    Name = "Cliente Demo",
+                    Document =  new Document("12345678901"),
+                    Phone = "51999999999",
+                    Username = "customer",
+                    Password = PasswordSeed.Hash // fixo abaixo
+                }
+            );
+        }
+
+        private void SeedAdmins(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Admin>().HasData(
+                new Admin
+                {
+                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                    Name = "Admin Master",
+                    Department = "Sistema",
+                    Username = "admin",
+                    Password = PasswordSeed.Hash
+                }
+            );
+        }
+    }
+
+    public static class PasswordSeed
+    {
+        public static string Hash = BCrypt.Net.BCrypt.HashPassword("123456");
     }
 } 

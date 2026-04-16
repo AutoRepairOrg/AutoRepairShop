@@ -4,13 +4,13 @@ namespace AutoRepairShop.Domain.Entities
 {
     public class Admin : IUser
     {
-        public string Name { get; private set; }
-        public string Department { get; private set; }
-        public Guid Id { get; private set; }
-        public string Username { get; private set; }
-        public string Password { get; private set; }
+        public string Name { get; set; }
+        public string Department { get; set; }
+        public Guid Id { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
 
-        protected Admin() { }
+        public Admin() { }
 
         public Admin(string name, string department, string username, string passwordHash)
         {

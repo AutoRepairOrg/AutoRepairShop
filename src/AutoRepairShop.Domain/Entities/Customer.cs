@@ -4,14 +4,14 @@ using AutoRepairShop.Domain.Interfaces;
 namespace AutoRepairShop.Domain.Entities;
 public class Customer : IUser
 {
-    public string Name { get; private set; }
-    public Document Document { get; private set; }
-    public string Phone { get; private set; }
-    public Guid Id { get; private set; }
-    public string Username { get; private set; }
-    public string Password { get; private set; }
+    public string Name { get; set; }
+    public Document Document { get; set; }
+    public string Phone { get; set; }
+    public Guid Id { get; set; }
+    public string Username { get; set; }
+    public string Password { get; set; }
 
-    protected Customer() { } 
+    public Customer() { } 
 
     public Customer(
         string name,

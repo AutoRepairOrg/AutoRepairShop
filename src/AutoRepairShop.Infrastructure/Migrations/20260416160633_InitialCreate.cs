@@ -12,6 +12,21 @@ namespace AutoRepairShop.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Admins",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Department = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Admins", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Customers",
                 columns: table => new
                 {
@@ -25,6 +40,21 @@ namespace AutoRepairShop.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -135,6 +165,16 @@ namespace AutoRepairShop.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Admins",
+                columns: new[] { "Id", "Department", "Name", "Password", "Username" },
+                values: new object[] { new Guid("22222222-2222-2222-2222-222222222222"), "Sistema", "Admin Master", "$2a$11$47kGy1CVaWAxx48uhR6HYOIBv8FF1InEXcHLZOutpHMuVGZCWotKG", "admin" });
+
+            migrationBuilder.InsertData(
+                table: "Customers",
+                columns: new[] { "Id", "Document", "Name", "Password", "Phone", "Username" },
+                values: new object[] { new Guid("11111111-1111-1111-1111-111111111111"), "12345678901", "Cliente Demo", "$2a$11$47kGy1CVaWAxx48uhR6HYOIBv8FF1InEXcHLZOutpHMuVGZCWotKG", "51999999999", "customer" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_ServiceOrderItem_ServiceOrderId",
                 table: "ServiceOrderItem",
@@ -169,6 +209,12 @@ namespace AutoRepairShop.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Admins");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens");
+
             migrationBuilder.DropTable(
                 name: "ServiceOrderItem");
 
