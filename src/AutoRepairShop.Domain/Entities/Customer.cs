@@ -22,31 +22,31 @@ public class Customer : IUser
     {
         Id = Guid.NewGuid();
 
-        ChangeName(name);
+        SetName(name);
         Document = document
             ?? throw new DomainException("Document is required");
 
-        ChangePhone(phone);
-        ChangeUserName(username);
+        SetPhone(phone);
+        SetUserName(username);
         Password = password;
     }
 
     public void Update(string name, string phone, string username, string password)
     {
-        ChangeName(name);
-        ChangePhone(phone);
-        ChangeUserName(username);
+        SetName(name);
+        SetPhone(phone);
+        SetUserName(username);
         Password = password;
     }
 
-    private void ChangeName(string name)
+    private void SetName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Customer name is required");
 
         Name = name.Trim();
     }
-    private void ChangePhone(string phone)
+    private void SetPhone(string phone)
     {
         if (string.IsNullOrWhiteSpace(phone))
             throw new DomainException("Phone is required");
@@ -62,7 +62,7 @@ public class Customer : IUser
         Phone = phone;
     }
 
-    private void ChangeUserName(string userName)
+    private void SetUserName(string userName)
     {
         if (string.IsNullOrWhiteSpace(userName))
             throw new DomainException("UserName is required");

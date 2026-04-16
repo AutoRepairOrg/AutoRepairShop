@@ -9,6 +9,7 @@ namespace AutoRepairShop.Infrastructure.Repositories
     {
         private readonly AppDbContext _context;
 
+        //TODO: Implementação de CRUD de admin
         public AdminRepository(AppDbContext context)
         {
             _context = context;

@@ -57,11 +57,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 // AutoMapper
-builder.Services.AddAutoMapper(typeof(CustomerProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 
 // Dependency Injection
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+
+builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 

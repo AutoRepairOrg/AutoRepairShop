@@ -1,19 +1,21 @@
 ﻿using AutoMapper;
 using AutoRepairShop.Application.DTOs.Customer;
+using AutoRepairShop.Application.DTOs.Vehicle;
 using AutoRepairShop.Domain.Entities;
 
 namespace AutoRepairShop.Application.Mapping
 {
-    public class CustomerProfile : Profile
+    public class MapperProfile : Profile
     {
-        public CustomerProfile()
+        public MapperProfile()
         {
             CreateMap<Customer, CustomerResponse>()
                 .ForMember(dest => dest.Document,
                   opt => opt.MapFrom(src => src.Document.Value));
 
-            CreateMap<UpdateCustomerRequest, Customer>()
-                .ForMember(dest => dest.Document, opt => opt.Ignore());
+            CreateMap<Vehicle, VehicleResponse>()
+                .ForMember(dest => dest.Plate,
+                  opt => opt.MapFrom(src => src.Plate.Value));
         }
     }
 }

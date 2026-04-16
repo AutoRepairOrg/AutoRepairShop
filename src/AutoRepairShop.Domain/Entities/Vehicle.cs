@@ -1,4 +1,6 @@
-﻿public class Vehicle
+﻿using AutoRepairShop.Domain.Exceptions;
+
+public class Vehicle
 {
     public Guid Id { get; private set; }
     public Guid CustomerId { get; private set; }
@@ -9,20 +11,71 @@
 
     protected Vehicle() { }
 
-    public Vehicle(Guid customerId, VehiclePlate plate, string brand, string model, int year)
+    public Vehicle(
+        Guid customerId,
+        VehiclePlate plate,
+        string brand,
+        string model,
+        int year)
     {
         Id = Guid.NewGuid();
-        CustomerId = customerId;
-        Plate = plate;
-        Brand = brand;
-        Model = model;
-        Year = year;
+
+        SetCustomer(customerId);
+        SetPlate(plate);
+        SetBrand(brand);
+        SetModel(model);
+        SetYear(year);
     }
 
     public void Update(string brand, string model, int year)
     {
-        Brand = brand;
-        Model = model;
+        SetBrand(brand);
+        SetModel(model);
+        SetYear(year);
+    }
+
+    private void SetCustomer(Guid customerId)
+    {
+        if (customerId == Guid.Empty)
+            throw new DomainException("Customer is required.");
+
+        CustomerId = customerId;
+    }
+
+    private void SetPlate(VehiclePlate plate)
+    {
+        Plate = plate ?? throw new DomainException("Vehicle plate is required.");
+    }
+
+    private void SetBrand(string brand)
+    {
+        if (string.IsNullOrWhiteSpace(brand))
+            throw new DomainException("Brand is required.");
+
+        if (brand.Length > 50)
+            throw new DomainException("Brand cannot exceed 50 characters.");
+
+        Brand = brand.Trim();
+    }
+
+    private void SetModel(string model)
+    {
+        if (string.IsNullOrWhiteSpace(model))
+            throw new DomainException("Model is required.");
+
+        if (model.Length > 50)
+            throw new DomainException("Model cannot exceed 50 characters.");
+
+        Model = model.Trim();
+    }
+
+    private void SetYear(int year)
+    {
+        var maxYear = DateTime.UtcNow.Year + 1;
+
+        if (year < 1886 || year > maxYear)
+            throw new DomainException("Invalid vehicle year.");
+
         Year = year;
     }
 }
