@@ -1,6 +1,7 @@
 ﻿using AutoRepairShop.Application.DTOs.Customer;
 using AutoRepairShop.Application.Interfaces.Services;
 using AutoRepairShop.Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutoRepairShop.Api.Controllers
@@ -17,6 +18,7 @@ namespace AutoRepairShop.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<CustomerResponse>>> GetAll()
         {
             var result = await _customerService.GetAllAsync();
@@ -24,6 +26,7 @@ namespace AutoRepairShop.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<ActionResult<CustomerResponse>> GetById([FromRoute] Guid id)
         {
             var result = await _customerService.GetByIdAsync(id);
@@ -31,6 +34,7 @@ namespace AutoRepairShop.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<ActionResult<CustomerResponse>> Delete([FromRoute] Guid id)
         {
             await _customerService.DeleteAsync(id);
@@ -38,6 +42,7 @@ namespace AutoRepairShop.Api.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreateCustomerRequest request)
         {
             try
@@ -52,6 +57,7 @@ namespace AutoRepairShop.Api.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> Update([FromBody] UpdateCustomerRequest request)
         {
             try

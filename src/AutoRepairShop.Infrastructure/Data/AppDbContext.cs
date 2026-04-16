@@ -37,10 +37,10 @@ namespace AutoRepairShop.Infrastructure.Data
                 {
                     Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
                     Name = "Cliente Demo",
-                    Document =  new Document("12345678901"),
+                    Document =  new Document("52998224725"),
                     Phone = "51999999999",
                     Username = "customer",
-                    Password = PasswordSeed.Hash // fixo abaixo
+                    Password = PasswordSeed.Hash
                 }
             );
         }

@@ -53,17 +53,20 @@ namespace AutoRepairShop.Application.Services
             );
 
             var refreshToken = _jwtService.GenerateRefreshToken();
+            var expiresAt = DateTime.UtcNow.AddDays(7);
 
             await _refreshTokenRepository.SaveAsync(new RefreshToken(
                 user.Id,
                 refreshToken,
-                DateTime.UtcNow.AddDays(7)
+                expiresAt
             ));
 
             return new LoginResponse
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken,
+                Role = role,
+                ExpiresAt = expiresAt
             };
         }
 
