@@ -1,6 +1,8 @@
-﻿namespace AutoRepairShop.Application.Interfaces.Services
+﻿using AutoRepairShop.Application.DTOs.Service;
+
+namespace AutoRepairShop.Application.Interfaces.Services
 {
-    public interface IServiceService
+    public interface IServiceService : IBaseService<CreateServiceRequest, UpdateServiceRequest, ServiceResponse>
     {
     }
 }
