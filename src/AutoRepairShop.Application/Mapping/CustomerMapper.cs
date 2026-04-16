@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoRepairShop.Application.DTOs.Customer;
+using AutoRepairShop.Domain.Entities;
 
 namespace AutoRepairShop.Application.Mapping
 {

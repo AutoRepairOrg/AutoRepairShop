@@ -7,6 +7,7 @@ namespace AutoRepairShop.Infrastructure.Data
     {
         public DbSet<Customer> Customers => Set<Customer>();
         public DbSet<Admin> Admins => Set<Admin>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<Service> Services => Set<Service>();
         public DbSet<ServiceOrder> ServiceOrders => Set<ServiceOrder>();
         public DbSet<ServiceOrderItem> ServiceOrderItems => Set<ServiceOrderItem>();

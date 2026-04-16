@@ -2,6 +2,7 @@
 using AutoRepairShop.Application.DTOs.Customer;
 using AutoRepairShop.Application.Interfaces;
 using AutoRepairShop.Application.Interfaces.Services;
+using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 
 namespace AutoRepairShop.Application.Services

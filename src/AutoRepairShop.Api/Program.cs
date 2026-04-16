@@ -33,8 +33,11 @@ builder.Services.AddAutoMapper(typeof(CustomerProfile).Assembly);
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-//builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtTokenService,  JwtTokenService>();
 
 var app = builder.Build();
 
