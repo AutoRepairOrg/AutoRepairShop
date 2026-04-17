@@ -36,28 +36,49 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
 
             builder.Property(x => x.FinishedAt);
 
-            builder.HasMany<ServiceOrderItem>(x => x.Items)
-               .WithOne()
-               .HasForeignKey("ServiceOrderId")
-               .OnDelete(DeleteBehavior.Cascade);
-
             builder.Navigation(x => x.Items)
                    .UsePropertyAccessMode(PropertyAccessMode.Field);
 
             builder.HasOne<Service>()
-               .WithMany()
-               .HasForeignKey(x => x.ServiceId)
-               .OnDelete(DeleteBehavior.Restrict);
+                   .WithMany()
+                   .HasForeignKey(x => x.ServiceId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne<Customer>()
-               .WithMany()
-               .HasForeignKey(x => x.CustomerId)
-               .OnDelete(DeleteBehavior.Restrict);
+                   .WithMany()
+                   .HasForeignKey(x => x.CustomerId)
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne<Vehicle>()
-               .WithMany()
-               .HasForeignKey(x => x.VehicleId)
-               .OnDelete(DeleteBehavior.Restrict);
+                   .WithMany()
+                   .HasForeignKey(x => x.VehicleId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.OwnsMany(x => x.Items, items =>
+            {
+                items.ToTable("ServiceOrderItems");
+
+                items.WithOwner()
+                     .HasForeignKey("ServiceOrderId");
+
+                // Shadow key (required by EF Core)
+                items.Property<Guid>("Id");
+                items.HasKey("Id");
+
+                items.Property(i => i.SupplyId)
+                     .IsRequired();
+
+                items.Property(i => i.SupplyName)
+                     .IsRequired()
+                     .HasMaxLength(200);
+
+                items.Property(i => i.UnitPrice)
+                     .HasPrecision(18, 2)
+                     .IsRequired();
+
+                items.Property(i => i.Quantity)
+                     .IsRequired();
+            });
 
             builder.HasIndex(x => x.CustomerId);
             builder.HasIndex(x => x.VehicleId);

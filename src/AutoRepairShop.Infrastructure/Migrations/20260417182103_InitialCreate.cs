@@ -145,20 +145,21 @@ namespace AutoRepairShop.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ServiceOrderItem",
+                name: "ServiceOrderItems",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ServiceOrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SupplyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SupplyName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    ServiceOrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ServiceOrderItem", x => x.Id);
+                    table.PrimaryKey("PK_ServiceOrderItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ServiceOrderItem_ServiceOrders_ServiceOrderId",
+                        name: "FK_ServiceOrderItems_ServiceOrders_ServiceOrderId",
                         column: x => x.ServiceOrderId,
                         principalTable: "ServiceOrders",
                         principalColumn: "Id",
@@ -168,22 +169,17 @@ namespace AutoRepairShop.Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "Admins",
                 columns: new[] { "Id", "Department", "Name", "Password", "Username" },
-                values: new object[] { new Guid("22222222-2222-2222-2222-222222222222"), "Sistema", "Admin Master", "$2a$11$47kGy1CVaWAxx48uhR6HYOIBv8FF1InEXcHLZOutpHMuVGZCWotKG", "admin" });
+                values: new object[] { new Guid("22222222-2222-2222-2222-222222222222"), "Sistema", "Admin Master", "$2a$11$zmqFg7JKmB6g8npdnr5/q.OHkUkV4Wo4SXjFIVn1oLnzUmWxKk8cK", "admin" });
 
             migrationBuilder.InsertData(
                 table: "Customers",
                 columns: new[] { "Id", "Document", "Name", "Password", "Phone", "Username" },
-                values: new object[] { new Guid("11111111-1111-1111-1111-111111111111"), "12345678901", "Cliente Demo", "$2a$11$47kGy1CVaWAxx48uhR6HYOIBv8FF1InEXcHLZOutpHMuVGZCWotKG", "51999999999", "customer" });
+                values: new object[] { new Guid("11111111-1111-1111-1111-111111111111"), "52998224725", "Cliente Demo", "$2a$11$zmqFg7JKmB6g8npdnr5/q.OHkUkV4Wo4SXjFIVn1oLnzUmWxKk8cK", "51999999999", "customer" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ServiceOrderItem_ServiceOrderId",
-                table: "ServiceOrderItem",
+                name: "IX_ServiceOrderItems_ServiceOrderId",
+                table: "ServiceOrderItems",
                 column: "ServiceOrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServiceOrderItem_SupplyId",
-                table: "ServiceOrderItem",
-                column: "SupplyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ServiceOrders_CustomerId",
@@ -216,7 +212,7 @@ namespace AutoRepairShop.Infrastructure.Migrations
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
-                name: "ServiceOrderItem");
+                name: "ServiceOrderItems");
 
             migrationBuilder.DropTable(
                 name: "Supplies");

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoRepairShop.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260416160633_InitialCreate")]
+    [Migration("20260417182103_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -57,7 +57,7 @@ namespace AutoRepairShop.Infrastructure.Migrations
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
                             Department = "Sistema",
                             Name = "Admin Master",
-                            Password = "$2a$11$47kGy1CVaWAxx48uhR6HYOIBv8FF1InEXcHLZOutpHMuVGZCWotKG",
+                            Password = "$2a$11$zmqFg7JKmB6g8npdnr5/q.OHkUkV4Wo4SXjFIVn1oLnzUmWxKk8cK",
                             Username = "admin"
                         });
                 });
@@ -98,9 +98,9 @@ namespace AutoRepairShop.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            Document = "12345678901",
+                            Document = "52998224725",
                             Name = "Cliente Demo",
-                            Password = "$2a$11$47kGy1CVaWAxx48uhR6HYOIBv8FF1InEXcHLZOutpHMuVGZCWotKG",
+                            Password = "$2a$11$zmqFg7JKmB6g8npdnr5/q.OHkUkV4Wo4SXjFIVn1oLnzUmWxKk8cK",
                             Phone = "51999999999",
                             Username = "customer"
                         });
@@ -128,33 +128,6 @@ namespace AutoRepairShop.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("RefreshTokens");
-                });
-
-            modelBuilder.Entity("AutoRepairShop.Domain.Entities.ServiceOrderItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("ServiceOrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SupplyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceOrderId");
-
-                    b.HasIndex("SupplyId");
-
-                    b.ToTable("ServiceOrderItem", (string)null);
                 });
 
             modelBuilder.Entity("Service", b =>
@@ -275,15 +248,6 @@ namespace AutoRepairShop.Infrastructure.Migrations
                     b.ToTable("Vehicles", (string)null);
                 });
 
-            modelBuilder.Entity("AutoRepairShop.Domain.Entities.ServiceOrderItem", b =>
-                {
-                    b.HasOne("ServiceOrder", null)
-                        .WithMany("Items")
-                        .HasForeignKey("ServiceOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("ServiceOrder", b =>
                 {
                     b.HasOne("AutoRepairShop.Domain.Entities.Customer", null)
@@ -303,6 +267,42 @@ namespace AutoRepairShop.Infrastructure.Migrations
                         .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.OwnsMany("AutoRepairShop.Domain.ValueObjects.ServiceOrderItem", "Items", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Quantity")
+                                .HasColumnType("int");
+
+                            b1.Property<Guid>("ServiceOrderId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<Guid>("SupplyId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("SupplyName")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("nvarchar(200)");
+
+                            b1.Property<decimal>("UnitPrice")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("decimal(18,2)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ServiceOrderId");
+
+                            b1.ToTable("ServiceOrderItems", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("ServiceOrderId");
+                        });
+
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Vehicle", b =>
@@ -334,11 +334,6 @@ namespace AutoRepairShop.Infrastructure.Migrations
 
                     b.Navigation("Plate")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ServiceOrder", b =>
-                {
-                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

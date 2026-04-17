@@ -1,5 +1,6 @@
-﻿using AutoRepairShop.Domain.Entities;
-using AutoRepairShop.Domain.Enums;
+﻿using AutoRepairShop.Domain.Enums;
+using AutoRepairShop.Domain.Exceptions;
+using AutoRepairShop.Domain.ValueObjects;
 
 public class ServiceOrder
 {
@@ -33,17 +34,68 @@ public class ServiceOrder
         CreatedAt = DateTime.UtcNow;
     }
 
-    public void AddSupply(Guid supplyId, int quantity, decimal unitPrice)
+    public void AddSupply(Guid supplyId,string supplyName, int quantity, decimal unitPrice, decimal servicePrice)
     {
-        //if (_items.Any(i => i.SupplyId == supplyId))
-        //    throw new DomainException("Supply já adicionado à ordem.");
+        if (Status != ServiceOrderStatus.Received &&
+            Status != ServiceOrderStatus.InDiagnosis)
+            throw new DomainException("Cannot add supplies at this stage.");
 
-        _items.Add(new ServiceOrderItem(this.Id, supplyId, quantity, unitPrice));
-        RecalculateTotal();
+        if (quantity <= 0)
+            throw new DomainException("Quantity must be greater than zero.");
+
+        if (unitPrice <= 0)
+            throw new DomainException("Unit price must be greater than zero.");
+
+        var supply = new ServiceOrderItem(supplyId, supplyName, unitPrice, quantity);
+        _items.Add(supply);
+
+        RecalculateTotal(servicePrice);
     }
 
-    private void RecalculateTotal()
+    private void RecalculateTotal(decimal servicePrice)
     {
-        TotalAmount = _items.Sum(i => i.Subtotal);
+        TotalAmount = servicePrice + _items.Sum(s => s.Subtotal);
+    }
+
+    public void StartDiagnosis()
+    {
+        if (Status != ServiceOrderStatus.Received)
+            throw new DomainException("Service order must be received.");
+
+        Status = ServiceOrderStatus.InDiagnosis;
+    }
+
+    public void RequestApproval()
+    {
+        if (Status != ServiceOrderStatus.InDiagnosis)
+            throw new DomainException("Service order must be in diagnosis.");
+
+        Status = ServiceOrderStatus.WaitingApproval;
+    }
+
+    public void Approve()
+    {
+        if (Status != ServiceOrderStatus.WaitingApproval)
+            throw new DomainException("Service order must be awaiting approval.");
+
+        Status = ServiceOrderStatus.InExecution;
+        StartedAt = DateTime.UtcNow;
+    }
+
+    public void Finish()
+    {
+        if (Status != ServiceOrderStatus.InExecution)
+            throw new DomainException("Service order must be in execution.");
+
+        Status = ServiceOrderStatus.Finished;
+        FinishedAt = DateTime.UtcNow;
+    }
+
+    public void Deliver()
+    {
+        if (Status != ServiceOrderStatus.Finished)
+            throw new DomainException("Service order must be finished.");
+
+        Status = ServiceOrderStatus.Delivered;
     }
 }
