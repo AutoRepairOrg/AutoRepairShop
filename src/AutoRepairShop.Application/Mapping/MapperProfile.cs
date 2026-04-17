@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoRepairShop.Application.DTOs.Customer;
 using AutoRepairShop.Application.DTOs.Service;
+using AutoRepairShop.Application.DTOs.Supply;
 using AutoRepairShop.Application.DTOs.Vehicle;
 using AutoRepairShop.Domain.Entities;
 
@@ -19,6 +20,7 @@ namespace AutoRepairShop.Application.Mapping
                   opt => opt.MapFrom(src => src.Plate.Value));
 
             CreateMap<Service, ServiceResponse>();
+            CreateMap<Supply, SupplyResponse>();
         }
     }
 }

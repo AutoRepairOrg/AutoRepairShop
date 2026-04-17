@@ -1,4 +1,4 @@
-﻿using AutoRepairShop.Application.DTOs.Service;
+﻿using AutoRepairShop.Application.DTOs.Supply;
 using AutoRepairShop.Application.Interfaces.Services;
 using AutoRepairShop.Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
@@ -6,20 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AutoRepairShop.Api.Controllers
 {
-    [Route("api/service")]
+    [Route("api/supply")]
     [ApiController]
-    public class ServiceController : ControllerBase
+    public class SupplyController : ControllerBase
     {
-        private readonly IServiceService _service;
+        private readonly ISupplyService _service;
 
-        public ServiceController(IServiceService service)
+        public SupplyController(ISupplyService service)
         {
             _service = service;
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<ServiceResponse>>> GetAll()
+        public async Task<ActionResult<IEnumerable<SupplyResponse>>> GetAll()
         {
             var result = await _service.GetAllAsync();
             return Ok(result);
@@ -27,7 +27,7 @@ namespace AutoRepairShop.Api.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<ServiceResponse>> GetById([FromRoute] Guid id)
+        public async Task<ActionResult<SupplyResponse>> GetById([FromRoute] Guid id)
         {
             var result = await _service.GetByIdAsync(id);
             return Ok(result);
@@ -35,7 +35,7 @@ namespace AutoRepairShop.Api.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<ServiceResponse>> Delete([FromRoute] Guid id)
+        public async Task<ActionResult<SupplyResponse>> Delete([FromRoute] Guid id)
         {
             await _service.DeleteAsync(id);
             return Ok();
@@ -43,7 +43,7 @@ namespace AutoRepairShop.Api.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([FromBody] CreateServiceRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateSupplyRequest request)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace AutoRepairShop.Api.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update([FromBody] UpdateServiceRequest request)
+        public async Task<IActionResult> Update([FromBody] UpdateSupplyRequest request)
         {
             try
             {

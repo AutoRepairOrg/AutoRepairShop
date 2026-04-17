@@ -69,6 +69,9 @@ builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 
+builder.Services.AddScoped<ISupplyService, SupplyService>();
+builder.Services.AddScoped<ISupplyRepository, SupplyRepository>();
+
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();

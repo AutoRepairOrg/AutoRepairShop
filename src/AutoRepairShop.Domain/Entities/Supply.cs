@@ -1,4 +1,6 @@
-﻿public class Supply
+﻿using AutoRepairShop.Domain.Exceptions;
+
+public class Supply
 {
     public Guid Id { get; private set; }
     public string Name { get; private set; }
@@ -9,25 +11,31 @@
 
     public Supply(string name, decimal price, int stockQuantity)
     {
+        Validate(name, price, stockQuantity);
+
         Id = Guid.NewGuid();
         Name = name;
         Price = price;
         StockQuantity = stockQuantity;
-    }
-
-    public void AddStock(int quantity)
+    } 
+    public void Update(string name, decimal price, int stockQuantity)
     {
-        StockQuantity += quantity;
-    }
+        Validate(name, price, stockQuantity);
 
-    public void RemoveStock(int quantity)
-    {
-        StockQuantity -= quantity;
-    }
-
-    public void Update(string name, decimal price)
-    {
         Name = name;
         Price = price;
+        StockQuantity = stockQuantity;  
+    }
+
+    private static void Validate(string name, decimal price, int stockQuantity)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainException("Supply name is required.");
+
+        if (price <= 0)
+            throw new DomainException("Price must be greater than zero.");
+
+        if (stockQuantity < 0)
+            throw new DomainException("Stock quantity cannot be negative.");
     }
 }
