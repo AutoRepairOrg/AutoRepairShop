@@ -58,7 +58,6 @@ namespace AutoRepairShop.Application.Services
             serviceOrder.StartDiagnosis();
 
             await _repository.UpdateAsync(serviceOrder);
-            await _unitOfWork.CommitAsync();
         }
 
         public async Task RequestApprovalAsync(Guid serviceOrderId)

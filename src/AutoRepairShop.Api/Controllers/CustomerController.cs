@@ -70,5 +70,8 @@ namespace AutoRepairShop.Api.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        //endpoint de consulta de ordens do cliente
+        //endpoint que aprova orçamento
     }
 }

@@ -1,26 +1,34 @@
 ﻿using AutoRepairShop.Domain.Interfaces.Repositories;
+using AutoRepairShop.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoRepairShop.Infrastructure.Repositories
 {
     public class ServiceOrderRepository : IServiceOrderRepository
     {
-        public ServiceOrderRepository()
+        private readonly AppDbContext _context;
+
+        public ServiceOrderRepository(AppDbContext context)
         {
+            _context = context;
         }
 
-        public Task AddAsync(ServiceOrder serviceOrder)
+        public async Task AddAsync(ServiceOrder serviceOrder)
         {
-            throw new NotImplementedException();
+            await _context.ServiceOrders.AddAsync(serviceOrder);
         }
 
-        public Task<ServiceOrder?> GetByIdAsync(Guid id)
+        public async Task<ServiceOrder?> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _context.ServiceOrders
+                .Include(x => x.Items)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task UpdateAsync(ServiceOrder serviceOrder)
+        public async Task UpdateAsync(ServiceOrder serviceOrder)
         {
-            throw new NotImplementedException();
+            _context.Services.Update(serviceOrder);
+            await _context.SaveChangesAsync();
         }
     }
 }
