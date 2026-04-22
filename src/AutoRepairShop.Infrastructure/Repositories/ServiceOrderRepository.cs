@@ -4,14 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AutoRepairShop.Infrastructure.Repositories
 {
-    public class ServiceOrderRepository : IServiceOrderRepository
+    public class ServiceOrderRepository(AppDbContext context) : IServiceOrderRepository
     {
-        private readonly AppDbContext _context;
-
-        public ServiceOrderRepository(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         public async Task AddAsync(ServiceOrder serviceOrder)
         {
@@ -20,14 +15,14 @@ namespace AutoRepairShop.Infrastructure.Repositories
 
         public async Task<ServiceOrder?> GetByIdAsync(Guid id)
         {
-            return await _context.ServiceOrders
-                .Include(x => x.Items)
+            return await _context
+                .ServiceOrders.Include(x => x.Items)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task UpdateAsync(ServiceOrder serviceOrder)
         {
-            _context.Services.Update(serviceOrder);
+            _context.ServiceOrders.Update(serviceOrder);
             await _context.SaveChangesAsync();
         }
     }
