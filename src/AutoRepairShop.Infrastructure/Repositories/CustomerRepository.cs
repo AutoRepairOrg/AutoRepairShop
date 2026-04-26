@@ -33,7 +33,7 @@ namespace AutoRepairShop.Infrastructure.Repositories
 
         public async Task<Customer?> GetByIdAsync(Guid id)
         {
-           return await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
+            return await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task UpdateAsync(Customer entity)
@@ -45,6 +45,12 @@ namespace AutoRepairShop.Infrastructure.Repositories
         public async Task<Customer?> GetByUserNameAsync(string username)
         {
             return await _context.Customers.FirstOrDefaultAsync(c => c.Username == username);
+        }
+
+        public async Task<Customer?> GetByCpfCnpjAsync(string cpfCnpj)
+        {
+            Document document = Document.Create(cpfCnpj);
+            return await _context.Customers.FirstOrDefaultAsync(c => c.Document == document);
         }
     }
 }

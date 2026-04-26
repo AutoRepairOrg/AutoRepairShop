@@ -1,4 +1,6 @@
-﻿namespace AutoRepairShop.Domain.Interfaces.Repositories
+﻿using AutoRepairShop.Domain.Entities.ServiceOrder;
+
+namespace AutoRepairShop.Domain.Interfaces.Repositories
 {
     public interface IServiceOrderRepository
     {

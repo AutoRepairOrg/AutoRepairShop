@@ -1,4 +1,5 @@
 ﻿using AutoRepairShop.Domain.Exceptions;
+using AutoRepairShop.Domain.ValueObjects;
 
 public class Vehicle
 {
@@ -11,12 +12,7 @@ public class Vehicle
 
     protected Vehicle() { }
 
-    public Vehicle(
-        Guid customerId,
-        VehiclePlate plate,
-        string brand,
-        string model,
-        int year)
+    public Vehicle(Guid customerId, VehiclePlate plate, string brand, string model, int year)
     {
         Id = Guid.NewGuid();
 

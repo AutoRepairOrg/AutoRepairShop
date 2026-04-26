@@ -7,21 +7,15 @@ using AutoRepairShop.Domain.Interfaces.Repositories;
 
 namespace AutoRepairShop.Application.Services
 {
-    public class CustomerService : ICustomerService
+    public class CustomerService(
+        ICustomerRepository repository,
+        IMapper mapper,
+        IPasswordHasher passwordHasher
+    ) : ICustomerService
     {
-        private readonly ICustomerRepository _repository;
-        private readonly IMapper _mapper;
-        private readonly IPasswordHasher _passwordHasher;
-
-        public CustomerService(
-            ICustomerRepository repository,
-            IMapper mapper,
-            IPasswordHasher passwordHasher)
-        {
-            _repository = repository;
-            _mapper = mapper;
-            _passwordHasher = passwordHasher;
-        }
+        private readonly ICustomerRepository _repository = repository;
+        private readonly IMapper _mapper = mapper;
+        private readonly IPasswordHasher _passwordHasher = passwordHasher;
 
         public async Task<CustomerResponse> CreateAsync(CreateCustomerRequest request)
         {
@@ -42,7 +36,7 @@ namespace AutoRepairShop.Application.Services
 
         public async Task DeleteAsync(Guid id)
         {
-           var result = await _repository.GetByIdAsync(id);
+            var result = await _repository.GetByIdAsync(id);
 
             if (result == null)
                 throw new Exception("Customer not found.");
@@ -56,10 +50,18 @@ namespace AutoRepairShop.Application.Services
             return _mapper.Map<IEnumerable<CustomerResponse>>(result);
         }
 
+        public async Task<Customer> GetByCpfCnpjAsync(string cpfCnpj)
+        {
+            Customer customer =
+                await _repository.GetByCpfCnpjAsync(cpfCnpj)
+                ?? throw new Exception("Customer not found.");
+            return customer;
+        }
+
         public async Task<CustomerResponse> GetByIdAsync(Guid id)
         {
-           var result = await _repository.GetByIdAsync(id);
-           return _mapper.Map<CustomerResponse>(result);
+            var result = await _repository.GetByIdAsync(id);
+            return _mapper.Map<CustomerResponse>(result);
         }
 
         public async Task<CustomerResponse> UpdateAsync(UpdateCustomerRequest request)
@@ -73,11 +75,7 @@ namespace AutoRepairShop.Application.Services
 
             var hash = _passwordHasher.Hash(request.Password);
 
-            result.Update(
-                request.Name,
-                request.Phone,
-                request.Username,
-                hash);
+            result.Update(request.Name, request.Phone, request.Username, hash);
 
             await _repository.UpdateAsync(result);
 

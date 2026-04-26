@@ -1,4 +1,5 @@
-﻿using AutoRepairShop.Domain.Interfaces.Repositories;
+﻿using AutoRepairShop.Domain.Entities.ServiceOrder;
+using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,12 +12,14 @@ namespace AutoRepairShop.Infrastructure.Repositories
         public async Task AddAsync(ServiceOrder serviceOrder)
         {
             await _context.ServiceOrders.AddAsync(serviceOrder);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<ServiceOrder?> GetByIdAsync(Guid id)
         {
             return await _context
-                .ServiceOrders.Include(x => x.Items)
+                .ServiceOrders.Include(x => x.Services)
+                .Include(x => x.Supplies)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 

@@ -17,14 +17,26 @@ public class Supply
         Name = name;
         Price = price;
         StockQuantity = stockQuantity;
-    } 
+    }
+
     public void Update(string name, decimal price, int stockQuantity)
     {
         Validate(name, price, stockQuantity);
 
         Name = name;
         Price = price;
-        StockQuantity = stockQuantity;  
+        StockQuantity = stockQuantity;
+    }
+
+    public void DecreaseStock(int quantity)
+    {
+        if (quantity <= 0)
+            throw new DomainException("Quantity must be greater than zero.");
+
+        if (quantity > StockQuantity)
+            throw new DomainException("Insufficient stock quantity.");
+
+        StockQuantity -= quantity;
     }
 
     private static void Validate(string name, decimal price, int stockQuantity)

@@ -1,4 +1,5 @@
 ﻿using AutoRepairShop.Domain.Entities;
+using AutoRepairShop.Domain.Entities.ServiceOrder;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoRepairShop.Infrastructure.Data
@@ -13,17 +14,12 @@ namespace AutoRepairShop.Infrastructure.Data
         public DbSet<Supply> Supplies => Set<Supply>();
         public DbSet<Vehicle> Vehicles => Set<Vehicle>();
 
-
-        public AppDbContext(DbContextOptions<AppDbContext> options) 
-            : base(options) 
-        {
-        }
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(
-                 typeof(AppDbContext).Assembly
-            );
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
             SeedAdmins(modelBuilder);
             SeedCustomers(modelBuilder);
@@ -31,31 +27,35 @@ namespace AutoRepairShop.Infrastructure.Data
 
         private void SeedCustomers(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Customer>().HasData(
-                new Customer
-                {
-                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-                    Name = "Cliente Demo",
-                    Document =  new Document("52998224725"),
-                    Phone = "51999999999",
-                    Username = "customer",
-                    Password = PasswordSeed.Hash
-                }
-            );
+            modelBuilder
+                .Entity<Customer>()
+                .HasData(
+                    new Customer
+                    {
+                        Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                        Name = "Cliente Demo",
+                        Document = new Document("52998224725"),
+                        Phone = "51999999999",
+                        Username = "customer",
+                        Password = PasswordSeed.Hash,
+                    }
+                );
         }
 
         private void SeedAdmins(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Admin>().HasData(
-                new Admin
-                {
-                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-                    Name = "Admin Master",
-                    Department = "Sistema",
-                    Username = "admin",
-                    Password = PasswordSeed.Hash
-                }
-            );
+            modelBuilder
+                .Entity<Admin>()
+                .HasData(
+                    new Admin
+                    {
+                        Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                        Name = "Admin Master",
+                        Department = "Sistema",
+                        Username = "admin",
+                        Password = PasswordSeed.Hash,
+                    }
+                );
         }
     }
 
@@ -63,4 +63,4 @@ namespace AutoRepairShop.Infrastructure.Data
     {
         public static string Hash = BCrypt.Net.BCrypt.HashPassword("123456");
     }
-} 
+}

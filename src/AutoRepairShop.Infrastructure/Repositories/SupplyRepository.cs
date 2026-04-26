@@ -1,17 +1,13 @@
 ﻿using AutoRepairShop.Domain.Interfaces.Repositories;
+using AutoRepairShop.Domain.Models.Supply;
 using AutoRepairShop.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoRepairShop.Infrastructure.Repositories
 {
-    public class SupplyRepository : ISupplyRepository
+    public class SupplyRepository(AppDbContext context) : ISupplyRepository
     {
-        private readonly AppDbContext _context;
-
-        public SupplyRepository(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         public async Task AddAsync(Supply entity)
         {
@@ -33,6 +29,32 @@ namespace AutoRepairShop.Infrastructure.Repositories
         public async Task<Supply?> GetByIdAsync(Guid id)
         {
             return await _context.Supplies.FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<List<Supply>> GetSuppliesInStockAsync(List<SupplyRequestItem> supplyItems)
+        {
+            var requestedIds = supplyItems.Select(item => item.SupplyId).ToList();
+            var supplies = await _context
+                .Supplies.Where(supply => requestedIds.Contains(supply.Id))
+                .ToListAsync();
+
+            List<Supply> availableSupplies = [];
+
+            foreach (var supply in supplies)
+            {
+                var requestedItem = supplyItems.FirstOrDefault(item => item.SupplyId == supply.Id);
+
+                if (requestedItem is null || requestedItem.Quantity > supply.StockQuantity)
+                    continue;
+
+                supply.DecreaseStock(requestedItem.Quantity);
+                availableSupplies.Add(supply);
+            }
+
+            // if (availableSupplies.Count > 0)
+            //     await _context.SaveChangesAsync();
+
+            return availableSupplies;
         }
 
         public async Task UpdateAsync(Supply entity)

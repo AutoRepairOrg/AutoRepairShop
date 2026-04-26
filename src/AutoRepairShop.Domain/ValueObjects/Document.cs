@@ -3,7 +3,9 @@
 public sealed class Document
 {
     public string Value { get; }
+
     public Document() { }
+
     public Document(string value)
     {
         Value = value;
@@ -25,8 +27,7 @@ public sealed class Document
         throw new DomainException("Invalid CPF or CNPJ");
     }
 
-    private static string OnlyDigits(string value)
-        => new(value.Where(char.IsDigit).ToArray());
+    private static string OnlyDigits(string value) => new(value.Where(char.IsDigit).ToArray());
 
     #region CPF
 
@@ -42,7 +43,8 @@ public sealed class Document
             sum1 += numbers[i] * (10 - i);
 
         var digit1 = (sum1 * 10) % 11;
-        if (digit1 == 10) digit1 = 0;
+        if (digit1 == 10)
+            digit1 = 0;
 
         if (numbers[9] != digit1)
             return false;
@@ -52,7 +54,8 @@ public sealed class Document
             sum2 += numbers[i] * (11 - i);
 
         var digit2 = (sum2 * 10) % 11;
-        if (digit2 == 10) digit2 = 0;
+        if (digit2 == 10)
+            digit2 = 0;
 
         return numbers[10] == digit2;
     }
@@ -93,11 +96,9 @@ public sealed class Document
 
     #endregion
 
-    public override bool Equals(object obj)
-        => obj is Document other && Value == other.Value;
+    public override bool Equals(object obj) => obj is Document other && Value == other.Value;
 
-    public override int GetHashCode()
-        => Value.GetHashCode();
+    public override int GetHashCode() => Value.GetHashCode();
 
     public override string ToString() => Value;
 

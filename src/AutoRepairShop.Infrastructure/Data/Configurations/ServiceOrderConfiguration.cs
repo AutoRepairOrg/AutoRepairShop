@@ -1,4 +1,5 @@
 ﻿using AutoRepairShop.Domain.Entities;
+using AutoRepairShop.Domain.Entities.ServiceOrder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,77 +13,79 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
 
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.CustomerId)
-                   .IsRequired();
+            builder.Property(x => x.CustomerId).IsRequired();
 
-            builder.Property(x => x.VehicleId)
-                   .IsRequired();
+            builder.Property(x => x.VehicleId).IsRequired();
 
-            builder.Property(x => x.ServiceId)
-                   .IsRequired();
+            builder.Property(x => x.Status).HasConversion<string>().IsRequired();
 
-            builder.Property(x => x.Status)
-                   .HasConversion<string>()
-                   .IsRequired();
-
-            builder.Property(x => x.TotalAmount)
-                   .HasPrecision(18, 2)
-                   .IsRequired();
-
-            builder.Property(x => x.CreatedAt)
-                   .IsRequired();
+            builder.Property(x => x.CreatedAt).IsRequired();
 
             builder.Property(x => x.StartedAt);
 
             builder.Property(x => x.FinishedAt);
 
-            builder.Navigation(x => x.Items)
-                   .UsePropertyAccessMode(PropertyAccessMode.Field);
+            builder.Navigation(x => x.Services).UsePropertyAccessMode(PropertyAccessMode.Field);
+            builder.Navigation(x => x.Supplies).UsePropertyAccessMode(PropertyAccessMode.Field);
 
-            builder.HasOne<Service>()
-                   .WithMany()
-                   .HasForeignKey(x => x.ServiceId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            builder
+                .HasOne<Customer>()
+                .WithMany()
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<Customer>()
-                   .WithMany()
-                   .HasForeignKey(x => x.CustomerId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            builder
+                .HasOne<Vehicle>()
+                .WithMany()
+                .HasForeignKey(x => x.VehicleId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<Vehicle>()
-                   .WithMany()
-                   .HasForeignKey(x => x.VehicleId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            builder.OwnsMany(
+                x => x.Services,
+                services =>
+                {
+                    services.ToTable("ServiceOrderServices");
 
-            builder.OwnsMany(x => x.Items, items =>
-            {
-                items.ToTable("ServiceOrderItems");
+                    services.WithOwner().HasForeignKey(x => x.ServiceOrderId);
 
-                items.WithOwner()
-                     .HasForeignKey("ServiceOrderId");
+                    services.HasKey(x => new { x.ServiceOrderId, x.ServiceId });
 
-                // Shadow key (required by EF Core)
-                items.Property<Guid>("Id");
-                items.HasKey("Id");
+                    services.Property(x => x.ServiceOrderId).IsRequired();
+                    services.Property(x => x.ServiceId).IsRequired();
 
-                items.Property(i => i.SupplyId)
-                     .IsRequired();
+                    services
+                        .HasOne<Service>()
+                        .WithMany()
+                        .HasForeignKey(x => x.ServiceId)
+                        .OnDelete(DeleteBehavior.Restrict);
+                }
+            );
 
-                items.Property(i => i.SupplyName)
-                     .IsRequired()
-                     .HasMaxLength(200);
+            builder.OwnsMany(
+                x => x.Supplies,
+                supplies =>
+                {
+                    supplies.ToTable("ServiceOrderSupplies");
 
-                items.Property(i => i.UnitPrice)
-                     .HasPrecision(18, 2)
-                     .IsRequired();
+                    supplies.WithOwner().HasForeignKey(x => x.ServiceOrderId);
 
-                items.Property(i => i.Quantity)
-                     .IsRequired();
-            });
+                    supplies.HasKey(x => new { x.ServiceOrderId, x.SupplyId });
+
+                    supplies.Property(x => x.ServiceOrderId).IsRequired();
+                    supplies.Property(x => x.SupplyId).IsRequired();
+                    supplies.Property(x => x.Quantity).IsRequired();
+
+                    supplies
+                        .HasOne<Supply>()
+                        .WithMany()
+                        .HasForeignKey(x => x.SupplyId)
+                        .OnDelete(DeleteBehavior.Restrict);
+                }
+            );
 
             builder.HasIndex(x => x.CustomerId);
             builder.HasIndex(x => x.VehicleId);
-            builder.HasIndex(x => x.ServiceId);
+            builder.HasIndex(x => x.Status);
         }
     }
 }

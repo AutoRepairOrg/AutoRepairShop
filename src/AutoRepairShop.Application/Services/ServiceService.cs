@@ -5,25 +5,14 @@ using AutoRepairShop.Domain.Interfaces.Repositories;
 
 namespace AutoRepairShop.Application.Services
 {
-    public class ServiceService : IServiceService
+    public class ServiceService(IServiceRepository repository, IMapper mapper) : IServiceService
     {
-        private readonly IServiceRepository _repository;
-        private readonly IMapper _mapper;
-
-        public ServiceService(
-            IServiceRepository repository,
-            IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        private readonly IServiceRepository _repository = repository;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<ServiceResponse> CreateAsync(CreateServiceRequest request)
         {
-            var service = new Service(
-                request.Name,
-                request.Description,
-                request.Price);
+            var service = new Service(request.Name, request.Description, request.Price);
 
             await _repository.AddAsync(service);
 
@@ -52,6 +41,12 @@ namespace AutoRepairShop.Application.Services
             return _mapper.Map<ServiceResponse>(result);
         }
 
+        public async Task<List<Service>> GetServicesByIdsAsync(List<Guid> serviceIds)
+        {
+            List<Service> services = await _repository.GetServicesByIdsAsync(serviceIds);
+            return services;
+        }
+
         public async Task<ServiceResponse> UpdateAsync(UpdateServiceRequest request)
         {
             var result = await _repository.GetByIdAsync(request.Id);
@@ -61,10 +56,7 @@ namespace AutoRepairShop.Application.Services
 
             //TODO: Criação de exceções específicas/customizadas
 
-            result.Update(
-                request.Name,
-                request.Description,
-                request.Price);
+            result.Update(request.Name, request.Description, request.Price);
 
             await _repository.UpdateAsync(result);
 
