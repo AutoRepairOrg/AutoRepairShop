@@ -2,32 +2,26 @@
 using AutoRepairShop.Application.DTOs.Vehicle;
 using AutoRepairShop.Application.Interfaces.Services;
 using AutoRepairShop.Domain.Interfaces.Repositories;
+using AutoRepairShop.Domain.ValueObjects;
 
 namespace AutoRepairShop.Application.Services
 {
-    public class VehicleService : IVehicleService
+    public class VehicleService(IVehicleRepository repository, IMapper mapper) : IVehicleService
     {
-        private readonly IVehicleRepository _repository;
-        private readonly IMapper _mapper;
-
-        public VehicleService(
-            IVehicleRepository repository,
-            IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        private readonly IVehicleRepository _repository = repository;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<VehicleResponse> CreateAsync(CreateVehicleRequest request)
         {
             //TODO: Validar se o cliente existe
 
-           var vehicle = new Vehicle(
-               request.CustomerId,
-               VehiclePlate.Create(request.Plate.Value),
-               request.Brand,
-               request.Model,
-               request.Year);
+            var vehicle = new Vehicle(
+                request.CustomerId,
+                VehiclePlate.Create(request.Plate.Value),
+                request.Brand,
+                request.Model,
+                request.Year
+            );
 
             await _repository.AddAsync(vehicle);
 
@@ -65,14 +59,31 @@ namespace AutoRepairShop.Application.Services
 
             //TODO: Criação de exceções específicas/customizadas
 
-            result.Update(
-                request.Brand,
-                request.Model,
-                request.Year);
+            result.Update(request.Brand, request.Model, request.Year);
 
             await _repository.UpdateAsync(result);
 
             return _mapper.Map<VehicleResponse>(result);
+        }
+
+        public async Task<Vehicle> GetOrCreateAsync(VehicleDto request, Guid customerId)
+        {
+            Vehicle? vehicleAlready = await _repository.GetByPlateAsync(request.Plate);
+
+            if (vehicleAlready != null)
+                return vehicleAlready;
+
+            var vehicle = new Vehicle(
+                customerId,
+                VehiclePlate.Create(request.Plate),
+                request.Brand,
+                request.Model,
+                request.Year
+            );
+
+            await _repository.AddAsync(vehicle);
+
+            return vehicle;
         }
     }
 }

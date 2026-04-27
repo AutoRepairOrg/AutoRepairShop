@@ -14,29 +14,29 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
 
             builder.HasIndex(x => x.CustomerId);
 
-            builder.HasOne<Customer>()
-                   .WithMany()
-                   .HasForeignKey(x => x.CustomerId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            builder
+                .HasOne<Customer>()
+                .WithMany()
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.OwnsOne(x => x.Plate, plate =>
-            {
-                plate.Property(p => p.Value)
-                     .HasColumnName("Plate")
-                     .HasMaxLength(10)
-                     .IsRequired();
-            });
+            builder.OwnsOne(
+                x => x.Plate,
+                plate =>
+                {
+                    plate
+                        .Property(p => p.Value)
+                        .HasColumnName("Plate")
+                        .HasMaxLength(10)
+                        .IsRequired();
+                }
+            );
 
-            builder.Property(x => x.Brand)
-                   .HasMaxLength(100)
-                   .IsRequired();
+            builder.Property(x => x.Brand).HasMaxLength(100).IsRequired();
 
-            builder.Property(x => x.Model)
-                   .HasMaxLength(100)
-                   .IsRequired();
+            builder.Property(x => x.Model).HasMaxLength(100).IsRequired();
 
-            builder.Property(x => x.Year)
-                   .IsRequired();
+            builder.Property(x => x.Year).IsRequired();
 
             builder.HasIndex(x => x.CustomerId);
         }

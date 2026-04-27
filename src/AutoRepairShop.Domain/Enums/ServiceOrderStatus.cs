@@ -7,6 +7,6 @@
         WaitingApproval,
         InExecution,
         Finished,
-        Delivered
+        Delivered,
     }
 }

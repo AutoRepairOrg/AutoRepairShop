@@ -1,47 +1,43 @@
 ﻿using System.Text.RegularExpressions;
 
-public sealed class VehiclePlate
+namespace AutoRepairShop.Domain.ValueObjects
 {
-    private static readonly Regex OldPlateRegex =
-        new(@"^[A-Z]{3}[0-9]{4}$");
-
-    private static readonly Regex MercosulPlateRegex =
-        new(@"^[A-Z]{3}[0-9][A-Z][0-9]{2}$");
-
-    public string Value { get; }
-
-    private VehiclePlate(string value)
+    public sealed class VehiclePlate
     {
-        Value = value;
-    }
+        private static readonly Regex OldPlateRegex = new(@"^[A-Z]{3}[0-9]{4}$");
 
-    public static VehiclePlate Create(string input)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-            throw new ArgumentException("Vehicle plate is required");
+        private static readonly Regex MercosulPlateRegex = new(@"^[A-Z]{3}[0-9][A-Z][0-9]{2}$");
 
-        var plate = Normalize(input);
+        public string Value { get; }
 
-        if (!OldPlateRegex.IsMatch(plate) &&
-            !MercosulPlateRegex.IsMatch(plate))
+        private VehiclePlate(string value)
         {
-            throw new ArgumentException("Invalid vehicle plate");
+            Value = value;
         }
 
-        return new VehiclePlate(plate);
+        public static VehiclePlate Create(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                throw new ArgumentException("Vehicle plate is required");
+
+            var plate = Normalize(input);
+
+            if (!OldPlateRegex.IsMatch(plate) && !MercosulPlateRegex.IsMatch(plate))
+            {
+                throw new ArgumentException("Invalid vehicle plate");
+            }
+
+            return new VehiclePlate(plate);
+        }
+
+        private static string Normalize(string value) =>
+            value.ToUpper().Replace("-", "").Replace(" ", "");
+
+        public override bool Equals(object obj) =>
+            obj is VehiclePlate other && Value == other.Value;
+
+        public override int GetHashCode() => Value.GetHashCode();
+
+        public override string ToString() => Value;
     }
-
-    private static string Normalize(string value)
-        => value
-            .ToUpper()
-            .Replace("-", "")
-            .Replace(" ", "");
-
-    public override bool Equals(object obj)
-        => obj is VehiclePlate other && Value == other.Value;
-
-    public override int GetHashCode()
-        => Value.GetHashCode();
-
-    public override string ToString() => Value;
 }

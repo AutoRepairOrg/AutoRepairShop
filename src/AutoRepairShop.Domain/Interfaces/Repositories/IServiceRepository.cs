@@ -2,5 +2,6 @@
 {
     public interface IServiceRepository : IRepository<Service>
     {
+        Task<List<Service>> GetServicesByIdsAsync(List<Guid> serviceIds);
     }
 }

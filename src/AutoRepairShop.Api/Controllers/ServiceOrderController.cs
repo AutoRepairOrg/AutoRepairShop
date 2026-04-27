@@ -1,20 +1,31 @@
-﻿using AutoRepairShop.Application.Interfaces.Services;
+﻿using AutoRepairShop.Application.DTOs.ServiceOrder.Request;
+using AutoRepairShop.Application.Interfaces.Services;
+using AutoRepairShop.Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AutoRepairShop.Api.Controllers
 {
     [Route("api/service-order")]
     [ApiController]
-    public class ServiceOrderController : ControllerBase
+    public class ServiceOrderController(IServiceOrderService service) : ControllerBase
     {
-        private readonly IServiceOrderService _service;
+        private readonly IServiceOrderService _service = service;
 
-        public ServiceOrderController(IServiceOrderService service)
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([FromBody] CreateServiceOrderRequest request)
         {
-            _service = service;
+            try
+            {
+                await _service.CreateServiceOrderAsync(request);
+                return Ok();
+            }
+            catch (DomainException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
-
-        //endpoint de criação de ordem de serviço
         //endpoint de consulta de tempo médio
     }
 }

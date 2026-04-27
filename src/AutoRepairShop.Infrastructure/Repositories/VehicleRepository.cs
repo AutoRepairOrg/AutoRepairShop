@@ -1,4 +1,5 @@
 ﻿using AutoRepairShop.Domain.Interfaces.Repositories;
+using AutoRepairShop.Domain.ValueObjects;
 using AutoRepairShop.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +34,15 @@ namespace AutoRepairShop.Infrastructure.Repositories
         public async Task<Vehicle?> GetByIdAsync(Guid id)
         {
             return await _context.Vehicles.FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<Vehicle?> GetByPlateAsync(string plate)
+        {
+            VehiclePlate vehiclePlate = VehiclePlate.Create(plate);
+            Vehicle? vehicle = await _context.Vehicles.FirstOrDefaultAsync(c =>
+                c.Plate.Value == vehiclePlate.Value
+            );
+            return vehicle;
         }
 
         public async Task UpdateAsync(Vehicle entity)

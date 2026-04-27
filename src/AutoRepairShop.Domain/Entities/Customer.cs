@@ -2,6 +2,7 @@
 using AutoRepairShop.Domain.Interfaces;
 
 namespace AutoRepairShop.Domain.Entities;
+
 public class Customer : IUser
 {
     public string Name { get; set; }
@@ -11,20 +12,14 @@ public class Customer : IUser
     public string Username { get; set; }
     public string Password { get; set; }
 
-    public Customer() { } 
+    public Customer() { }
 
-    public Customer(
-        string name,
-        Document document,
-        string phone,
-        string username,
-        string password)
+    public Customer(string name, Document document, string phone, string username, string password)
     {
         Id = Guid.NewGuid();
 
         SetName(name);
-        Document = document
-            ?? throw new DomainException("Document is required");
+        Document = document ?? throw new DomainException("Document is required");
 
         SetPhone(phone);
         SetUserName(username);
@@ -46,6 +41,7 @@ public class Customer : IUser
 
         Name = name.Trim();
     }
+
     private void SetPhone(string phone)
     {
         if (string.IsNullOrWhiteSpace(phone))
@@ -69,6 +65,6 @@ public class Customer : IUser
 
         Username = userName;
 
-        //TODO: Validar quantidade de caracteres, validação de senha 
+        //TODO: Validar quantidade de caracteres, validação de senha
     }
 }

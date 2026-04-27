@@ -154,7 +154,7 @@ namespace AutoRepairShop.Infrastructure.Migrations
                     b.ToTable("Services", (string)null);
                 });
 
-            modelBuilder.Entity("ServiceOrder", b =>
+            modelBuilder.Entity("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrder", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -169,19 +169,12 @@ namespace AutoRepairShop.Infrastructure.Migrations
                     b.Property<DateTime?>("FinishedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("ServiceId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("StartedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<Guid>("VehicleId")
                         .HasColumnType("uniqueidentifier");
@@ -190,7 +183,7 @@ namespace AutoRepairShop.Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("ServiceId");
+                    b.HasIndex("Status");
 
                     b.HasIndex("VehicleId");
 
@@ -248,17 +241,11 @@ namespace AutoRepairShop.Infrastructure.Migrations
                     b.ToTable("Vehicles", (string)null);
                 });
 
-            modelBuilder.Entity("ServiceOrder", b =>
+            modelBuilder.Entity("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrder", b =>
                 {
                     b.HasOne("AutoRepairShop.Domain.Entities.Customer", null)
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Service", null)
-                        .WithMany()
-                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -268,41 +255,60 @@ namespace AutoRepairShop.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsMany("AutoRepairShop.Domain.ValueObjects.ServiceOrderItem", "Items", b1 =>
+                    b.OwnsMany("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrderService", "Services", b1 =>
                         {
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
+                            b1.Property<Guid>("ServiceOrderId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<int>("Quantity")
-                                .HasColumnType("int");
+                            b1.Property<Guid>("ServiceId")
+                                .HasColumnType("uniqueidentifier");
 
+                            b1.HasKey("ServiceOrderId", "ServiceId");
+
+                            b1.HasIndex("ServiceId");
+
+                            b1.ToTable("ServiceOrderServices", (string)null);
+
+                            b1.HasOne("Service", null)
+                                .WithMany()
+                                .HasForeignKey("ServiceId")
+                                .OnDelete(DeleteBehavior.Restrict)
+                                .IsRequired();
+
+                            b1.WithOwner()
+                                .HasForeignKey("ServiceOrderId");
+                        });
+
+                    b.OwnsMany("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrderSupply", "Supplies", b1 =>
+                        {
                             b1.Property<Guid>("ServiceOrderId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<Guid>("SupplyId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<string>("SupplyName")
-                                .IsRequired()
-                                .HasMaxLength(200)
-                                .HasColumnType("nvarchar(200)");
+                            b1.Property<int>("Quantity")
+                                .HasColumnType("int");
 
-                            b1.Property<decimal>("UnitPrice")
-                                .HasPrecision(18, 2)
-                                .HasColumnType("decimal(18,2)");
+                            b1.HasKey("ServiceOrderId", "SupplyId");
 
-                            b1.HasKey("Id");
+                            b1.HasIndex("SupplyId");
 
-                            b1.HasIndex("ServiceOrderId");
-
-                            b1.ToTable("ServiceOrderItems", (string)null);
+                            b1.ToTable("ServiceOrderSupplies", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ServiceOrderId");
+
+                            b1.HasOne("Supply", null)
+                                .WithMany()
+                                .HasForeignKey("SupplyId")
+                                .OnDelete(DeleteBehavior.Restrict)
+                                .IsRequired();
                         });
 
-                    b.Navigation("Items");
+                    b.Navigation("Services");
+
+                    b.Navigation("Supplies");
                 });
 
             modelBuilder.Entity("Vehicle", b =>
