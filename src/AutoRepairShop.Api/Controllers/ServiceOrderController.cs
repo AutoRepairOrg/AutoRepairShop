@@ -1,5 +1,6 @@
 ﻿using AutoRepairShop.Application.DTOs.ServiceOrder.Request;
 using AutoRepairShop.Application.Interfaces.Services;
+using AutoRepairShop.Domain.Enums;
 using AutoRepairShop.Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,65 @@ namespace AutoRepairShop.Api.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
-        //endpoint de consulta de tempo médio
+
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetStatus(Guid id)
+        {
+            try
+            {
+                var response = await _service.GetByIdAsync(id);
+                return Ok(response);
+            }
+            catch (DomainException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAll([FromQuery] ServiceOrderStatus? status = null)
+        {
+            var response = await _service.GetAllAsync(status);
+            return Ok(response);
+        }
+
+        [HttpPost("{id}/advance")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AdvanceStatus(Guid id)
+        {
+            try
+            {
+                await _service.AdvanceStatusAsync(id);
+                return Ok(new { message = "Service order status advanced successfully." });
+            }
+            catch (DomainException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("decision")]
+        [Authorize(Roles = "Customer")]
+        public async Task<IActionResult> ProcessApprovalDecision(
+            [FromBody] ApprovalDecisionRequest request
+        )
+        {
+            try
+            {
+                await _service.ProcessApprovalDecisionAsync(request);
+
+                var message = request.IsApproved
+                    ? "Service order approved successfully."
+                    : "Service order rejected successfully.";
+
+                return Ok(new { message });
+            }
+            catch (DomainException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
     }
 }

@@ -9,15 +9,15 @@
 
 ## 2. Escopo Funcional Obrigatório
 
-### 2.1 Fluxo: Criação da Ordem de Serviço (OS)
-- Identificar cliente por CPF/CNPJ.
+### 2.1 Fluxo: Criação da Ordem de Serviço (OS) ✅
+- ✅ Identificar cliente por CPF/CNPJ.
 - ✅ Permitir cadastrar cliente caso não exista.
 - ✅ Cadastrar veículo (placa, marca, modelo, ano) vinculado ao cliente.
-- Incluir serviços solicitados na OS (ex.: troca de óleo, alinhamento).
-- Incluir peças e insumos necessários na OS.
-- Gerar orçamento automaticamente com base em serviços + peças/insumos.
-- Registrar envio do orçamento para aprovação do cliente.
-- Registrar resposta de aprovação/reprovação do cliente.
+- ✅ Incluir serviços solicitados na OS (ex.: troca de óleo, alinhamento).
+- ✅ Incluir peças e insumos necessários na OS.
+- ✅ Gerar orçamento automaticamente com base em serviços + peças/insumos.
+- ✅ Registrar envio do orçamento para aprovação do cliente.
+- ✅ Registrar resposta de aprovação/reprovação do cliente.
 
 ### 2.2 Fluxo: Acompanhamento da OS
 - ✅ Implementar status da OS:
@@ -27,8 +27,9 @@
   - ✅ Em execução
   - ✅ Finalizada
   - ✅ Entregue
+  - ✅ Cancelada
 - ✅ Implementar regras de transição automática de status conforme ações do sistema.
-- Disponibilizar endpoint para cliente consultar progresso da OS via API.
+- ✅ Disponibilizar endpoint para cliente e admin consultarem progresso da OS via API.
 - Garantir histórico de mudanças de status (auditoria básica).
 
 ### 2.3 Fluxo: Gestão Administrativa
@@ -36,9 +37,9 @@
 - ✅ CRUD de veículos.
 - ✅ CRUD de serviços.
 - ✅ CRUD de peças e insumos.
-- Controle de estoque (entrada, saída, saldo mínimo opcional).
-- Listagem de ordens de serviço com filtros.
-- Detalhamento de ordem de serviço.
+- ✅ Controle de estoque (baixa na criação, devolução no cancelamento, bloqueio de estoque negativo).
+- ✅ Listagem de ordens de serviço com filtro de status.
+- ✅ Detalhamento de ordem de serviço por ID.
 - Monitoramento do tempo médio de execução dos serviços.
 
 ---

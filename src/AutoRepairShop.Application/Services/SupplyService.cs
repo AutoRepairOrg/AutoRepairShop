@@ -65,5 +65,18 @@ namespace AutoRepairShop.Application.Services
 
             return _mapper.Map<SupplyResponse>(result);
         }
+
+        public async Task RestockSuppliesAsync(List<(Guid SupplyId, int Quantity)> supplies)
+        {
+            foreach (var (supplyId, quantity) in supplies)
+            {
+                var supply =
+                    await _repository.GetByIdAsync(supplyId)
+                    ?? throw new Exception($"Supply with ID {supplyId} not found.");
+                supply.IncreaseStock(quantity);
+
+                await _repository.UpdateAsync(supply);
+            }
+        }
     }
 }

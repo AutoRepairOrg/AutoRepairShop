@@ -15,60 +15,65 @@ Conforme cada tarefa for concluida, atualize o checklist principal em [TECH_CHAL
 ## Etapa 1 - Fechar fluxo de Ordem de Servico (OS)
 
 ### 1.1 Criacao da OS
-- [ ] Criar endpoint de criacao da OS no controller.
-- [ ] Receber cliente por CPF/CNPJ (buscar existente, criar se necessario).
-- [ ] Vincular veiculo ao cliente.
-- [ ] Permitir incluir servicos solicitados.
-- [ ] Permitir incluir pecas/insumos.
-- [ ] Calcular orcamento automaticamente.
-- [ ] Persistir OS com status inicial.
+- [x] Criar endpoint de criacao da OS no controller.
+- [x] Receber cliente por CPF/CNPJ (buscar existente, criar se necessario).
+- [x] Vincular veiculo ao cliente.
+- [x] Permitir incluir servicos solicitados.
+- [x] Permitir incluir pecas/insumos.
+- [x] Calcular orcamento automaticamente.
+- [x] Persistir OS com status inicial.
 
 Critério de pronto:
-- [ ] OS criada com sucesso via API.
-- [ ] Valor total do orcamento consistente com servicos + pecas.
+- [x] OS criada com sucesso via API.
+- [x] Valor total do orcamento consistente com servicos + pecas.
 
 Quando concluir, atualizar no checklist principal:
-- [ ] Secao 2.1 (itens de criacao e orcamento).
+- [x] Secao 2.1 (itens de criacao e orcamento).
 
 ### 1.2 Acompanhamento da OS
-- [ ] Criar endpoint de consulta de progresso da OS para cliente.
-- [ ] Expor status atual da OS.
-- [ ] Expor dados basicos (cliente, veiculo, itens, total).
-- [ ] Registrar historico de mudancas de status (auditoria basica).
+- [x] Criar endpoint de consulta de progresso da OS para cliente e administrador.
+- [x] Expor status atual da OS.
+- [x] Expor dados basicos (cliente, veiculo, itens).
+- [ ] Registrar historico de mudancas de status (auditoria basica). (removido a pedido, pendente se necessario)
 
 Critério de pronto:
-- [ ] Cliente consegue consultar progresso por API.
+- [x] Cliente e Admin conseguem consultar progresso por API (GET /api/service-order/{id}).
+- [x] Admin pode avancar status (POST /api/service-order/{id}/advance).
+- [x] Customer aprova ou rejeita em WaitingApproval (POST /api/service-order/decision).
 - [ ] Historico de status gravado e consultavel.
 
 Quando concluir, atualizar no checklist principal:
-- [ ] Secao 2.2 (consulta e historico).
+- [x] Secao 2.2 (consulta e transicoes de status).
 
 ---
 
 ## Etapa 2 - Gestao administrativa avancada
 
 ### 2.1 Estoque e pecas/insumos
-- [ ] Definir regra de baixa de estoque ao incluir item na OS.
-- [ ] Impedir estoque negativo.
-- [ ] Criar regra de validacao para quantidade disponivel.
-- [ ] Atualizar saldo de estoque de forma consistente.
+- [x] Definir regra de baixa de estoque ao incluir item na OS.
+- [x] Impedir estoque negativo.
+- [x] Criar regra de validacao para quantidade disponivel.
+- [x] Atualizar saldo de estoque de forma consistente.
+- [x] Devolver estoque ao cancelar/rejeitar OS (RestockSuppliesAsync).
 
 Critério de pronto:
-- [ ] Fluxo de estoque funciona em cenario feliz e cenario de erro.
+- [x] Fluxo de estoque funciona em cenario feliz e cenario de erro.
 
 Quando concluir, atualizar no checklist principal:
-- [ ] Secao 2.3 (controle de estoque).
+- [x] Secao 2.3 (controle de estoque).
 
 ### 2.2 Listagem e detalhamento de OS
-- [ ] Criar endpoint de listagem de OS com filtros (status, cliente, periodo).
-- [ ] Criar endpoint de detalhamento por id.
+- [x] Criar endpoint de listagem de OS com filtro de status (GET /api/service-order?status=...).
+- [x] Criar endpoint de detalhamento por id (GET /api/service-order/{id}).
+- [ ] Implementar filtros adicionais (cliente, periodo).
 - [ ] Implementar retorno paginado (se aplicavel).
 
 Critério de pronto:
-- [ ] Lista e detalhe funcionando e testados.
+- [x] Lista e detalhe funcionando via API.
+- [ ] Testados.
 
 Quando concluir, atualizar no checklist principal:
-- [ ] Secao 2.3 (listagem e detalhamento de OS).
+- [x] Secao 2.3 (listagem e detalhamento de OS).
 
 ### 2.3 Tempo medio de execucao
 - [ ] Definir metrica (ex.: InExecution ate Finished).

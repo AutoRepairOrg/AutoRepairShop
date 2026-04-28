@@ -1,4 +1,6 @@
 ﻿using AutoRepairShop.Application.DTOs.ServiceOrder.Request;
+using AutoRepairShop.Application.DTOs.ServiceOrder.Response;
+using AutoRepairShop.Domain.Enums;
 
 namespace AutoRepairShop.Application.Interfaces.Services;
 
@@ -6,13 +8,11 @@ public interface IServiceOrderService
 {
     Task CreateServiceOrderAsync(CreateServiceOrderRequest request);
 
-    Task StartDiagnosisAsync(Guid serviceOrderId);
+    Task<IEnumerable<GetServiceOrderResponse>> GetAllAsync(ServiceOrderStatus? status);
 
-    Task RequestApprovalAsync(Guid serviceOrderId);
+    Task<GetServiceOrderResponse> GetByIdAsync(Guid serviceOrderId);
 
-    Task ApproveAsync(Guid serviceOrderId);
+    Task AdvanceStatusAsync(Guid serviceOrderId);
 
-    Task FinishAsync(Guid serviceOrderId);
-
-    Task DeliverAsync(Guid serviceOrderId);
+    Task ProcessApprovalDecisionAsync(ApprovalDecisionRequest request);
 }

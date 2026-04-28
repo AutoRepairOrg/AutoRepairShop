@@ -27,6 +27,22 @@ namespace AutoRepairShop.Domain.Entities.ServiceOrder
             _supplies.Add(new ServiceOrderSupply(Id, supplyId, quantity));
         }
 
+        public void ApproveFromReceived()
+        {
+            if (Status != ServiceOrderStatus.Received)
+                throw new DomainException("Service order must be received to be approved.");
+
+            Status = ServiceOrderStatus.InDiagnosis;
+        }
+
+        public void Reject()
+        {
+            if (Status != ServiceOrderStatus.WaitingApproval)
+                throw new DomainException("Service order must be waiting approval to be rejected.");
+
+            Status = ServiceOrderStatus.Canceled;
+        }
+
         public void StartDiagnosis()
         {
             if (Status != ServiceOrderStatus.Received)
@@ -41,6 +57,7 @@ namespace AutoRepairShop.Domain.Entities.ServiceOrder
                 throw new DomainException("Service order must be in diagnosis.");
 
             Status = ServiceOrderStatus.WaitingApproval;
+            Console.WriteLine("Customer notified for approval."); // Como passado no grupo do Discord, não é necessário implementar o envio real, apenas simular a ação.
         }
 
         public void Approve()
@@ -50,6 +67,7 @@ namespace AutoRepairShop.Domain.Entities.ServiceOrder
 
             Status = ServiceOrderStatus.InExecution;
             StartedAt = DateTime.UtcNow;
+            Console.WriteLine("Admin notified that customer approved the service order."); // Como passado no grupo do Discord, não é necessário implementar o envio real, apenas simular a ação.
         }
 
         public void Finish()

@@ -1,4 +1,5 @@
 ﻿using AutoRepairShop.Domain.Entities.ServiceOrder;
+using AutoRepairShop.Domain.Enums;
 
 namespace AutoRepairShop.Domain.Interfaces.Repositories
 {
@@ -6,6 +7,7 @@ namespace AutoRepairShop.Domain.Interfaces.Repositories
     {
         Task AddAsync(ServiceOrder serviceOrder);
         Task<ServiceOrder?> GetByIdAsync(Guid id);
+        Task<List<ServiceOrder>> GetAllAsync(ServiceOrderStatus? status);
         Task UpdateAsync(ServiceOrder serviceOrder);
     }
 }

@@ -39,6 +39,14 @@ public class Supply
         StockQuantity -= quantity;
     }
 
+    public void IncreaseStock(int quantity)
+    {
+        if (quantity <= 0)
+            throw new DomainException("Quantity must be greater than zero.");
+
+        StockQuantity += quantity;
+    }
+
     private static void Validate(string name, decimal price, int stockQuantity)
     {
         if (string.IsNullOrWhiteSpace(name))
