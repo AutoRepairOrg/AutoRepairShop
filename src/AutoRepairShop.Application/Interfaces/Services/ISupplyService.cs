@@ -6,5 +6,7 @@ namespace AutoRepairShop.Application.Interfaces.Services
         : IBaseService<CreateSupplyRequest, UpdateSupplyRequest, SupplyResponse>
     {
         Task<List<Supply>> GetSuppliesInStockAsync(List<SupplyItemDto> supplyItems);
+
+        Task RestockSuppliesAsync(List<(Guid SupplyId, int Quantity)> supplies);
     }
 }

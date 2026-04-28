@@ -8,5 +8,6 @@
         InExecution,
         Finished,
         Delivered,
+        Canceled,
     }
 }

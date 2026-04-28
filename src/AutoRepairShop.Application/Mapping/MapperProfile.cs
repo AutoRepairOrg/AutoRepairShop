@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using AutoRepairShop.Application.DTOs.Customer;
 using AutoRepairShop.Application.DTOs.Service;
+using AutoRepairShop.Application.DTOs.ServiceOrder.Response;
 using AutoRepairShop.Application.DTOs.Supply;
 using AutoRepairShop.Application.DTOs.Vehicle;
 using AutoRepairShop.Domain.Entities;
+using AutoRepairShop.Domain.Entities.ServiceOrder;
 using AutoRepairShop.Domain.Models.Supply;
 
 namespace AutoRepairShop.Application.Mapping
@@ -21,6 +23,18 @@ namespace AutoRepairShop.Application.Mapping
             CreateMap<Service, ServiceResponse>();
             CreateMap<Supply, SupplyResponse>();
             CreateMap<SupplyItemDto, SupplyRequestItem>();
+
+            // ServiceOrder mappings
+            CreateMap<ServiceOrder, GetServiceOrderResponse>()
+                .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services))
+                .ForMember(dest => dest.Supplies, opt => opt.MapFrom(src => src.Supplies));
+
+            CreateMap<ServiceOrderService, ServiceOrderItemResponse>()
+                .ForMember(dest => dest.ServiceId, opt => opt.MapFrom(src => src.ServiceId));
+
+            CreateMap<ServiceOrderSupply, ServiceOrderSupplyItemResponse>()
+                .ForMember(dest => dest.SupplyId, opt => opt.MapFrom(src => src.SupplyId))
+                .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity));
         }
     }
 }

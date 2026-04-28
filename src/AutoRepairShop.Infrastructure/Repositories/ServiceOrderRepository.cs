@@ -1,4 +1,5 @@
 ﻿using AutoRepairShop.Domain.Entities.ServiceOrder;
+using AutoRepairShop.Domain.Enums;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,20 @@ namespace AutoRepairShop.Infrastructure.Repositories
                 .ServiceOrders.Include(x => x.Services)
                 .Include(x => x.Supplies)
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<List<ServiceOrder>> GetAllAsync(ServiceOrderStatus? status)
+        {
+            IQueryable<ServiceOrder> query = _context
+                .ServiceOrders.Include(x => x.Services)
+                .Include(x => x.Supplies);
+
+            if (status.HasValue)
+            {
+                query = query.Where(x => x.Status == status.Value);
+            }
+
+            return await query.OrderByDescending(x => x.CreatedAt).ToListAsync();
         }
 
         public async Task UpdateAsync(ServiceOrder serviceOrder)
