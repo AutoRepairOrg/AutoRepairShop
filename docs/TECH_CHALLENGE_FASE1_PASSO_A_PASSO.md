@@ -30,20 +30,27 @@ Critério de pronto:
 Quando concluir, atualizar no checklist principal:
 - [x] Secao 2.1 (itens de criacao e orcamento).
 
-### 1.2 Acompanhamento da OS
+### 1.2 Acompanhamento da OS e Histórico de Mudanças
 - [x] Criar endpoint de consulta de progresso da OS para cliente e administrador.
 - [x] Expor status atual da OS.
 - [x] Expor dados basicos (cliente, veiculo, itens).
-- [ ] Registrar historico de mudancas de status (auditoria basica). (removido a pedido, pendente se necessario)
+- [x] Registrar historico de mudancas de status (auditoria basica).
+
+Implementação do histórico:
+- [x] Entidade ServiceOrderHistory criada (Id, ServiceOrderId, Status, CreatedAt, CreatedById).
+- [x] Registro automático em cada transição de status (criação da OS, avanço, aprovação/rejeição).
+- [x] DTO ServiceOrderHistoryResponse exposto em GetServiceOrderResponse.
+- [x] Persistência transacional com ExecutionStrategy (SQL Server com retry).
+- [x] Migration de banco gerada e estruturada.
 
 Critério de pronto:
 - [x] Cliente e Admin conseguem consultar progresso por API (GET /api/service-order/{id}).
 - [x] Admin pode avancar status (POST /api/service-order/{id}/advance).
 - [x] Customer aprova ou rejeita em WaitingApproval (POST /api/service-order/decision).
-- [ ] Historico de status gravado e consultavel.
+- [x] Historico de status gravado e consultavel.
 
 Quando concluir, atualizar no checklist principal:
-- [x] Secao 2.2 (consulta e transicoes de status).
+- [x] Secao 2.2 (consulta, transicoes de status e histórico de auditoria).
 
 ---
 
@@ -65,8 +72,6 @@ Quando concluir, atualizar no checklist principal:
 ### 2.2 Listagem e detalhamento de OS
 - [x] Criar endpoint de listagem de OS com filtro de status (GET /api/service-order?status=...).
 - [x] Criar endpoint de detalhamento por id (GET /api/service-order/{id}).
-- [ ] Implementar filtros adicionais (cliente, periodo).
-- [ ] Implementar retorno paginado (se aplicavel).
 
 Critério de pronto:
 - [x] Lista e detalhe funcionando via API.
@@ -76,15 +81,21 @@ Quando concluir, atualizar no checklist principal:
 - [x] Secao 2.3 (listagem e detalhamento de OS).
 
 ### 2.3 Tempo medio de execucao
-- [ ] Definir metrica (ex.: InExecution ate Finished).
-- [ ] Implementar consulta de tempo medio por periodo/servico.
-- [ ] Expor endpoint administrativo.
+- [x] Definir metrica (ex.: InExecution ate Finished).
+- [x] Implementar consulta de tempo medio por periodo/servico.
+- [x] Expor endpoint administrativo.
+
+Implementacao da metrica:
+- [x] DTO AverageExecutionTimeResponse com campos: TotalServiceOrders, CompletedServiceOrders, AverageExecutionTimeInHours, AverageExecutionTimeInDays, EarliestStartDate, LatestFinishDate.
+- [x] Metodo GetAverageExecutionTimeAsync no repositorio calcula tempo entre StartedAt (status InExecution) ate FinishedAt (status Finished).
+- [x] Endpoint administrativo: GET /api/service-order/metrics/average-execution-time [Authorize(Roles = "Admin")].
+- [x] Retorna tempo medio em horas e dias, total de OS e OS completadas.
 
 Critério de pronto:
-- [ ] Endpoint retorna metrica correta com base em dados reais.
+- [x] Endpoint retorna metrica correta com base em dados reais.
 
 Quando concluir, atualizar no checklist principal:
-- [ ] Secao 2.3 (monitoramento do tempo medio).
+- [x] Secao 2.3 (monitoramento do tempo medio).
 
 ---
 

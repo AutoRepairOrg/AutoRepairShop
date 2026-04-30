@@ -9,5 +9,12 @@ namespace AutoRepairShop.Domain.Interfaces.Repositories
         Task<ServiceOrder?> GetByIdAsync(Guid id);
         Task<List<ServiceOrder>> GetAllAsync(ServiceOrderStatus? status);
         Task UpdateAsync(ServiceOrder serviceOrder);
+        Task<(
+            int total,
+            int completed,
+            double averageHours,
+            DateTime? earliest,
+            DateTime? latest
+        )> GetAverageExecutionTimeAsync();
     }
 }

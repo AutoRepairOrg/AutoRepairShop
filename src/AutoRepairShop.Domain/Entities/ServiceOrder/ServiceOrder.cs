@@ -45,7 +45,7 @@ namespace AutoRepairShop.Domain.Entities.ServiceOrder
         public void Reject()
         {
             if (Status != ServiceOrderStatus.WaitingApproval)
-                throw new DomainException("Service order must be waiting approval to be rejected.");
+                throw new DomainException("Service order must be waiting approval to be canceled.");
 
             Status = ServiceOrderStatus.Canceled;
         }

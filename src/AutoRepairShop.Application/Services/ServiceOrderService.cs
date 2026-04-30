@@ -154,5 +154,21 @@ namespace AutoRepairShop.Application.Services
 
             await _repository.UpdateAsync(serviceOrder);
         }
+
+        public async Task<AverageExecutionTimeResponse> GetAverageExecutionTimeAsync()
+        {
+            var (total, completed, averageHours, earliest, latest) =
+                await _repository.GetAverageExecutionTimeAsync();
+
+            return new AverageExecutionTimeResponse
+            {
+                TotalServiceOrders = total,
+                CompletedServiceOrders = completed,
+                AverageExecutionTimeInHours = Math.Round(averageHours, 2),
+                AverageExecutionTimeInDays = Math.Round(averageHours / 24, 2),
+                EarliestStartDate = earliest,
+                LatestFinishDate = latest,
+            };
+        }
     }
 }

@@ -88,9 +88,24 @@ namespace AutoRepairShop.Api.Controllers
 
                 var message = request.IsApproved
                     ? "Service order approved successfully."
-                    : "Service order rejected successfully.";
+                    : "Service order canceled successfully.";
 
                 return Ok(new { message });
+            }
+            catch (DomainException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpGet("metrics/average-execution-time")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAverageExecutionTime()
+        {
+            try
+            {
+                var response = await _service.GetAverageExecutionTimeAsync();
+                return Ok(response);
             }
             catch (DomainException ex)
             {
