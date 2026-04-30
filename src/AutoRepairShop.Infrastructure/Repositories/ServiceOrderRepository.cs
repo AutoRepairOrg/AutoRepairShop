@@ -83,5 +83,42 @@ namespace AutoRepairShop.Infrastructure.Repositories
                 await transaction.CommitAsync();
             });
         }
+
+        public async Task<(
+            int total,
+            int completed,
+            double averageHours,
+            DateTime? earliest,
+            DateTime? latest
+        )> GetAverageExecutionTimeAsync()
+        {
+            var allOrders = await _context.ServiceOrders.ToListAsync();
+            var completed = allOrders
+                .Where(x =>
+                    x.Status == ServiceOrderStatus.Finished
+                    || x.Status == ServiceOrderStatus.Delivered
+                )
+                .ToList();
+
+            var total = allOrders.Count;
+            var completedCount = completed.Count;
+
+            if (completedCount == 0)
+            {
+                return (total, 0, 0, null, null);
+            }
+
+            var executionTimes = completed
+                .Where(x => x.StartedAt.HasValue && x.FinishedAt.HasValue)
+                .Select(x => (x.FinishedAt!.Value - x.StartedAt!.Value).TotalHours)
+                .ToList();
+
+            var averageHours = executionTimes.Count != 0 ? executionTimes.Average() : 0;
+
+            var earliest = completed.Min(x => x.StartedAt);
+            var latest = completed.Max(x => x.FinishedAt);
+
+            return (total, completedCount, averageHours, earliest, latest);
+        }
     }
 }
