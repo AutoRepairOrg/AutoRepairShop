@@ -9,6 +9,5 @@
         Finished,
         Delivered,
         Canceled,
-        Rejected,
     }
 }
