@@ -16,6 +16,8 @@ namespace AutoRepairShop.Domain.Entities.ServiceOrder
         public IReadOnlyCollection<ServiceOrderService> Services => _services;
         private readonly List<ServiceOrderSupply> _supplies = [];
         public IReadOnlyCollection<ServiceOrderSupply> Supplies => _supplies;
+        private readonly List<ServiceOrderHistory> _history = [];
+        public IReadOnlyCollection<ServiceOrderHistory> History => _history;
 
         public void AddService(Guid serviceId)
         {
@@ -25,6 +27,11 @@ namespace AutoRepairShop.Domain.Entities.ServiceOrder
         public void AddSupply(Guid supplyId, int quantity)
         {
             _supplies.Add(new ServiceOrderSupply(Id, supplyId, quantity));
+        }
+
+        public void AddHistory(ServiceOrderStatus status, Guid createdById)
+        {
+            _history.Add(new ServiceOrderHistory(Id, status, createdById));
         }
 
         public void ApproveFromReceived()

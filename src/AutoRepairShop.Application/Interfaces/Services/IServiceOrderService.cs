@@ -6,13 +6,13 @@ namespace AutoRepairShop.Application.Interfaces.Services;
 
 public interface IServiceOrderService
 {
-    Task CreateServiceOrderAsync(CreateServiceOrderRequest request);
+    Task CreateServiceOrderAsync(CreateServiceOrderRequest request, Guid createdById);
 
     Task<IEnumerable<GetServiceOrderResponse>> GetAllAsync(ServiceOrderStatus? status);
 
     Task<GetServiceOrderResponse> GetByIdAsync(Guid serviceOrderId);
 
-    Task AdvanceStatusAsync(Guid serviceOrderId);
+    Task AdvanceStatusAsync(Guid serviceOrderId, Guid changedById);
 
-    Task ProcessApprovalDecisionAsync(ApprovalDecisionRequest request);
+    Task ProcessApprovalDecisionAsync(ApprovalDecisionRequest request, Guid changedById);
 }

@@ -21,6 +21,7 @@ namespace AutoRepairShop.Infrastructure.Repositories
             return await _context
                 .ServiceOrders.Include(x => x.Services)
                 .Include(x => x.Supplies)
+                .Include(x => x.History.OrderBy(h => h.CreatedAt))
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
@@ -28,7 +29,8 @@ namespace AutoRepairShop.Infrastructure.Repositories
         {
             IQueryable<ServiceOrder> query = _context
                 .ServiceOrders.Include(x => x.Services)
-                .Include(x => x.Supplies);
+                .Include(x => x.Supplies)
+                .Include(x => x.History.OrderBy(h => h.CreatedAt));
 
             if (status.HasValue)
             {
@@ -40,8 +42,46 @@ namespace AutoRepairShop.Infrastructure.Repositories
 
         public async Task UpdateAsync(ServiceOrder serviceOrder)
         {
-            _context.ServiceOrders.Update(serviceOrder);
-            await _context.SaveChangesAsync();
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            await strategy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await _context.Database.BeginTransactionAsync();
+
+                var latestHistory = serviceOrder
+                    .History.OrderByDescending(h => h.CreatedAt)
+                    .FirstOrDefault();
+
+                if (latestHistory is not null)
+                {
+                    var historyEntry = _context.Entry(latestHistory);
+
+                    if (historyEntry.State == EntityState.Detached)
+                    {
+                        await _context.ServiceOrderHistories.AddAsync(latestHistory);
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+
+                var affectedRows = await _context
+                    .ServiceOrders.Where(x => x.Id == serviceOrder.Id)
+                    .ExecuteUpdateAsync(setters =>
+                        setters
+                            .SetProperty(x => x.Status, serviceOrder.Status)
+                            .SetProperty(x => x.StartedAt, serviceOrder.StartedAt)
+                            .SetProperty(x => x.FinishedAt, serviceOrder.FinishedAt)
+                    );
+
+                if (affectedRows == 0)
+                {
+                    throw new DbUpdateConcurrencyException(
+                        $"Service order '{serviceOrder.Id}' was not found while updating."
+                    );
+                }
+
+                await transaction.CommitAsync();
+            });
         }
     }
 }

@@ -13,6 +13,7 @@ namespace AutoRepairShop.Application.DTOs.ServiceOrder.Response
         public DateTime? FinishedAt { get; set; }
         public List<ServiceOrderItemResponse> Services { get; set; } = [];
         public List<ServiceOrderSupplyItemResponse> Supplies { get; set; } = [];
+        public List<ServiceOrderHistoryResponse> History { get; set; } = [];
     }
 
     public class ServiceOrderItemResponse
@@ -24,5 +25,14 @@ namespace AutoRepairShop.Application.DTOs.ServiceOrder.Response
     {
         public Guid SupplyId { get; set; }
         public int Quantity { get; set; }
+    }
+
+    public class ServiceOrderHistoryResponse
+    {
+        public Guid Id { get; set; }
+        public Guid ServiceOrderId { get; set; }
+        public ServiceOrderStatus Status { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public Guid CreatedById { get; set; }
     }
 }

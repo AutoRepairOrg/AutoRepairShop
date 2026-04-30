@@ -27,7 +27,8 @@ namespace AutoRepairShop.Application.Mapping
             // ServiceOrder mappings
             CreateMap<ServiceOrder, GetServiceOrderResponse>()
                 .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services))
-                .ForMember(dest => dest.Supplies, opt => opt.MapFrom(src => src.Supplies));
+                .ForMember(dest => dest.Supplies, opt => opt.MapFrom(src => src.Supplies))
+                .ForMember(dest => dest.History, opt => opt.MapFrom(src => src.History));
 
             CreateMap<ServiceOrderService, ServiceOrderItemResponse>()
                 .ForMember(dest => dest.ServiceId, opt => opt.MapFrom(src => src.ServiceId));
@@ -35,6 +36,8 @@ namespace AutoRepairShop.Application.Mapping
             CreateMap<ServiceOrderSupply, ServiceOrderSupplyItemResponse>()
                 .ForMember(dest => dest.SupplyId, opt => opt.MapFrom(src => src.SupplyId))
                 .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity));
+
+            CreateMap<ServiceOrderHistory, ServiceOrderHistoryResponse>();
         }
     }
 }
