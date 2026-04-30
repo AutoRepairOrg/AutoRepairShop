@@ -2,8 +2,8 @@
 {
     public class CreateSupplyRequest
     {
-        public string Name { get; private set; }
-        public decimal Price { get; private set; }
-        public int StockQuantity { get; private set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int StockQuantity { get; set; }
     }
 }
