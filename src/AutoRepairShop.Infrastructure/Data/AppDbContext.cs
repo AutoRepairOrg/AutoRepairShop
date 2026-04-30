@@ -11,6 +11,7 @@ namespace AutoRepairShop.Infrastructure.Data
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<Service> Services => Set<Service>();
         public DbSet<ServiceOrder> ServiceOrders => Set<ServiceOrder>();
+        public DbSet<ServiceOrderHistory> ServiceOrderHistories => Set<ServiceOrderHistory>();
         public DbSet<Supply> Supplies => Set<Supply>();
         public DbSet<Vehicle> Vehicles => Set<Vehicle>();
 

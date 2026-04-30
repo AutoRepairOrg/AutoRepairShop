@@ -1,4 +1,5 @@
-﻿using AutoRepairShop.Application.DTOs.ServiceOrder.Request;
+﻿using System.Security.Claims;
+using AutoRepairShop.Application.DTOs.ServiceOrder.Request;
 using AutoRepairShop.Application.Interfaces.Services;
 using AutoRepairShop.Domain.Enums;
 using AutoRepairShop.Domain.Exceptions;
@@ -19,7 +20,10 @@ namespace AutoRepairShop.Api.Controllers
         {
             try
             {
-                await _service.CreateServiceOrderAsync(request);
+                if (!TryGetCurrentUserId(out var currentUserId))
+                    return Unauthorized(new { error = "Invalid authenticated user." });
+
+                await _service.CreateServiceOrderAsync(request, currentUserId);
                 return Ok();
             }
             catch (DomainException ex)
@@ -57,7 +61,10 @@ namespace AutoRepairShop.Api.Controllers
         {
             try
             {
-                await _service.AdvanceStatusAsync(id);
+                if (!TryGetCurrentUserId(out var currentUserId))
+                    return Unauthorized(new { error = "Invalid authenticated user." });
+
+                await _service.AdvanceStatusAsync(id, currentUserId);
                 return Ok(new { message = "Service order status advanced successfully." });
             }
             catch (DomainException ex)
@@ -74,7 +81,10 @@ namespace AutoRepairShop.Api.Controllers
         {
             try
             {
-                await _service.ProcessApprovalDecisionAsync(request);
+                if (!TryGetCurrentUserId(out var currentUserId))
+                    return Unauthorized(new { error = "Invalid authenticated user." });
+
+                await _service.ProcessApprovalDecisionAsync(request, currentUserId);
 
                 var message = request.IsApproved
                     ? "Service order approved successfully."
@@ -86,6 +96,14 @@ namespace AutoRepairShop.Api.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
+        }
+
+        private bool TryGetCurrentUserId(out Guid userId)
+        {
+            userId = Guid.Empty;
+
+            var value = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return value is not null && Guid.TryParse(value, out userId);
         }
     }
 }

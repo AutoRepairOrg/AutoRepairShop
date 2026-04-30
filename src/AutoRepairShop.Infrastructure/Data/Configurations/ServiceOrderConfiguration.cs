@@ -27,6 +27,7 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
 
             builder.Navigation(x => x.Services).UsePropertyAccessMode(PropertyAccessMode.Field);
             builder.Navigation(x => x.Supplies).UsePropertyAccessMode(PropertyAccessMode.Field);
+            builder.Navigation(x => x.History).UsePropertyAccessMode(PropertyAccessMode.Field);
 
             builder
                 .HasOne<Customer>()
@@ -82,6 +83,12 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
                         .OnDelete(DeleteBehavior.Restrict);
                 }
             );
+
+            builder
+                .HasMany(x => x.History)
+                .WithOne()
+                .HasForeignKey(x => x.ServiceOrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(x => x.CustomerId);
             builder.HasIndex(x => x.VehicleId);

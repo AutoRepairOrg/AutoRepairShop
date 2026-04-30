@@ -27,7 +27,10 @@ namespace AutoRepairShop.Application.Services
         private readonly ISupplyService _supplyService = supplyService;
         private readonly IMapper _mapper = mapper;
 
-        public async Task CreateServiceOrderAsync(CreateServiceOrderRequest request)
+        public async Task CreateServiceOrderAsync(
+            CreateServiceOrderRequest request,
+            Guid createdById
+        )
         {
             Customer customer = await _customerService.GetByCpfCnpjAsync(request.CustomerDocument);
 
@@ -61,6 +64,8 @@ namespace AutoRepairShop.Application.Services
                 )
             );
 
+            serviceOrder.AddHistory(serviceOrder.Status, createdById);
+
             await _repository.AddAsync(serviceOrder);
         }
 
@@ -81,7 +86,7 @@ namespace AutoRepairShop.Application.Services
             return _mapper.Map<IEnumerable<GetServiceOrderResponse>>(serviceOrders);
         }
 
-        public async Task AdvanceStatusAsync(Guid serviceOrderId)
+        public async Task AdvanceStatusAsync(Guid serviceOrderId, Guid changedById)
         {
             var serviceOrder =
                 await _repository.GetByIdAsync(serviceOrderId)
@@ -113,10 +118,15 @@ namespace AutoRepairShop.Application.Services
                     throw new DomainException("Invalid service order status transition.");
             }
 
+            serviceOrder.AddHistory(serviceOrder.Status, changedById);
+
             await _repository.UpdateAsync(serviceOrder);
         }
 
-        public async Task ProcessApprovalDecisionAsync(ApprovalDecisionRequest request)
+        public async Task ProcessApprovalDecisionAsync(
+            ApprovalDecisionRequest request,
+            Guid changedById
+        )
         {
             var serviceOrder =
                 await _repository.GetByIdAsync(request.ServiceOrderId)
@@ -139,6 +149,8 @@ namespace AutoRepairShop.Application.Services
                     await _supplyService.RestockSuppliesAsync(suppliesToRestock);
                 }
             }
+
+            serviceOrder.AddHistory(serviceOrder.Status, changedById);
 
             await _repository.UpdateAsync(serviceOrder);
         }

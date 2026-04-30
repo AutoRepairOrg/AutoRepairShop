@@ -51,9 +51,6 @@ namespace AutoRepairShop.Infrastructure.Repositories
                 availableSupplies.Add(supply);
             }
 
-            // if (availableSupplies.Count > 0)
-            //     await _context.SaveChangesAsync();
-
             return availableSupplies;
         }
 
