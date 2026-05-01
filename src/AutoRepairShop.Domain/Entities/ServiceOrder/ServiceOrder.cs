@@ -29,6 +29,26 @@ namespace AutoRepairShop.Domain.Entities.ServiceOrder
             _supplies.Add(new ServiceOrderSupply(Id, supplyId, quantity));
         }
 
+        public void ReplaceServices(IEnumerable<Guid> serviceIds)
+        {
+            _services.Clear();
+
+            foreach (var serviceId in serviceIds)
+            {
+                AddService(serviceId);
+            }
+        }
+
+        public void ReplaceSupplies(IEnumerable<(Guid SupplyId, int Quantity)> supplyItems)
+        {
+            _supplies.Clear();
+
+            foreach (var (supplyId, quantity) in supplyItems)
+            {
+                AddSupply(supplyId, quantity);
+            }
+        }
+
         public void AddHistory(ServiceOrderStatus status, Guid createdById)
         {
             _history.Add(new ServiceOrderHistory(Id, status, createdById));
