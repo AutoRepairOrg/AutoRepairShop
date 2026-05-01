@@ -1,5 +1,6 @@
 ﻿using AutoRepairShop.Domain.Exceptions;
 
+namespace AutoRepairShop.Domain.Entities;
 public class Supply
 {
     public Guid Id { get; private set; }

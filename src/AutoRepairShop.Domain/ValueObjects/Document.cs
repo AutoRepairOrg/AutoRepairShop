@@ -1,5 +1,6 @@
 ﻿using AutoRepairShop.Domain.Exceptions;
 
+namespace AutoRepairShop.Domain.ValueObjects;
 public sealed class Document
 {
     public string Value { get; }

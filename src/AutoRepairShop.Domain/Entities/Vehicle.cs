@@ -1,6 +1,7 @@
 ﻿using AutoRepairShop.Domain.Exceptions;
 using AutoRepairShop.Domain.ValueObjects;
 
+namespace AutoRepairShop.Domain.Entities;
 public class Vehicle
 {
     public Guid Id { get; private set; }
