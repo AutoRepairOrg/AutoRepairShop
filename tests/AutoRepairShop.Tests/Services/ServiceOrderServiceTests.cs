@@ -9,6 +9,7 @@ using AutoRepairShop.Domain.Entities.ServiceOrder;
 using AutoRepairShop.Domain.Enums;
 using AutoRepairShop.Domain.Exceptions;
 using AutoRepairShop.Domain.Interfaces.Repositories;
+using AutoRepairShop.Domain.ValueObjects;
 using Moq;
 
 namespace AutoRepairShop.Tests.Services;
@@ -33,15 +34,15 @@ public class ServiceOrderServiceTests
             "maria",
             "hash"
         );
-        var vehicle = new global::Vehicle(
+        var vehicle = new Vehicle(
             customer.Id,
             Domain.ValueObjects.VehiclePlate.Create("ABC1234"),
             "Ford",
             "Ka",
             2022
         );
-        var service = new global::Service("Troca de oleo", "Descricao", 150m);
-        var supply = new global::Supply("Filtro", 45m, 10);
+        var service = new Service("Troca de oleo", "Descricao", 150m);
+        var supply = new Supply("Filtro", 45m, 10);
         var request = CreateServiceOrderRequest(service.Id, supply.Id);
         _customerServiceMock
             .Setup(serviceMock => serviceMock.GetByCpfCnpjAsync(request.CustomerDocument))
@@ -89,7 +90,7 @@ public class ServiceOrderServiceTests
             "maria",
             "hash"
         );
-        var vehicle = new global::Vehicle(
+        var vehicle = new Vehicle(
             customer.Id,
             AutoRepairShop.Domain.ValueObjects.VehiclePlate.Create("ABC1234"),
             "Ford",

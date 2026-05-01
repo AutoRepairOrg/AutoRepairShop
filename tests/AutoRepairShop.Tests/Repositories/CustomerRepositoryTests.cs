@@ -1,4 +1,5 @@
 using AutoRepairShop.Domain.Entities;
+using AutoRepairShop.Domain.ValueObjects;
 using AutoRepairShop.Infrastructure.Repositories;
 
 namespace AutoRepairShop.Tests.Repositories;

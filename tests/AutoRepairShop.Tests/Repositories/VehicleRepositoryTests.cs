@@ -1,3 +1,4 @@
+using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.ValueObjects;
 using AutoRepairShop.Infrastructure.Repositories;
 
@@ -9,7 +10,7 @@ public class VehicleRepositoryTests
     public async Task AddAsync_WhenVehicleIsValid_ShouldPersistEntity()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        var entity = new global::Vehicle(
+        var entity = new Vehicle(
             Guid.Parse("11111111-1111-1111-1111-111111111111"),
             VehiclePlate.Create("ABC1234"),
             "Ford",
@@ -34,7 +35,7 @@ public class VehicleRepositoryTests
     public async Task GetByPlateAsync_WhenPlateExists_ShouldNormalizeAndReturnVehicle()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        var entity = new global::Vehicle(
+        var entity = new Vehicle(
             Guid.Parse("11111111-1111-1111-1111-111111111111"),
             VehiclePlate.Create("ABC1234"),
             "Ford",
@@ -61,11 +62,11 @@ public class VehicleRepositoryTests
     public async Task UpdateAsync_WhenVehicleExists_ShouldPersistChanges()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        global::Vehicle entity;
+        Vehicle entity;
 
         await using (var seedContext = database.CreateDbContext())
         {
-            entity = new global::Vehicle(
+            entity = new Vehicle(
                 Guid.Parse("11111111-1111-1111-1111-111111111111"),
                 VehiclePlate.Create("ABC1234"),
                 "Ford",
@@ -98,11 +99,11 @@ public class VehicleRepositoryTests
     public async Task DeleteAsync_WhenVehicleExists_ShouldRemoveEntity()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        global::Vehicle entity;
+        Vehicle entity;
 
         await using (var seedContext = database.CreateDbContext())
         {
-            entity = new global::Vehicle(
+            entity = new Vehicle(
                 Guid.Parse("11111111-1111-1111-1111-111111111111"),
                 VehiclePlate.Create("ABC1234"),
                 "Ford",

@@ -1,3 +1,4 @@
+using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Infrastructure.Repositories;
 
 namespace AutoRepairShop.Tests.Repositories;
@@ -8,7 +9,7 @@ public class ServiceRepositoryTests
     public async Task AddAsync_WhenServiceIsValid_ShouldPersistEntity()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        var entity = new global::Service("Troca de oleo", "Descricao", 150m);
+        var entity = new Service("Troca de oleo", "Descricao", 150m);
 
         await using (var context = database.CreateDbContext())
         {
@@ -27,9 +28,9 @@ public class ServiceRepositoryTests
     public async Task GetServicesByIdsAsync_WhenIdsExist_ShouldReturnOnlyRequestedServices()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        var first = new global::Service("Troca de oleo", "Descricao", 150m);
-        var second = new global::Service("Balanceamento", "Descricao", 200m);
-        var third = new global::Service("Alinhamento", "Descricao", 250m);
+        var first = new Service("Troca de oleo", "Descricao", 150m);
+        var second = new Service("Balanceamento", "Descricao", 200m);
+        var third = new Service("Alinhamento", "Descricao", 250m);
 
         await using (var seedContext = database.CreateDbContext())
         {
@@ -52,11 +53,11 @@ public class ServiceRepositoryTests
     public async Task UpdateAsync_WhenServiceExists_ShouldPersistChanges()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        global::Service entity;
+        Service entity;
 
         await using (var seedContext = database.CreateDbContext())
         {
-            entity = new global::Service("Troca de oleo", "Descricao", 150m);
+            entity = new Service("Troca de oleo", "Descricao", 150m);
             seedContext.Services.Add(entity);
             await seedContext.SaveChangesAsync();
         }
@@ -82,11 +83,11 @@ public class ServiceRepositoryTests
     public async Task DeleteAsync_WhenServiceExists_ShouldRemoveEntity()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        global::Service entity;
+        Service entity;
 
         await using (var seedContext = database.CreateDbContext())
         {
-            entity = new global::Service("Troca de oleo", "Descricao", 150m);
+            entity = new Service("Troca de oleo", "Descricao", 150m);
             seedContext.Services.Add(entity);
             await seedContext.SaveChangesAsync();
         }

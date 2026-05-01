@@ -1,3 +1,4 @@
+using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Entities.ServiceOrder;
 using AutoRepairShop.Domain.Enums;
 using AutoRepairShop.Infrastructure.Repositories;
@@ -243,7 +244,7 @@ public class ServiceOrderRepositoryTests
             return (vehicleId, serviceId, supplyId);
 
         context.Vehicles.Add(
-            new global::Vehicle(
+            new Vehicle(
                 CustomerId,
                 AutoRepairShop.Domain.ValueObjects.VehiclePlate.Create("ABC1234"),
                 "Ford",
@@ -251,8 +252,8 @@ public class ServiceOrderRepositoryTests
                 2022
             )
         );
-        context.Services.Add(new global::Service("Troca de oleo", "Descricao", 150m));
-        context.Supplies.Add(new global::Supply("Filtro", 45m, 10));
+        context.Services.Add(new Service("Troca de oleo", "Descricao", 150m));
+        context.Supplies.Add(new Supply("Filtro", 45m, 10));
         await context.SaveChangesAsync();
 
         var vehicle = await context.Vehicles.OrderByDescending(x => x.Id).FirstAsync();

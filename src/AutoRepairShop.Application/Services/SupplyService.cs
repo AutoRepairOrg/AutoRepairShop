@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoRepairShop.Application.DTOs.Supply;
 using AutoRepairShop.Application.Interfaces.Services;
+using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Domain.Models.Supply;
 

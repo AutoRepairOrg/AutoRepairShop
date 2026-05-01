@@ -1,6 +1,7 @@
 using AutoMapper;
 using AutoRepairShop.Application.DTOs.Supply;
 using AutoRepairShop.Application.Services;
+using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Domain.Models.Supply;
 using Moq;
@@ -24,7 +25,7 @@ public class SupplyServiceTests
         _mapperMock
             .Setup(mapper =>
                 mapper.Map<SupplyResponse>(
-                    It.Is<global::Supply>(supply =>
+                    It.Is<Supply>(supply =>
                         supply.Name == "Filtro" && supply.Price == 45m && supply.StockQuantity == 10
                     )
                 )
@@ -35,10 +36,7 @@ public class SupplyServiceTests
         var result = await sut.CreateAsync(request);
 
         Assert.Same(response, result);
-        _repositoryMock.Verify(
-            repository => repository.AddAsync(It.IsAny<global::Supply>()),
-            Times.Once
-        );
+        _repositoryMock.Verify(repository => repository.AddAsync(It.IsAny<Supply>()), Times.Once);
     }
 
     [Fact]
@@ -52,7 +50,7 @@ public class SupplyServiceTests
         {
             new(supplyItems[0].SupplyId, supplyItems[0].Quantity),
         };
-        var supplies = new List<global::Supply> { new("Filtro", 45m, 10) };
+        var supplies = new List<Supply> { new("Filtro", 45m, 10) };
         _mapperMock
             .Setup(mapper => mapper.Map<List<SupplyRequestItem>>(supplyItems))
             .Returns(mappedItems);
@@ -69,7 +67,7 @@ public class SupplyServiceTests
     [Fact]
     public async Task UpdateAsync_WhenSupplyExists_ShouldUpdateEntityAndMapResponse()
     {
-        var entity = new global::Supply("Filtro", 45m, 10);
+        var entity = new Supply("Filtro", 45m, 10);
         var request = TestObjectFactory.Create<UpdateSupplyRequest>(
             ("Id", entity.Id),
             ("Name", "Oleo"),
@@ -95,8 +93,8 @@ public class SupplyServiceTests
     [Fact]
     public async Task RestockSuppliesAsync_WhenSuppliesExist_ShouldIncreaseStockAndUpdateEachEntity()
     {
-        var first = new global::Supply("Filtro", 45m, 10);
-        var second = new global::Supply("Oleo", 70m, 3);
+        var first = new Supply("Filtro", 45m, 10);
+        var second = new Supply("Oleo", 70m, 3);
         _repositoryMock.Setup(repository => repository.GetByIdAsync(first.Id)).ReturnsAsync(first);
         _repositoryMock
             .Setup(repository => repository.GetByIdAsync(second.Id))
@@ -117,7 +115,7 @@ public class SupplyServiceTests
         var missingId = Guid.NewGuid();
         _repositoryMock
             .Setup(repository => repository.GetByIdAsync(missingId))
-            .ReturnsAsync((global::Supply?)null);
+            .ReturnsAsync((Supply?)null);
         var sut = CreateSut();
 
         var action = () => sut.RestockSuppliesAsync([(missingId, 2)]);
