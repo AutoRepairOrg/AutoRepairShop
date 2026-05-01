@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoRepairShop.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AutoRepairShop.Infrastructure.Data.Configurations
@@ -9,15 +10,11 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
         {
             builder.HasKey(c => c.Id);
 
-            builder.Property(c => c.Name)
-            .IsRequired()
-            .HasMaxLength(150);
+            builder.Property(c => c.Name).IsRequired().HasMaxLength(150);
 
-            builder.Property(c => c.StockQuantity)
-            .IsRequired();
+            builder.Property(c => c.StockQuantity).IsRequired();
 
-            builder.Property(c => c.Price)
-            .IsRequired();
+            builder.Property(c => c.Price).IsRequired();
         }
     }
 }

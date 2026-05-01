@@ -1,5 +1,6 @@
 ﻿using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Entities.ServiceOrder;
+using AutoRepairShop.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoRepairShop.Infrastructure.Data

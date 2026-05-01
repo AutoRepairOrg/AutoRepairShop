@@ -1,4 +1,5 @@
-﻿using AutoRepairShop.Domain.Interfaces.Repositories;
+﻿using AutoRepairShop.Domain.Entities;
+using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Domain.Models.Supply;
 using AutoRepairShop.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

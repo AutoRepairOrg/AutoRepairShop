@@ -1,6 +1,7 @@
 using AutoMapper;
 using AutoRepairShop.Application.DTOs.Service;
 using AutoRepairShop.Application.Services;
+using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using Moq;
 
@@ -23,7 +24,7 @@ public class ServiceServiceTests
         _mapperMock
             .Setup(mapper =>
                 mapper.Map<ServiceResponse>(
-                    It.Is<global::Service>(service =>
+                    It.Is<Service>(service =>
                         service.Name == "Troca de oleo"
                         && service.Description == "Descricao"
                         && service.Price == 150m
@@ -36,10 +37,7 @@ public class ServiceServiceTests
         var result = await sut.CreateAsync(request);
 
         Assert.Same(response, result);
-        _repositoryMock.Verify(
-            repository => repository.AddAsync(It.IsAny<global::Service>()),
-            Times.Once
-        );
+        _repositoryMock.Verify(repository => repository.AddAsync(It.IsAny<Service>()), Times.Once);
     }
 
     [Fact]
@@ -48,7 +46,7 @@ public class ServiceServiceTests
         var serviceId = Guid.NewGuid();
         _repositoryMock
             .Setup(repository => repository.GetByIdAsync(serviceId))
-            .ReturnsAsync((global::Service?)null);
+            .ReturnsAsync((Service?)null);
         var sut = CreateSut();
 
         var action = () => sut.DeleteAsync(serviceId);
@@ -60,7 +58,7 @@ public class ServiceServiceTests
     [Fact]
     public async Task GetAllAsync_WhenServicesExist_ShouldMapRepositoryResult()
     {
-        var services = new List<global::Service> { new("Troca de oleo", "Descricao", 150m) };
+        var services = new List<Service> { new("Troca de oleo", "Descricao", 150m) };
         IEnumerable<ServiceResponse> response = [new ServiceResponse()];
         _repositoryMock.Setup(repository => repository.GetAllAsync()).ReturnsAsync(services);
         _mapperMock
@@ -77,7 +75,7 @@ public class ServiceServiceTests
     public async Task GetServicesByIdsAsync_WhenRepositoryReturnsServices_ShouldReturnSameList()
     {
         var ids = new List<Guid> { Guid.NewGuid() };
-        var services = new List<global::Service> { new("Troca de oleo", "Descricao", 150m) };
+        var services = new List<Service> { new("Troca de oleo", "Descricao", 150m) };
         _repositoryMock
             .Setup(repository => repository.GetServicesByIdsAsync(ids))
             .ReturnsAsync(services);
@@ -91,7 +89,7 @@ public class ServiceServiceTests
     [Fact]
     public async Task UpdateAsync_WhenServiceExists_ShouldUpdateEntityAndMapResponse()
     {
-        var entity = new global::Service("Troca de oleo", "Descricao", 150m);
+        var entity = new Service("Troca de oleo", "Descricao", 150m);
         var request = TestObjectFactory.Create<UpdateServiceRequest>(
             ("Id", entity.Id),
             ("Name", "Balanceamento"),

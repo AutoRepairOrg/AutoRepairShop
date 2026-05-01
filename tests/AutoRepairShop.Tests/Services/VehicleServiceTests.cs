@@ -1,6 +1,7 @@
 using AutoMapper;
 using AutoRepairShop.Application.DTOs.Vehicle;
 using AutoRepairShop.Application.Services;
+using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using Moq;
 
@@ -25,7 +26,7 @@ public class VehicleServiceTests
         _mapperMock
             .Setup(mapper =>
                 mapper.Map<VehicleResponse>(
-                    It.Is<global::Vehicle>(vehicle =>
+                    It.Is<Vehicle>(vehicle =>
                         vehicle.CustomerId == request.CustomerId
                         && vehicle.Plate.Value == "ABC1234"
                         && vehicle.Brand == "Ford"
@@ -40,16 +41,13 @@ public class VehicleServiceTests
         var result = await sut.CreateAsync(request);
 
         Assert.Same(response, result);
-        _repositoryMock.Verify(
-            repository => repository.AddAsync(It.IsAny<global::Vehicle>()),
-            Times.Once
-        );
+        _repositoryMock.Verify(repository => repository.AddAsync(It.IsAny<Vehicle>()), Times.Once);
     }
 
     [Fact]
     public async Task UpdateAsync_WhenVehicleExists_ShouldUpdateEntityAndMapResponse()
     {
-        var entity = new global::Vehicle(
+        var entity = new Vehicle(
             Guid.NewGuid(),
             AutoRepairShop.Domain.ValueObjects.VehiclePlate.Create("ABC1234"),
             "Ford",
@@ -83,7 +81,7 @@ public class VehicleServiceTests
     [Fact]
     public async Task GetOrCreateAsync_WhenVehicleAlreadyExists_ShouldReturnExistingVehicle()
     {
-        var existing = new global::Vehicle(
+        var existing = new Vehicle(
             Guid.NewGuid(),
             AutoRepairShop.Domain.ValueObjects.VehiclePlate.Create("ABC1234"),
             "Ford",
@@ -105,10 +103,7 @@ public class VehicleServiceTests
         var result = await sut.GetOrCreateAsync(request, Guid.NewGuid());
 
         Assert.Same(existing, result);
-        _repositoryMock.Verify(
-            repository => repository.AddAsync(It.IsAny<global::Vehicle>()),
-            Times.Never
-        );
+        _repositoryMock.Verify(repository => repository.AddAsync(It.IsAny<Vehicle>()), Times.Never);
     }
 
     [Fact]
@@ -124,7 +119,7 @@ public class VehicleServiceTests
         };
         _repositoryMock
             .Setup(repository => repository.GetByPlateAsync(request.Plate))
-            .ReturnsAsync((global::Vehicle?)null);
+            .ReturnsAsync((Vehicle?)null);
         var sut = CreateSut();
 
         var result = await sut.GetOrCreateAsync(request, customerId);
@@ -134,7 +129,7 @@ public class VehicleServiceTests
         _repositoryMock.Verify(
             repository =>
                 repository.AddAsync(
-                    It.Is<global::Vehicle>(vehicle =>
+                    It.Is<Vehicle>(vehicle =>
                         vehicle.CustomerId == customerId && vehicle.Plate.Value == request.Plate
                     )
                 ),

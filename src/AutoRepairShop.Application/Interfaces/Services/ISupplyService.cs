@@ -1,4 +1,5 @@
 ﻿using AutoRepairShop.Application.DTOs.Supply;
+using AutoRepairShop.Domain.Entities;
 
 namespace AutoRepairShop.Application.Interfaces.Services
 {

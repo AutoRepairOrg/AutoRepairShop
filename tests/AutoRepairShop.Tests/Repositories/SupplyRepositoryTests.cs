@@ -1,3 +1,4 @@
+using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Models.Supply;
 using AutoRepairShop.Infrastructure.Repositories;
 
@@ -9,7 +10,7 @@ public class SupplyRepositoryTests
     public async Task AddAsync_WhenSupplyIsValid_ShouldPersistEntity()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        var entity = new global::Supply("Filtro", 45m, 10);
+        var entity = new Supply("Filtro", 45m, 10);
 
         await using (var context = database.CreateDbContext())
         {
@@ -28,8 +29,8 @@ public class SupplyRepositoryTests
     public async Task GetSuppliesInStockAsync_WhenSomeSuppliesHaveInsufficientStock_ShouldReturnOnlyAvailableSuppliesAndDecreaseTrackedStock()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        var available = new global::Supply("Filtro", 45m, 10);
-        var unavailable = new global::Supply("Oleo", 70m, 1);
+        var available = new Supply("Filtro", 45m, 10);
+        var unavailable = new Supply("Oleo", 70m, 1);
 
         await using (var seedContext = database.CreateDbContext())
         {
@@ -56,11 +57,11 @@ public class SupplyRepositoryTests
     public async Task UpdateAsync_WhenSupplyExists_ShouldPersistChanges()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        global::Supply entity;
+        Supply entity;
 
         await using (var seedContext = database.CreateDbContext())
         {
-            entity = new global::Supply("Filtro", 45m, 10);
+            entity = new Supply("Filtro", 45m, 10);
             seedContext.Supplies.Add(entity);
             await seedContext.SaveChangesAsync();
         }
@@ -86,11 +87,11 @@ public class SupplyRepositoryTests
     public async Task DeleteAsync_WhenSupplyExists_ShouldRemoveEntity()
     {
         await using var database = await SqliteRepositoryTestContext.CreateAsync();
-        global::Supply entity;
+        Supply entity;
 
         await using (var seedContext = database.CreateDbContext())
         {
-            entity = new global::Supply("Filtro", 45m, 10);
+            entity = new Supply("Filtro", 45m, 10);
             seedContext.Supplies.Add(entity);
             await seedContext.SaveChangesAsync();
         }

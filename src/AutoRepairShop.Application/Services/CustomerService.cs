@@ -4,6 +4,7 @@ using AutoRepairShop.Application.Interfaces;
 using AutoRepairShop.Application.Interfaces.Services;
 using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Interfaces.Repositories;
+using AutoRepairShop.Domain.ValueObjects;
 
 namespace AutoRepairShop.Application.Services
 {
