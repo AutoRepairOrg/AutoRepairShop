@@ -4,9 +4,17 @@ namespace AutoRepairShop.Domain.ValueObjects
 {
     public sealed class VehiclePlate
     {
-        private static readonly Regex OldPlateRegex = new(@"^[A-Z]{3}[0-9]{4}$");
+        private static readonly Regex OldPlateRegex = new(
+            @"^[A-Z]{3}[0-9]{4}$",
+            RegexOptions.None,
+            TimeSpan.FromMilliseconds(100)
+        );
 
-        private static readonly Regex MercosulPlateRegex = new(@"^[A-Z]{3}[0-9][A-Z][0-9]{2}$");
+        private static readonly Regex MercosulPlateRegex = new(
+            @"^[A-Z]{3}[0-9][A-Z][0-9]{2}$",
+            RegexOptions.None,
+            TimeSpan.FromMilliseconds(100)
+        );
 
         public string Value { get; }
 

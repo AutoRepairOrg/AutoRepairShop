@@ -1,0 +1,40 @@
+# Build artifacts
+**/bin/
+**/obj/
+
+# Test projects
+**/Tests/
+**/tests/
+
+# IDE and user-specific files
+**/.vs/
+**/*.user
+**/*.suo
+**/*.userosscache
+
+# Secrets and environment files
+**/*.env
+**/.env*
+**/appsettings.*.json
+!**/appsettings.json
+!**/appsettings.Development.json
+
+# Git
+**/.git/
+**/.gitignore
+**/.gitattributes
+
+# Documentation
+**/docs/
+**/README.md
+
+# CI/CD
+**/.github/
+
+# Logs
+**/*.log
+**/Logs/
+
+# Docker files (not needed inside the image)
+**/Dockerfile*
+**/.dockerignore
