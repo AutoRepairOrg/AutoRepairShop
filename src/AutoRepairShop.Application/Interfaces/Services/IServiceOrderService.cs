@@ -8,6 +8,12 @@ public interface IServiceOrderService
 {
     Task CreateServiceOrderAsync(CreateServiceOrderRequest request, Guid createdById);
 
+    Task UpdateInDiagnosisAndAdvanceAsync(
+        Guid serviceOrderId,
+        UpdateServiceOrderInDiagnosisRequest request,
+        Guid changedById
+    );
+
     Task<IEnumerable<GetServiceOrderResponse>> GetAllAsync(ServiceOrderStatus? status);
 
     Task<GetServiceOrderResponse> GetByIdAsync(Guid serviceOrderId);

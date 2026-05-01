@@ -55,7 +55,7 @@ namespace AutoRepairShop.Api.Controllers
             return Ok(response);
         }
 
-        [HttpPost("{id}/advance")]
+        [HttpPut("{id}/advance")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AdvanceStatus(Guid id)
         {
@@ -73,7 +73,28 @@ namespace AutoRepairShop.Api.Controllers
             }
         }
 
-        [HttpPost("decision")]
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateInDiagnosisAndAdvance(
+            Guid id,
+            [FromBody] UpdateServiceOrderInDiagnosisRequest request
+        )
+        {
+            try
+            {
+                if (!TryGetCurrentUserId(out var currentUserId))
+                    return Unauthorized(new { error = "Invalid authenticated user." });
+
+                await _service.UpdateInDiagnosisAndAdvanceAsync(id, request, currentUserId);
+                return Ok(new { message = "Service order updated and advanced successfully." });
+            }
+            catch (DomainException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpPut("decision")]
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> ProcessApprovalDecision(
             [FromBody] ApprovalDecisionRequest request

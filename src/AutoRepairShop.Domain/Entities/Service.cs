@@ -1,6 +1,7 @@
 ﻿using AutoRepairShop.Domain.Exceptions;
 
 namespace AutoRepairShop.Domain.Entities;
+
 public class Service
 {
     public Guid Id { get; private set; }
@@ -8,7 +9,7 @@ public class Service
     public string Description { get; private set; }
     public decimal Price { get; private set; }
 
-    protected Service() { } 
+    protected Service() { }
 
     public Service(string name, string description, decimal price)
     {

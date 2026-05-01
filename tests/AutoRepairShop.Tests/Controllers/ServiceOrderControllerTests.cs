@@ -177,6 +177,76 @@ public class ServiceOrderControllerTests
         );
     }
 
+    [Fact]
+    public async Task UpdateInDiagnosisAndAdvance_WhenUserIdIsMissing_ShouldReturnUnauthorized()
+    {
+        var controller = CreateController();
+        var request = new UpdateServiceOrderInDiagnosisRequest
+        {
+            ServiceIds = [Guid.NewGuid()],
+            SupplyItems = [],
+        };
+
+        var result = await controller.UpdateInDiagnosisAndAdvance(Guid.NewGuid(), request);
+
+        var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
+        Assert.Equal(
+            "Invalid authenticated user.",
+            ControllerResultValueReader.GetString(unauthorizedResult.Value, "error")
+        );
+    }
+
+    [Fact]
+    public async Task UpdateInDiagnosisAndAdvance_WhenRequestIsValid_ShouldReturnOkWithMessage()
+    {
+        var userId = Guid.NewGuid();
+        var serviceOrderId = Guid.NewGuid();
+        var request = new UpdateServiceOrderInDiagnosisRequest
+        {
+            ServiceIds = [Guid.NewGuid()],
+            SupplyItems = [new SupplyItemDto { SupplyId = Guid.NewGuid(), Quantity = 2 }],
+        };
+        var controller = CreateController(userId);
+
+        var result = await controller.UpdateInDiagnosisAndAdvance(serviceOrderId, request);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal(
+            "Service order updated and advanced successfully.",
+            ControllerResultValueReader.GetString(okResult.Value, "message")
+        );
+        _serviceMock.Verify(
+            service => service.UpdateInDiagnosisAndAdvanceAsync(serviceOrderId, request, userId),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task UpdateInDiagnosisAndAdvance_WhenDomainExceptionIsThrown_ShouldReturnBadRequest()
+    {
+        var userId = Guid.NewGuid();
+        var serviceOrderId = Guid.NewGuid();
+        var request = new UpdateServiceOrderInDiagnosisRequest
+        {
+            ServiceIds = [Guid.NewGuid()],
+            SupplyItems = [],
+        };
+        _serviceMock
+            .Setup(service =>
+                service.UpdateInDiagnosisAndAdvanceAsync(serviceOrderId, request, userId)
+            )
+            .ThrowsAsync(new DomainException("order not in diagnosis"));
+        var controller = CreateController(userId);
+
+        var result = await controller.UpdateInDiagnosisAndAdvance(serviceOrderId, request);
+
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal(
+            "order not in diagnosis",
+            ControllerResultValueReader.GetString(badRequestResult.Value, "error")
+        );
+    }
+
     [Theory]
     [InlineData(true, "Service order approved successfully.")]
     [InlineData(false, "Service order canceled successfully.")]
