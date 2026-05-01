@@ -1,4 +1,5 @@
-﻿using AutoRepairShop.Domain.Models.Supply;
+﻿using AutoRepairShop.Domain.Entities;
+using AutoRepairShop.Domain.Models.Supply;
 
 namespace AutoRepairShop.Domain.Interfaces.Repositories
 {

@@ -1,5 +1,6 @@
 ﻿using AutoRepairShop.Domain.Exceptions;
 using AutoRepairShop.Domain.Interfaces;
+using AutoRepairShop.Domain.ValueObjects;
 
 namespace AutoRepairShop.Domain.Entities;
 

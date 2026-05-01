@@ -1,4 +1,6 @@
-﻿namespace AutoRepairShop.Domain.Interfaces.Repositories
+﻿using AutoRepairShop.Domain.Entities;
+
+namespace AutoRepairShop.Domain.Interfaces.Repositories
 {
     public interface IServiceRepository : IRepository<Service>
     {
