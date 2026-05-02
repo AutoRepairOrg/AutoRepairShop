@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoRepairShop.Application.DTOs.ServiceOrder;
 using AutoRepairShop.Application.DTOs.ServiceOrder.Request;
 using AutoRepairShop.Application.DTOs.ServiceOrder.Response;
 using AutoRepairShop.Application.DTOs.Supply;
@@ -144,13 +145,13 @@ namespace AutoRepairShop.Application.Services
             }
 
             serviceOrder.ReplaceServices(request.ServiceIds);
-            serviceOrder.ReplaceSupplies(
-                request.SupplyItems.Select(x => (x.SupplyId, x.Quantity)).ToList()
-            );
+            serviceOrder.ReplaceSupplies([
+                .. request.SupplyItems.Select(x => (x.SupplyId, x.Quantity)),
+            ]);
 
             serviceOrder.RequestApproval();
             serviceOrder.AddHistory(serviceOrder.Status, changedById);
-
+            await SimulateEmailNotificationAsync(serviceOrder);
             await _repository.UpdateAsync(serviceOrder);
         }
 
@@ -183,6 +184,7 @@ namespace AutoRepairShop.Application.Services
                     serviceOrder.StartDiagnosis();
                     break;
                 case ServiceOrderStatus.InDiagnosis:
+                    await SimulateEmailNotificationAsync(serviceOrder);
                     serviceOrder.RequestApproval();
                     break;
                 case ServiceOrderStatus.InExecution:
@@ -254,6 +256,74 @@ namespace AutoRepairShop.Application.Services
                 EarliestStartDate = earliest,
                 LatestFinishDate = latest,
             };
+        }
+
+        private async Task SimulateEmailNotificationAsync(ServiceOrder serviceOrder)
+        {
+            try
+            {
+                var summary = await BuildServiceOrderSummaryAsync(serviceOrder);
+                Console.WriteLine(
+                    $"[EMAIL SIMULATION] Service Order Total: ${summary.TotalAmount:F2}"
+                );
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in email simulation: {ex.Message}");
+            }
+        }
+
+        private async Task<ServiceOrderSummary> BuildServiceOrderSummaryAsync(
+            ServiceOrder serviceOrder
+        )
+        {
+            var summary = new ServiceOrderSummary { ServiceOrderId = serviceOrder.Id };
+
+            // Get services details
+            if (!serviceOrder.Services.IsNullOrEmpty())
+            {
+                var serviceIds = serviceOrder.Services.Select(s => s.ServiceId).ToList();
+                var services = await _serviceService.GetServicesByIdsAsync(serviceIds);
+                summary.Services =
+                [
+                    .. services.Select(s => new ServiceSummary
+                    {
+                        ServiceId = s.Id,
+                        Name = s.Name,
+                        Price = s.Price,
+                    }),
+                ];
+            }
+
+            // Get supplies details
+            if (!serviceOrder.Supplies.IsNullOrEmpty())
+            {
+                var supplyIds = serviceOrder.Supplies.Select(s => s.SupplyId).ToList();
+                var supplies = await _supplyService.GetSuppliesInStockAsync([
+                    .. supplyIds.Select(id => new SupplyItemDto { SupplyId = id, Quantity = 1 }),
+                ]);
+
+                var suppliesDict = supplies.ToDictionary(s => s.Id);
+                summary.Supplies =
+                [
+                    .. serviceOrder
+                        .Supplies.Where(s => suppliesDict.ContainsKey(s.SupplyId))
+                        .Select(s => new SupplySummary
+                        {
+                            SupplyId = s.SupplyId,
+                            Name = suppliesDict[s.SupplyId].Name,
+                            Price = suppliesDict[s.SupplyId].Price,
+                            Quantity = s.Quantity,
+                        }),
+                ];
+            }
+
+            // Calculate total
+            decimal servicesTotal = summary.Services.Sum(s => s.Price);
+            decimal suppliesTotal = summary.Supplies.Sum(s => s.Price * s.Quantity);
+            summary.TotalAmount = servicesTotal + suppliesTotal;
+
+            return summary;
         }
     }
 }

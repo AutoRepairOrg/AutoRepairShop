@@ -84,7 +84,6 @@ namespace AutoRepairShop.Domain.Entities.ServiceOrder
                 throw new DomainException("Service order must be in diagnosis.");
 
             Status = ServiceOrderStatus.WaitingApproval;
-            Console.WriteLine("Customer notified for approval."); // Como passado no grupo do Discord, não é necessário implementar o envio real, apenas simular a ação.
         }
 
         public void Approve()

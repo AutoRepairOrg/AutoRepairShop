@@ -137,6 +137,33 @@ public class ServiceOrderServiceTests
     }
 
     [Fact]
+    public async Task GetAllAsync_WhenRepositoryReturnsOrders_ShouldMapAndReturnResponses()
+    {
+        var status = ServiceOrderStatus.InDiagnosis;
+        var serviceOrders = new List<ServiceOrder>
+        {
+            new() { Id = Guid.NewGuid(), Status = status },
+        };
+        var mappedResponse = new List<GetServiceOrderResponse>
+        {
+            new() { Id = serviceOrders[0].Id, Status = status },
+        };
+
+        _repositoryMock
+            .Setup(repository => repository.GetAllAsync(status))
+            .ReturnsAsync(serviceOrders);
+        _mapperMock
+            .Setup(mapper => mapper.Map<IEnumerable<GetServiceOrderResponse>>(serviceOrders))
+            .Returns(mappedResponse);
+        var sut = CreateSut();
+
+        var result = await sut.GetAllAsync(status);
+
+        Assert.Same(mappedResponse, result);
+        _repositoryMock.Verify(repository => repository.GetAllAsync(status), Times.Once);
+    }
+
+    [Fact]
     public async Task AdvanceStatusAsync_WhenOrderIsReceived_ShouldMoveToDiagnosisAndPersist()
     {
         var changedById = Guid.NewGuid();
