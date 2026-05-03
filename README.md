@@ -101,7 +101,7 @@ Execução local da API (banco no Docker)
 
 ````json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=localhost,1433;                Database=AutoRepairShopDb;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True"
+  "DefaultConnection": "Server=localhost,1433;Database=AutoRepairShopDb;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True"
 }
 ````
 
