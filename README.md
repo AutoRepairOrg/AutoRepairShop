@@ -6,37 +6,40 @@ Projeto backend desenvolvido como **Tech Challenge**, simulando o sistema de ges
 
 ## 📐 Arquitetura
 
-O projeto segue uma **Clean Architecture simplificada**, com domínio rico (DDD) e separação clara de responsabilidades:
+O projeto segue uma **Clean Architecture simplificada**, com princípios de **DDD (Domain-Driven Design)** e separação clara de responsabilidades:
+
 
 ```
 AutoRepairShop
 ├── src
-│   ├── AutoRepairShop.Api              # Camada de apresentação (HTTP / Controllers)
-│   ├── AutoRepairShop.Application      # Application Services (casos de uso)
-│   ├── AutoRepairShop.Domain           # Domínio (Entidades, VOs, Enums, Regras)
-│   └── AutoRepairShop.Infrastructure   # Infraestrutura (EF Core, Repositórios, Migrations)
+│ ├── AutoRepairShop.Api # Camada de apresentação (HTTP / Controllers)
+│ ├── AutoRepairShop.Application # Application Services (casos de uso)
+│ ├── AutoRepairShop.Domain # Domínio (Entidades, VOs, Enums, Regras)
+│ └── AutoRepairShop.Infrastructure # Infraestrutura (EF Core, Repositórios, Migrations)
 │
 ├── tests
-│   └── AutoRepairShop.Tests            # Testes unitários e de integração
+│ └── AutoRepairShop.Tests # Testes unitários e de integração
 │
-├── docker-compose.yml                  # Orquestração API + SQL Server
+├── docker-compose.yml # Orquestração API + SQL Server
+├── .env.example # Exemplo de variáveis de ambiente
 └── AutoRepairShop.sln
 ```
 
-**Padrões adotados:**
-- DDD (Domain-Driven Design)
+### Padrões adotados
+- Domain-Driven Design (DDD)
 - Aggregate Root (`ServiceOrder`)
 - Value Objects
 - Repositórios
 - DTOs + Mappers
-- EF Core
+- Entity Framework Core
+- Separação por camadas
 
 ---
 
 ## 🧩 Principais Funcionalidades
 
 ### Ordem de Serviço (Service Order)
-- Criação da OS
+- Criação de Ordem de Serviço
 - Associação de cliente e veículo
 - Inclusão de serviços
 - Inclusão de peças/insumos (supplies)
@@ -48,6 +51,7 @@ AutoRepairShop
   - InExecution
   - Finished
   - Delivered
+  - Canceled
 - Consulta de OS por cliente
 - Monitoramento de tempo médio de execução
 
@@ -61,7 +65,21 @@ AutoRepairShop
 
 ---
 
-### 1️⃣ Subir API + Banco de Dados
+### 1️⃣ Configurar variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto (não versionado):
+
+```env
+DB_PASSWORD=your_strong_password_here
+
+JWT_KEY=your_super_secret_jwt_key_with_256_bits_or_more
+JWT_ISSUER=AutoRepairShop
+JWT_AUDIENCE=AutoRepairShopUsers
+JWT_EXPIRES_IN_MINUTES=15
+```
+---
+
+### 2️⃣ Subir API + Banco de Dados
 
 Na raiz do projeto:
 
@@ -75,19 +93,27 @@ Isso irá subir:
 
 ---
 
-### 2️⃣ String de Conexão
+🔌 String de Conexão
 
-A API já está configurada para acessar o banco via Docker:
+A aplicação suporta execução fora do Docker, enquanto o banco roda em container.
 
-```json
+Execução local da API (banco no Docker)
+
+````json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=sqlserver,1433;Database=AutoRepairShopDb;User Id=sa;Password=StrongPassword@123;TrustServerCertificate=True"
+  "DefaultConnection": "Server=localhost,1433;                Database=AutoRepairShopDb;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True"
 }
-```
+````
 
-> ⚠️ Importante: o nome do servidor é `sqlserver` (nome do serviço no docker-compose)
+Execução da API dentro do Docker
 
----
+````json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=sqlserver,1433;Database=AutoRepairShopDb;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True"
+}
+````
+
+⚠️ sqlserver é o nome do serviço definido no docker-compose.yml.
 
 ## 🗄️ Migrations (EF Core)
 
@@ -117,6 +143,27 @@ dotnet ef database update \
 
 ---
 
+## 🔐 Autenticação JWT
+
+A aplicação utiliza JWT (JSON Web Token) para autenticação.
+
+Configuração segura
+
+Nenhuma secret é versionada.
+As configurações são lidas via variáveis de ambiente.
+
+````json
+"Jwt": {
+  "Key": "${JWT_KEY}",
+  "Issuer": "${JWT_ISSUER}",
+  "Audience": "${JWT_AUDIENCE}",
+  "ExpiresInMinutes": "${JWT_EXPIRES_IN_MINUTES}"
+}
+````
+
+Variáveis injetadas no Docker
+
+---
 ## 🧪 Testes
 
 ### Tipos de testes implementados
@@ -155,8 +202,8 @@ dotnet test
 ✔ Docker configurado
 ✔ Migrations funcionando
 ✔ Aggregate implementado
-⬜ Endpoints REST
-⬜ Testes finais
+✔ Endpoints REST
+✔ Testes finais
 
 ---
 
