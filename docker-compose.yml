@@ -3,7 +3,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: autorepairshop-sql
     environment:
-      SA_PASSWORD: "StrongPassword@123"
+      SA_PASSWORD: ${DB_PASSWORD}
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
@@ -15,7 +15,7 @@ services:
 
   api:
     build:
-      context: ./src               
+      context: ./src
       dockerfile: AutoRepairShop.Api/Dockerfile
     container_name: autorepairshop-api
     depends_on:
@@ -25,3 +25,15 @@ services:
       - "5000:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+
+      ConnectionStrings__DefaultConnection: >
+        Server=sqlserver,1433;
+        Database=AutoRepairShopDb;
+        User Id=sa;
+        Password=${DB_PASSWORD};
+        TrustServerCertificate=True
+
+      JWT__KEY: ${JWT_KEY}
+      JWT__ISSUER: ${JWT_ISSUER}
+      JWT__AUDIENCE: ${JWT_AUDIENCE}
+      JWT__EXPIRESINMINUTES: ${JWT_EXPIRES_IN_MINUTES}
