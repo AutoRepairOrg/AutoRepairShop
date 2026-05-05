@@ -5,8 +5,8 @@ namespace AutoRepairShop.Domain.Entities;
 public class Service
 {
     public Guid Id { get; private set; }
-    public string Name { get; private set; }
-    public string Description { get; private set; }
+    public string Name { get; private set; } = string.Empty;
+    public string Description { get; private set; } = string.Empty;
     public decimal Price { get; private set; }
 
     protected Service() { }
@@ -43,7 +43,7 @@ public class Service
         if (!string.IsNullOrWhiteSpace(description) && description.Length > 500)
             throw new DomainException("Service description cannot exceed 500 characters.");
 
-        Description = description?.Trim();
+        Description = description?.Trim() ?? string.Empty;
     }
 
     private void SetPrice(decimal price)

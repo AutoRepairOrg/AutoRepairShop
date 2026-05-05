@@ -2,6 +2,6 @@
 {
     public class VehiclePlateDto
     {
-        public string Value { get; set; }
+        public string Value { get; set; } = string.Empty;
     }
 }

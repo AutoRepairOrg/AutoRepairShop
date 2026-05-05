@@ -1,36 +1,30 @@
-﻿using AutoRepairShop.Application.Interfaces.Services;
-using AutoRepairShop.Domain.Interfaces;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-
+using AutoRepairShop.Application.Interfaces.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace AutoRepairShop.Application.Services
 {
-    public class JwtTokenService : IJwtTokenService
+    public class JwtTokenService(IConfiguration config) : IJwtTokenService
     {
-        private readonly IConfiguration _config;
-
-        public JwtTokenService(IConfiguration config)
-        {
-            _config = config;
-        }
+        private readonly IConfiguration _config = config;
 
         public string GenerateAccessToken(Guid userId, string username, string role)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, role)
+                new(ClaimTypes.NameIdentifier, userId.ToString()),
+                new(ClaimTypes.Name, username),
+                new(ClaimTypes.Role, role),
             };
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["Jwt:Key"])
-            );
+            var jwtKey =
+                _config["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is required.");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
