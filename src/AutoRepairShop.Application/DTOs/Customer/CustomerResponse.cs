@@ -3,9 +3,9 @@
     public class CustomerResponse
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string Document { get; set; }
-        public string Phone { get; set; }
-        public string Username { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Document { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
     }
 }
