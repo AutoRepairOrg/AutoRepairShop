@@ -3,7 +3,7 @@
     public class ServiceOrderItem
     {
         public Guid SupplyId { get; }
-        public string SupplyName { get; }
+        public string SupplyName { get; } = string.Empty;
         public decimal UnitPrice { get; }
         public int Quantity { get; }
 

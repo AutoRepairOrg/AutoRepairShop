@@ -4,11 +4,11 @@ namespace AutoRepairShop.Domain.Entities
 {
     public class Admin : IUser
     {
-        public string Name { get; set; }
-        public string Department { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
         public Guid Id { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
 
         public Admin() { }
 
