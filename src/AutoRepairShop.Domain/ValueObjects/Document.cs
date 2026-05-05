@@ -1,9 +1,10 @@
 ﻿using AutoRepairShop.Domain.Exceptions;
 
 namespace AutoRepairShop.Domain.ValueObjects;
+
 public sealed class Document
 {
-    public string Value { get; }
+    public string Value { get; } = string.Empty;
 
     public Document() { }
 
@@ -97,12 +98,9 @@ public sealed class Document
 
     #endregion
 
-    public override bool Equals(object obj) => obj is Document other && Value == other.Value;
+    public override bool Equals(object? obj) => obj is Document other && Value == other.Value;
 
     public override int GetHashCode() => Value.GetHashCode();
 
     public override string ToString() => Value;
-
-    //todos os dígitos iguais -> inválido
-    //cálculo de dígitos verificadores
 }

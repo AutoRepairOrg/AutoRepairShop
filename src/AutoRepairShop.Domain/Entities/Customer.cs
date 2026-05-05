@@ -6,12 +6,12 @@ namespace AutoRepairShop.Domain.Entities;
 
 public class Customer : IUser
 {
-    public string Name { get; set; }
-    public Document Document { get; set; }
-    public string Phone { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public Document Document { get; set; } = null!;
+    public string Phone { get; set; } = string.Empty;
     public Guid Id { get; set; }
-    public string Username { get; set; }
-    public string Password { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 
     public Customer() { }
 

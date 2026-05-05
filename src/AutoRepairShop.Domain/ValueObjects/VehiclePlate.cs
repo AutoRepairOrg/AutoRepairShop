@@ -41,7 +41,7 @@ namespace AutoRepairShop.Domain.ValueObjects
         private static string Normalize(string value) =>
             value.ToUpper().Replace("-", "").Replace(" ", "");
 
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is VehiclePlate other && Value == other.Value;
 
         public override int GetHashCode() => Value.GetHashCode();
