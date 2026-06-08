@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: oficina
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/dhiuliaantunes/autorepairshop-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+
+          envFrom:
+            - configMapRef:
+                name: api-config
+            - secretRef:
+                name: sqlserver-secret
