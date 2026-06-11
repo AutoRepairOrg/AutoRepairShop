@@ -53,13 +53,31 @@ builder.Services.AddSwaggerGen(c =>
     );
 });
 
+//JWT Settings
+
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddEnvironmentVariables();
+
+
 // DbContext
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseSqlServer(
+//        builder.Configuration.GetConnectionString("DefaultConnection"),
+//        o => o.EnableRetryOnFailure()
+//    )
+//);
+
+var host = Environment.GetEnvironmentVariable("DB_HOST");
+var port = Environment.GetEnvironmentVariable("DB_PORT");
+var db = Environment.GetEnvironmentVariable("DB_NAME");
+var pass = Environment.GetEnvironmentVariable("SA_PASSWORD");
+
+var conn = $"Server={host},{port};Database={db};User Id=sa;Password={pass};TrustServerCertificate=True";
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        o => o.EnableRetryOnFailure()
-    )
-);
+    options.UseSqlServer(conn));
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
@@ -123,26 +141,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+using (var scope = app.Services.CreateScope())
+{
+    var database = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-//    var retry = 10;
-//    while (retry > 0)
-//    {
-//        try
-//        {
-//            db.Database.Migrate();
-//            break;
-//        }
-//        catch (Exception ex)
-//        {
-//            retry--;
-//            Console.WriteLine("Erro ao aplicar migrations. Tentando novamente...");
-//            Thread.Sleep(3000);
-//        }
-//    }
-//}
+    var retry = 10;
+    while (retry > 0)
+    {
+        try
+        {
+            database.Database.Migrate();
+            break;
+        }
+        catch (Exception ex)
+        {
+            retry--;
+            Console.WriteLine("Erro ao aplicar migrations. Tentando novamente...");
+            Thread.Sleep(3000);
+        }
+    }
+}
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();

@@ -5,7 +5,7 @@ metadata:
   namespace: oficina
 data:
   ASPNETCORE_ENVIRONMENT: "Production"
-
+  
   DB_HOST: "sqlserver"
   DB_PORT: "1433"
   DB_NAME: "AutoRepairShopDb"

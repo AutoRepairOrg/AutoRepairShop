@@ -27,9 +27,11 @@ spec:
               memory: "256Mi"
           imagePullPolicy: Always
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           envFrom:
             - configMapRef:
                 name: api-config
             - secretRef:
                 name: sqlserver-secret
+            - secretRef:
+                name: api-secrets
