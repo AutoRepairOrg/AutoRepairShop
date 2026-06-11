@@ -1,5 +1,9 @@
 terraform {
   required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.25"
+    }
     kubectl = {
       source  = "gavinbunney/kubectl"
       version = "~> 1.14"
@@ -7,8 +11,10 @@ terraform {
   }
 }
 
-provider "kubectl" {
+provider "kubernetes" {
   config_path = "~/.kube/config"
 }
 
- # Aponta para o kubeconfig do Minikube
+provider "kubectl" {
+  config_path = "~/.kube/config"
+}
