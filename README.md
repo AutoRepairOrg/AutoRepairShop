@@ -17,6 +17,8 @@ AutoRepairShop
 │ ├── AutoRepairShop.Domain # Domínio (Entidades, VOs, Enums, Regras)
 │ └── AutoRepairShop.Infrastructure # Infraestrutura (EF Core, Repositórios, Migrations)
 │
+├── infra # Scripts Terraform
+├── k8s # Manifestos Kubernets
 ├── tests
 │ └── AutoRepairShop.Tests # Testes unitários e de integração
 │
@@ -193,9 +195,6 @@ Este repositório demonstra a **provisão de infraestrutura com Terraform** e o 
 
 - Demonstrar o uso do **Terraform** para criar e gerenciar infraestrutura
 - Orquestrar aplicações usando **Kubernetes**
-- Facilitar testes, validação e demonstração da infraestrutura
-- Servir como base para estudos, entrevistas técnicas e pipelines CI/CD
-
 ---
 ## ⚙️ Pré-requisitos
 
@@ -341,6 +340,8 @@ Lista todos os recursos atualmente gerenciados pelo Terraform.
 - SQL Server 2022
 - Docker & Docker Compose
 - xUnit / FluentAssertions / Moq
+- Terraform
+- Kubernets
 
 ---
 
@@ -354,8 +355,8 @@ Lista todos os recursos atualmente gerenciados pelo Terraform.
 ✔ Aggregate implementado
 ✔ Endpoints REST
 ✔ Testes finais
-✔ Kubernets
-✔ Terraform
+✔ Infraestrutura escalável
+✔ Deploy automatizao
 
 ---
 
