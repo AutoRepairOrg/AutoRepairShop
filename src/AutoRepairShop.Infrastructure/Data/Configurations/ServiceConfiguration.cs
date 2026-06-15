@@ -16,7 +16,7 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
 
             builder.Property(c => c.Description).IsRequired().HasMaxLength(150);
 
-            builder.Property(c => c.Price).IsRequired();
+            builder.Property(c => c.Price).HasColumnType("decimal(18,2)").IsRequired();
         }
     }
 }

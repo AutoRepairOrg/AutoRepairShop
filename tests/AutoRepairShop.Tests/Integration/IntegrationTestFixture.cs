@@ -7,6 +7,7 @@ using AutoRepairShop.Application.Services;
 using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
+using AutoRepairShop.Infrastructure.Data.Mappings;
 using AutoRepairShop.Infrastructure.Repositories;
 using AutoRepairShop.Tests.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,14 +70,14 @@ public sealed class IntegrationTestFixture : IAsyncDisposable
     public async Task SeedServicesAsync(params Service[] services)
     {
         using var context = CreateDbContext();
-        context.Services.AddRange(services);
+        context.Services.AddRange(services.Select(s => s.ToEntity()));
         await context.SaveChangesAsync();
     }
 
     public async Task SeedSuppliesAsync(params Supply[] supplies)
     {
         using var context = CreateDbContext();
-        context.Supplies.AddRange(supplies);
+        context.Supplies.AddRange(supplies.Select(s => s.ToEntity()));
         await context.SaveChangesAsync();
     }
 

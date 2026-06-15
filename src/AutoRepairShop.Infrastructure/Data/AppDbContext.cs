@@ -63,6 +63,6 @@ namespace AutoRepairShop.Infrastructure.Data
 
     public static class PasswordSeed
     {
-        public static string Hash = BCrypt.Net.BCrypt.HashPassword("123456");
+        public const string Hash = "$2a$11$7/f7K3hTZxwP1CxlMnMW0uwiPawUUB1ga5c7KFNycp/w3NX.DrZOO";
     }
 }
