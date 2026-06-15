@@ -1,12 +1,12 @@
-﻿using AutoRepairShop.Domain.Entities;
+﻿using AutoRepairShop.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AutoRepairShop.Infrastructure.Data.Configurations
 {
-    public class SupplyConfiguration : IEntityTypeConfiguration<Supply>
+    public class SupplyConfiguration : IEntityTypeConfiguration<SupplyEntity>
     {
-        public void Configure(EntityTypeBuilder<Supply> builder)
+        public void Configure(EntityTypeBuilder<SupplyEntity> builder)
         {
             builder.HasKey(c => c.Id);
 

@@ -21,6 +21,21 @@ public class Supply
         StockQuantity = stockQuantity;
     }
 
+    private Supply(Guid id, string name, decimal price, int stockQuantity)
+    {
+        Validate(name, price, stockQuantity);
+
+        Id = id;
+        Name = name;
+        Price = price;
+        StockQuantity = stockQuantity;
+    }
+
+    public static Supply Restore(Guid id, string name, decimal price, int stockQuantity)
+    {
+        return new Supply(id, name, price, stockQuantity);
+    }
+
     public void Update(string name, decimal price, int stockQuantity)
     {
         Validate(name, price, stockQuantity);

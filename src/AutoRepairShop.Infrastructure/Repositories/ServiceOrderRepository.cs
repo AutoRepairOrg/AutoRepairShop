@@ -2,6 +2,8 @@
 using AutoRepairShop.Domain.Enums;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
+using AutoRepairShop.Infrastructure.Data.Entities;
+using AutoRepairShop.Infrastructure.Data.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoRepairShop.Infrastructure.Repositories
@@ -12,32 +14,37 @@ namespace AutoRepairShop.Infrastructure.Repositories
 
         public async Task AddAsync(ServiceOrder serviceOrder)
         {
-            await _context.ServiceOrders.AddAsync(serviceOrder);
+            await _context.ServiceOrders.AddAsync(serviceOrder.ToEntity());
             await _context.SaveChangesAsync();
         }
 
         public async Task<ServiceOrder?> GetByIdAsync(Guid id)
         {
-            return await _context
+            var entity = await _context
                 .ServiceOrders.Include(x => x.Services)
                 .Include(x => x.Supplies)
                 .Include(x => x.History.OrderBy(h => h.CreatedAt))
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
+
+            return entity?.ToDomain();
         }
 
         public async Task<List<ServiceOrder>> GetAllAsync(ServiceOrderStatus? status)
         {
-            IQueryable<ServiceOrder> query = _context
+            IQueryable<ServiceOrderEntity> query = _context
                 .ServiceOrders.Include(x => x.Services)
                 .Include(x => x.Supplies)
-                .Include(x => x.History.OrderBy(h => h.CreatedAt));
+                .Include(x => x.History.OrderBy(h => h.CreatedAt))
+                .AsNoTracking();
 
             if (status.HasValue)
             {
                 query = query.Where(x => x.Status == status.Value);
             }
 
-            return await query.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            var entities = await query.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            return [.. entities.Select(x => x.ToDomain())];
         }
 
         public async Task UpdateAsync(ServiceOrder serviceOrder)
@@ -48,37 +55,64 @@ namespace AutoRepairShop.Infrastructure.Repositories
             {
                 await using var transaction = await _context.Database.BeginTransactionAsync();
 
-                var latestHistory = serviceOrder
-                    .History.OrderByDescending(h => h.CreatedAt)
-                    .FirstOrDefault();
+                var persistedOrder = await _context
+                    .ServiceOrders.Include(x => x.Services)
+                    .Include(x => x.Supplies)
+                    .Include(x => x.History)
+                    .FirstOrDefaultAsync(x => x.Id == serviceOrder.Id);
 
-                if (latestHistory is not null)
-                {
-                    var historyEntry = _context.Entry(latestHistory);
-
-                    if (historyEntry.State == EntityState.Detached)
-                    {
-                        await _context.ServiceOrderHistories.AddAsync(latestHistory);
-                    }
-
-                    await _context.SaveChangesAsync();
-                }
-
-                var affectedRows = await _context
-                    .ServiceOrders.Where(x => x.Id == serviceOrder.Id)
-                    .ExecuteUpdateAsync(setters =>
-                        setters
-                            .SetProperty(x => x.Status, serviceOrder.Status)
-                            .SetProperty(x => x.StartedAt, serviceOrder.StartedAt)
-                            .SetProperty(x => x.FinishedAt, serviceOrder.FinishedAt)
-                    );
-
-                if (affectedRows == 0)
+                if (persistedOrder is null)
                 {
                     throw new DbUpdateConcurrencyException(
                         $"Service order '{serviceOrder.Id}' was not found while updating."
                     );
                 }
+
+                persistedOrder.Status = serviceOrder.Status;
+                persistedOrder.StartedAt = serviceOrder.StartedAt;
+                persistedOrder.FinishedAt = serviceOrder.FinishedAt;
+
+                persistedOrder.Services.Clear();
+                foreach (var service in serviceOrder.Services)
+                {
+                    persistedOrder.Services.Add(
+                        new ServiceOrderServiceEntity
+                        {
+                            ServiceOrderId = serviceOrder.Id,
+                            ServiceId = service.ServiceId,
+                        }
+                    );
+                }
+
+                persistedOrder.Supplies.Clear();
+                foreach (var supply in serviceOrder.Supplies)
+                {
+                    persistedOrder.Supplies.Add(
+                        new ServiceOrderSupplyEntity
+                        {
+                            ServiceOrderId = serviceOrder.Id,
+                            SupplyId = supply.SupplyId,
+                            Quantity = supply.Quantity,
+                        }
+                    );
+                }
+
+                var existingHistoryIds = persistedOrder.History.Select(x => x.Id).ToHashSet();
+                foreach (var history in serviceOrder.History.Where(x => !existingHistoryIds.Contains(x.Id)))
+                {
+                    persistedOrder.History.Add(
+                        new ServiceOrderHistoryEntity
+                        {
+                            Id = history.Id,
+                            ServiceOrderId = history.ServiceOrderId,
+                            Status = history.Status,
+                            CreatedAt = history.CreatedAt,
+                            CreatedById = history.CreatedById,
+                        }
+                    );
+                }
+
+                await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
             });

@@ -1,12 +1,12 @@
-﻿using AutoRepairShop.Domain.Entities;
+﻿using AutoRepairShop.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AutoRepairShop.Infrastructure.Data.Configurations
 {
-    public class ServiceConfiguration : IEntityTypeConfiguration<Service>
+    public class ServiceConfiguration : IEntityTypeConfiguration<ServiceEntity>
     {
-        public void Configure(EntityTypeBuilder<Service> builder)
+        public void Configure(EntityTypeBuilder<ServiceEntity> builder)
         {
             builder.ToTable("Services");
 

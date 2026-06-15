@@ -1,12 +1,12 @@
-using AutoRepairShop.Domain.Entities.ServiceOrder;
+using AutoRepairShop.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AutoRepairShop.Infrastructure.Data.Configurations
 {
-    public class ServiceOrderHistoryConfiguration : IEntityTypeConfiguration<ServiceOrderHistory>
+    public class ServiceOrderHistoryConfiguration : IEntityTypeConfiguration<ServiceOrderHistoryEntity>
     {
-        public void Configure(EntityTypeBuilder<ServiceOrderHistory> builder)
+        public void Configure(EntityTypeBuilder<ServiceOrderHistoryEntity> builder)
         {
             builder.ToTable("ServiceOrderHistories");
 

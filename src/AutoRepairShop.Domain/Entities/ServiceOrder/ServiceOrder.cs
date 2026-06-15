@@ -54,6 +54,12 @@ namespace AutoRepairShop.Domain.Entities.ServiceOrder
             _history.Add(new ServiceOrderHistory(Id, status, createdById));
         }
 
+        public void LoadHistory(IEnumerable<ServiceOrderHistory> historyEntries)
+        {
+            _history.Clear();
+            _history.AddRange(historyEntries);
+        }
+
         public void ApproveFromReceived()
         {
             if (Status != ServiceOrderStatus.Received)

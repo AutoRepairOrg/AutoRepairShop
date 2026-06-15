@@ -20,6 +20,20 @@ public class Service
         SetPrice(price);
     }
 
+    private Service(Guid id, string name, string description, decimal price)
+    {
+        Id = id;
+
+        SetName(name);
+        SetDescription(description);
+        SetPrice(price);
+    }
+
+    public static Service Restore(Guid id, string name, string description, decimal price)
+    {
+        return new Service(id, name, description, price);
+    }
+
     public void Update(string name, string description, decimal price)
     {
         SetName(name);

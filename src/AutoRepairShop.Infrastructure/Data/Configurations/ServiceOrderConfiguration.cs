@@ -1,13 +1,13 @@
 ﻿using AutoRepairShop.Domain.Entities;
-using AutoRepairShop.Domain.Entities.ServiceOrder;
+using AutoRepairShop.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AutoRepairShop.Infrastructure.Data.Configurations
 {
-    public class ServiceOrderConfiguration : IEntityTypeConfiguration<ServiceOrder>
+    public class ServiceOrderConfiguration : IEntityTypeConfiguration<ServiceOrderEntity>
     {
-        public void Configure(EntityTypeBuilder<ServiceOrder> builder)
+        public void Configure(EntityTypeBuilder<ServiceOrderEntity> builder)
         {
             builder.ToTable("ServiceOrders");
 
@@ -25,10 +25,6 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
 
             builder.Property(x => x.FinishedAt);
 
-            builder.Navigation(x => x.Services).UsePropertyAccessMode(PropertyAccessMode.Field);
-            builder.Navigation(x => x.Supplies).UsePropertyAccessMode(PropertyAccessMode.Field);
-            builder.Navigation(x => x.History).UsePropertyAccessMode(PropertyAccessMode.Field);
-
             builder
                 .HasOne<Customer>()
                 .WithMany()
@@ -40,49 +36,17 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
                 .WithMany()
                 .HasForeignKey(x => x.VehicleId)
                 .OnDelete(DeleteBehavior.Restrict);
+            builder
+                .HasMany(x => x.Services)
+                .WithOne()
+                .HasForeignKey(x => x.ServiceOrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            builder.OwnsMany(
-                x => x.Services,
-                services =>
-                {
-                    services.ToTable("ServiceOrderServices");
-
-                    services.WithOwner().HasForeignKey(x => x.ServiceOrderId);
-
-                    services.HasKey(x => new { x.ServiceOrderId, x.ServiceId });
-
-                    services.Property(x => x.ServiceOrderId).IsRequired();
-                    services.Property(x => x.ServiceId).IsRequired();
-
-                    services
-                        .HasOne<Service>()
-                        .WithMany()
-                        .HasForeignKey(x => x.ServiceId)
-                        .OnDelete(DeleteBehavior.Restrict);
-                }
-            );
-
-            builder.OwnsMany(
-                x => x.Supplies,
-                supplies =>
-                {
-                    supplies.ToTable("ServiceOrderSupplies");
-
-                    supplies.WithOwner().HasForeignKey(x => x.ServiceOrderId);
-
-                    supplies.HasKey(x => new { x.ServiceOrderId, x.SupplyId });
-
-                    supplies.Property(x => x.ServiceOrderId).IsRequired();
-                    supplies.Property(x => x.SupplyId).IsRequired();
-                    supplies.Property(x => x.Quantity).IsRequired();
-
-                    supplies
-                        .HasOne<Supply>()
-                        .WithMany()
-                        .HasForeignKey(x => x.SupplyId)
-                        .OnDelete(DeleteBehavior.Restrict);
-                }
-            );
+            builder
+                .HasMany(x => x.Supplies)
+                .WithOne()
+                .HasForeignKey(x => x.ServiceOrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .HasMany(x => x.History)

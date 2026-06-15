@@ -1,6 +1,6 @@
 ﻿using AutoRepairShop.Domain.Entities;
-using AutoRepairShop.Domain.Entities.ServiceOrder;
 using AutoRepairShop.Domain.ValueObjects;
+using AutoRepairShop.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoRepairShop.Infrastructure.Data
@@ -10,10 +10,10 @@ namespace AutoRepairShop.Infrastructure.Data
         public DbSet<Customer> Customers => Set<Customer>();
         public DbSet<Admin> Admins => Set<Admin>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-        public DbSet<Service> Services => Set<Service>();
-        public DbSet<ServiceOrder> ServiceOrders => Set<ServiceOrder>();
-        public DbSet<ServiceOrderHistory> ServiceOrderHistories => Set<ServiceOrderHistory>();
-        public DbSet<Supply> Supplies => Set<Supply>();
+        public DbSet<ServiceEntity> Services => Set<ServiceEntity>();
+        public DbSet<ServiceOrderEntity> ServiceOrders => Set<ServiceOrderEntity>();
+        public DbSet<ServiceOrderHistoryEntity> ServiceOrderHistories => Set<ServiceOrderHistoryEntity>();
+        public DbSet<SupplyEntity> Supplies => Set<SupplyEntity>();
         public DbSet<Vehicle> Vehicles => Set<Vehicle>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
