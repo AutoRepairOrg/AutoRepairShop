@@ -18,7 +18,9 @@ AutoRepairShop
 │ └── AutoRepairShop.Infrastructure # Infraestrutura (EF Core, Repositórios, Migrations)
 │
 ├── infra # Scripts Terraform
+|
 ├── k8s # Manifestos Kubernets
+|
 ├── tests
 │ └── AutoRepairShop.Tests # Testes unitários e de integração
 │
@@ -332,5 +334,5 @@ kubectl get deploy
 
 Projeto desenvolvido por **Dhiulia da Silva e Mateus Pinheiro** como parte de avaliação técnica.
 
-[Swagger.json do projeto](https://github.com/dhiuliaantunes/AutoRepairShop/blob/master/src/AutoRepairShop.Api/swagger.json)
+### [Swagger.json do projeto](https://github.com/dhiuliaantunes/AutoRepairShop/blob/master/src/AutoRepairShop.Api/swagger.json)
 ---
