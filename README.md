@@ -300,38 +300,6 @@ kubectl get svc
 kubectl get deploy
 ```
 
-Esses comandos confirmam que a aplicação e seus componentes estão em execução no cluster.
-
-## 🧪 Como Testar e Demonstrar o Terraform
-✅ Testes Essenciais
-
-Validação
-
-```bash 
-terraform validate
-```
-
-Garante que a configuração está correta e consistente.
-
-Simulação (dry-run)
-
-```bash 
-terraform plan
-```
-
-Utilizado para:
-
-- Demonstrar impacto das mudanças
-- Validar alterações antes do apply
-- Mostrar boas práticas de controle de infraestrutura
-- Estado da infraestrutura
-
-```bash 
-terraform state list
-```
-
-Lista todos os recursos atualmente gerenciados pelo Terraform.
-
 ## 📦 Tecnologias Utilizadas
 
 - .NET 8
@@ -364,4 +332,5 @@ Lista todos os recursos atualmente gerenciados pelo Terraform.
 
 Projeto desenvolvido por **Dhiulia da Silva e Mateus Pinheiro** como parte de avaliação técnica.
 
+[Swagger.json do projeto](https://github.com/dhiuliaantunes/AutoRepairShop/blob/master/src/AutoRepairShop.Api/swagger.json)
 ---
