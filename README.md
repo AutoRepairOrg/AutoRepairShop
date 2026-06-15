@@ -326,7 +326,7 @@ kubectl get deploy
 ✔ Endpoints REST
 ✔ Testes finais
 ✔ Infraestrutura escalável
-✔ Deploy automatizao
+✔ Deploy automatizado
 
 ---
 
@@ -334,5 +334,5 @@ kubectl get deploy
 
 Projeto desenvolvido por **Dhiulia da Silva e Mateus Pinheiro** como parte de avaliação técnica.
 
-### [Swagger.json do projeto](https://github.com/dhiuliaantunes/AutoRepairShop/blob/master/src/AutoRepairShop.Api/swagger.json)
+#### [Swagger.json do projeto](https://github.com/dhiuliaantunes/AutoRepairShop/blob/master/src/AutoRepairShop.Api/swagger.json)
 ---
