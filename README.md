@@ -17,6 +17,10 @@ AutoRepairShop
 │ ├── AutoRepairShop.Domain # Domínio (Entidades, VOs, Enums, Regras)
 │ └── AutoRepairShop.Infrastructure # Infraestrutura (EF Core, Repositórios, Migrations)
 │
+├── infra # Scripts Terraform
+|
+├── k8s # Manifestos Kubernets
+|
 ├── tests
 │ └── AutoRepairShop.Tests # Testes unitários e de integração
 │
@@ -193,9 +197,6 @@ Este repositório demonstra a **provisão de infraestrutura com Terraform** e o 
 
 - Demonstrar o uso do **Terraform** para criar e gerenciar infraestrutura
 - Orquestrar aplicações usando **Kubernetes**
-- Facilitar testes, validação e demonstração da infraestrutura
-- Servir como base para estudos, entrevistas técnicas e pipelines CI/CD
-
 ---
 ## ⚙️ Pré-requisitos
 
@@ -301,38 +302,6 @@ kubectl get svc
 kubectl get deploy
 ```
 
-Esses comandos confirmam que a aplicação e seus componentes estão em execução no cluster.
-
-## 🧪 Como Testar e Demonstrar o Terraform
-✅ Testes Essenciais
-
-Validação
-
-```bash 
-terraform validate
-```
-
-Garante que a configuração está correta e consistente.
-
-Simulação (dry-run)
-
-```bash 
-terraform plan
-```
-
-Utilizado para:
-
-- Demonstrar impacto das mudanças
-- Validar alterações antes do apply
-- Mostrar boas práticas de controle de infraestrutura
-- Estado da infraestrutura
-
-```bash 
-terraform state list
-```
-
-Lista todos os recursos atualmente gerenciados pelo Terraform.
-
 ## 📦 Tecnologias Utilizadas
 
 - .NET 8
@@ -341,6 +310,8 @@ Lista todos os recursos atualmente gerenciados pelo Terraform.
 - SQL Server 2022
 - Docker & Docker Compose
 - xUnit / FluentAssertions / Moq
+- Terraform
+- Kubernets
 
 ---
 
@@ -354,8 +325,8 @@ Lista todos os recursos atualmente gerenciados pelo Terraform.
 ✔ Aggregate implementado
 ✔ Endpoints REST
 ✔ Testes finais
-✔ Kubernets
-✔ Terraform
+✔ Infraestrutura escalável
+✔ Deploy automatizado
 
 ---
 
@@ -363,4 +334,5 @@ Lista todos os recursos atualmente gerenciados pelo Terraform.
 
 Projeto desenvolvido por **Dhiulia da Silva e Mateus Pinheiro** como parte de avaliação técnica.
 
+#### [Swagger.json do projeto](https://github.com/dhiuliaantunes/AutoRepairShop/blob/master/src/AutoRepairShop.Api/swagger.json)
 ---
