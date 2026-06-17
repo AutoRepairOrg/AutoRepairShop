@@ -7,3 +7,4 @@ namespace AutoRepairShop.Domain.Interfaces.Repositories
         Task<Vehicle?> GetByPlateAsync(string plate);
     }
 }
+ 
