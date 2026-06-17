@@ -2,6 +2,8 @@
 using AutoRepairShop.Domain.Enums;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
+using AutoRepairShop.Infrastructure.Data.Entities;
+using AutoRepairShop.Infrastructure.Data.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoRepairShop.Infrastructure.Repositories
@@ -12,76 +14,122 @@ namespace AutoRepairShop.Infrastructure.Repositories
 
         public async Task AddAsync(ServiceOrder serviceOrder)
         {
-            await _context.ServiceOrders.AddAsync(serviceOrder);
+            await _context.ServiceOrders.AddAsync(serviceOrder.ToEntity());
             await _context.SaveChangesAsync();
         }
 
         public async Task<ServiceOrder?> GetByIdAsync(Guid id)
         {
-            return await _context
+            var entity = await _context
                 .ServiceOrders.Include(x => x.Services)
                 .Include(x => x.Supplies)
                 .Include(x => x.History.OrderBy(h => h.CreatedAt))
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
+
+            return entity?.ToDomain();
         }
 
         public async Task<List<ServiceOrder>> GetAllAsync(ServiceOrderStatus? status)
         {
-            IQueryable<ServiceOrder> query = _context
+            IQueryable<ServiceOrderEntity> query = _context
                 .ServiceOrders.Include(x => x.Services)
                 .Include(x => x.Supplies)
-                .Include(x => x.History.OrderBy(h => h.CreatedAt));
+                .Include(x => x.History.OrderBy(h => h.CreatedAt))
+                .AsNoTracking();
 
             if (status.HasValue)
             {
                 query = query.Where(x => x.Status == status.Value);
             }
 
-            return await query.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            var entities = await query.OrderByDescending(x => x.CreatedAt).ToListAsync();
+            return [.. entities.Select(x => x.ToDomain())];
         }
 
         public async Task UpdateAsync(ServiceOrder serviceOrder)
         {
-            var strategy = _context.Database.CreateExecutionStrategy();
+            await using var transaction = await _context.Database.BeginTransactionAsync();
 
-            await strategy.ExecuteAsync(async () =>
+            var exists = await _context.ServiceOrders.AnyAsync(x => x.Id == serviceOrder.Id);
+            if (!exists)
             {
-                await using var transaction = await _context.Database.BeginTransactionAsync();
+                throw new DbUpdateConcurrencyException(
+                    $"Service order '{serviceOrder.Id}' was not found while updating."
+                );
+            }
 
-                var latestHistory = serviceOrder
-                    .History.OrderByDescending(h => h.CreatedAt)
-                    .FirstOrDefault();
+            await _context
+                .ServiceOrders.Where(x => x.Id == serviceOrder.Id)
+                .ExecuteUpdateAsync(setters =>
+                    setters
+                        .SetProperty(x => x.Status, serviceOrder.Status)
+                        .SetProperty(x => x.StartedAt, serviceOrder.StartedAt)
+                        .SetProperty(x => x.FinishedAt, serviceOrder.FinishedAt)
+                );
 
-                if (latestHistory is not null)
-                {
-                    var historyEntry = _context.Entry(latestHistory);
+            await _context
+                .Set<ServiceOrderServiceEntity>()
+                .Where(x => x.ServiceOrderId == serviceOrder.Id)
+                .ExecuteDeleteAsync();
 
-                    if (historyEntry.State == EntityState.Detached)
+            if (serviceOrder.Services.Count != 0)
+            {
+                var serviceEntities = serviceOrder
+                    .Services.Select(x => new ServiceOrderServiceEntity
                     {
-                        await _context.ServiceOrderHistories.AddAsync(latestHistory);
-                    }
+                        ServiceOrderId = serviceOrder.Id,
+                        ServiceId = x.ServiceId,
+                    })
+                    .ToList();
 
-                    await _context.SaveChangesAsync();
-                }
+                await _context.Set<ServiceOrderServiceEntity>().AddRangeAsync(serviceEntities);
+            }
 
-                var affectedRows = await _context
-                    .ServiceOrders.Where(x => x.Id == serviceOrder.Id)
-                    .ExecuteUpdateAsync(setters =>
-                        setters
-                            .SetProperty(x => x.Status, serviceOrder.Status)
-                            .SetProperty(x => x.StartedAt, serviceOrder.StartedAt)
-                            .SetProperty(x => x.FinishedAt, serviceOrder.FinishedAt)
-                    );
+            await _context
+                .Set<ServiceOrderSupplyEntity>()
+                .Where(x => x.ServiceOrderId == serviceOrder.Id)
+                .ExecuteDeleteAsync();
 
-                if (affectedRows == 0)
+            if (serviceOrder.Supplies.Count != 0)
+            {
+                var supplyEntities = serviceOrder
+                    .Supplies.Select(x => new ServiceOrderSupplyEntity
+                    {
+                        ServiceOrderId = serviceOrder.Id,
+                        SupplyId = x.SupplyId,
+                        Quantity = x.Quantity,
+                    })
+                    .ToList();
+
+                await _context.Set<ServiceOrderSupplyEntity>().AddRangeAsync(supplyEntities);
+            }
+
+            var existingHistoryIds = await _context
+                .ServiceOrderHistories.Where(x => x.ServiceOrderId == serviceOrder.Id)
+                .Select(x => x.Id)
+                .ToListAsync();
+
+            var existingHistorySet = existingHistoryIds.ToHashSet();
+            var newHistoryEntities = serviceOrder
+                .History.Where(x => !existingHistorySet.Contains(x.Id))
+                .Select(x => new ServiceOrderHistoryEntity
                 {
-                    throw new DbUpdateConcurrencyException(
-                        $"Service order '{serviceOrder.Id}' was not found while updating."
-                    );
-                }
+                    Id = x.Id,
+                    ServiceOrderId = x.ServiceOrderId,
+                    Status = x.Status,
+                    CreatedAt = x.CreatedAt,
+                    CreatedById = x.CreatedById,
+                })
+                .ToList();
 
-                await transaction.CommitAsync();
-            });
+            if (newHistoryEntities.Count != 0)
+            {
+                await _context.ServiceOrderHistories.AddRangeAsync(newHistoryEntities);
+            }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
         }
 
         public async Task<(

@@ -20,5 +20,31 @@ namespace AutoRepairShop.Domain.Entities.ServiceOrder
             CreatedAt = DateTime.UtcNow;
             CreatedById = createdById;
         }
+
+        private ServiceOrderHistory(
+            Guid id,
+            Guid serviceOrderId,
+            ServiceOrderStatus status,
+            DateTime createdAt,
+            Guid createdById
+        )
+        {
+            Id = id;
+            ServiceOrderId = serviceOrderId;
+            Status = status;
+            CreatedAt = createdAt;
+            CreatedById = createdById;
+        }
+
+        public static ServiceOrderHistory Restore(
+            Guid id,
+            Guid serviceOrderId,
+            ServiceOrderStatus status,
+            DateTime createdAt,
+            Guid createdById
+        )
+        {
+            return new ServiceOrderHistory(id, serviceOrderId, status, createdAt, createdById);
+        }
     }
 }

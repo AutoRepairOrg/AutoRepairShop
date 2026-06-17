@@ -1,6 +1,7 @@
 ﻿using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
+using AutoRepairShop.Infrastructure.Data.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoRepairShop.Infrastructure.Repositories
@@ -9,39 +10,58 @@ namespace AutoRepairShop.Infrastructure.Repositories
     {
         private readonly AppDbContext _context;
 
-        //TODO: Implementação de CRUD de admin
         public AdminRepository(AppDbContext context)
         {
             _context = context;
         }
-        public Task AddAsync(Admin entity)
+
+        public async Task AddAsync(Admin entity)
         {
-            throw new NotImplementedException();
+            _context.Admins.Add(entity.ToEntity());
+            await _context.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(Admin entity)
+        public async Task DeleteAsync(Admin entity)
         {
-            throw new NotImplementedException();
+            var persisted = await _context.Admins.FirstOrDefaultAsync(c => c.Id == entity.Id);
+
+            if (persisted is null)
+                return;
+
+            _context.Admins.Remove(persisted);
+            await _context.SaveChangesAsync();
         }
 
-        public Task<List<Admin>> GetAllAsync()
+        public async Task<List<Admin>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return [.. (await _context.Admins.ToListAsync()).Select(x => x.ToDomain())];
         }
 
-        public Task<Admin?> GetByIdAsync(Guid id)
+        public async Task<Admin?> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var entity = await _context.Admins.FirstOrDefaultAsync(c => c.Id == id);
+            return entity?.ToDomain();
         }
 
         public async Task<Admin?> GetByUserNameAsync(string username)
         {
-            return await _context.Admins.FirstOrDefaultAsync(c => c.Username == username);
+            var entity = await _context.Admins.FirstOrDefaultAsync(c => c.Username == username);
+            return entity?.ToDomain();
         }
 
-        public Task UpdateAsync(Admin entity)
+        public async Task UpdateAsync(Admin entity)
         {
-            throw new NotImplementedException();
+            var persisted = await _context.Admins.FirstOrDefaultAsync(c => c.Id == entity.Id);
+
+            if (persisted is null)
+                return;
+
+            persisted.Name = entity.Name;
+            persisted.Department = entity.Department;
+            persisted.Username = entity.Username;
+            persisted.Password = entity.Password;
+
+            await _context.SaveChangesAsync();
         }
     }
 }

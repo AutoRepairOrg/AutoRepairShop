@@ -1,6 +1,7 @@
 using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Entities.ServiceOrder;
 using AutoRepairShop.Domain.Enums;
+using AutoRepairShop.Infrastructure.Data.Mappings;
 using AutoRepairShop.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -67,7 +68,7 @@ public class ServiceOrderRepositoryTests
             order.AddHistory(ServiceOrderStatus.Received, Guid.NewGuid());
             order.StartDiagnosis();
             order.AddHistory(ServiceOrderStatus.InDiagnosis, Guid.NewGuid());
-            seedContext.ServiceOrders.Add(order);
+            seedContext.ServiceOrders.Add(order.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 
@@ -92,32 +93,31 @@ public class ServiceOrderRepositoryTests
 
         await using (var seedContext = database.CreateDbContext())
         {
-            seedContext.ServiceOrders.AddRange(
-                new ServiceOrder
-                {
-                    Id = Guid.NewGuid(),
-                    CustomerId = CustomerId,
-                    VehicleId = vehicleId,
-                    Status = ServiceOrderStatus.Received,
-                    CreatedAt = DateTime.UtcNow.AddHours(-3),
-                },
-                new ServiceOrder
-                {
-                    Id = Guid.NewGuid(),
-                    CustomerId = CustomerId,
-                    VehicleId = vehicleId,
-                    Status = ServiceOrderStatus.InDiagnosis,
-                    CreatedAt = DateTime.UtcNow.AddHours(-2),
-                },
-                new ServiceOrder
-                {
-                    Id = Guid.NewGuid(),
-                    CustomerId = CustomerId,
-                    VehicleId = vehicleId,
-                    Status = ServiceOrderStatus.InDiagnosis,
-                    CreatedAt = DateTime.UtcNow.AddHours(-1),
-                }
-            );
+            var so1 = new ServiceOrder
+            {
+                Id = Guid.NewGuid(),
+                CustomerId = CustomerId,
+                VehicleId = vehicleId,
+                Status = ServiceOrderStatus.Received,
+                CreatedAt = DateTime.UtcNow.AddHours(-3),
+            };
+            var so2 = new ServiceOrder
+            {
+                Id = Guid.NewGuid(),
+                CustomerId = CustomerId,
+                VehicleId = vehicleId,
+                Status = ServiceOrderStatus.InDiagnosis,
+                CreatedAt = DateTime.UtcNow.AddHours(-2),
+            };
+            var so3 = new ServiceOrder
+            {
+                Id = Guid.NewGuid(),
+                CustomerId = CustomerId,
+                VehicleId = vehicleId,
+                Status = ServiceOrderStatus.InDiagnosis,
+                CreatedAt = DateTime.UtcNow.AddHours(-1),
+            };
+            seedContext.ServiceOrders.AddRange(so1.ToEntity(), so2.ToEntity(), so3.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 
@@ -148,7 +148,7 @@ public class ServiceOrderRepositoryTests
                 CreatedAt = DateTime.UtcNow.AddHours(-2),
             };
             order.AddHistory(ServiceOrderStatus.Received, Guid.NewGuid());
-            seedContext.ServiceOrders.Add(order);
+            seedContext.ServiceOrders.Add(order.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 
@@ -184,36 +184,35 @@ public class ServiceOrderRepositoryTests
 
         await using (var seedContext = database.CreateDbContext())
         {
-            seedContext.ServiceOrders.AddRange(
-                new ServiceOrder
-                {
-                    Id = Guid.NewGuid(),
-                    CustomerId = CustomerId,
-                    VehicleId = vehicleId,
-                    Status = ServiceOrderStatus.Finished,
-                    CreatedAt = now.AddDays(-3),
-                    StartedAt = now.AddHours(-30),
-                    FinishedAt = now.AddHours(-6),
-                },
-                new ServiceOrder
-                {
-                    Id = Guid.NewGuid(),
-                    CustomerId = CustomerId,
-                    VehicleId = vehicleId,
-                    Status = ServiceOrderStatus.Delivered,
-                    CreatedAt = now.AddDays(-2),
-                    StartedAt = now.AddHours(-20),
-                    FinishedAt = now.AddHours(-2),
-                },
-                new ServiceOrder
-                {
-                    Id = Guid.NewGuid(),
-                    CustomerId = CustomerId,
-                    VehicleId = vehicleId,
-                    Status = ServiceOrderStatus.Received,
-                    CreatedAt = now.AddDays(-1),
-                }
-            );
+            var so1 = new ServiceOrder
+            {
+                Id = Guid.NewGuid(),
+                CustomerId = CustomerId,
+                VehicleId = vehicleId,
+                Status = ServiceOrderStatus.Finished,
+                CreatedAt = now.AddDays(-3),
+                StartedAt = now.AddHours(-30),
+                FinishedAt = now.AddHours(-6),
+            };
+            var so2 = new ServiceOrder
+            {
+                Id = Guid.NewGuid(),
+                CustomerId = CustomerId,
+                VehicleId = vehicleId,
+                Status = ServiceOrderStatus.Delivered,
+                CreatedAt = now.AddDays(-2),
+                StartedAt = now.AddHours(-20),
+                FinishedAt = now.AddHours(-2),
+            };
+            var so3 = new ServiceOrder
+            {
+                Id = Guid.NewGuid(),
+                CustomerId = CustomerId,
+                VehicleId = vehicleId,
+                Status = ServiceOrderStatus.Received,
+                CreatedAt = now.AddDays(-1),
+            };
+            seedContext.ServiceOrders.AddRange(so1.ToEntity(), so2.ToEntity(), so3.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 
@@ -243,23 +242,22 @@ public class ServiceOrderRepositoryTests
         if (await context.Vehicles.FindAsync(vehicleId) is not null)
             return (vehicleId, serviceId, supplyId);
 
-        context.Vehicles.Add(
-            new Vehicle(
-                CustomerId,
-                AutoRepairShop.Domain.ValueObjects.VehiclePlate.Create("ABC1234"),
-                "Ford",
-                "Ka",
-                2022
-            )
+        var vehicle = new Vehicle(
+            CustomerId,
+            AutoRepairShop.Domain.ValueObjects.VehiclePlate.Create("ABC1234"),
+            "Ford",
+            "Ka",
+            2022
         );
-        context.Services.Add(new Service("Troca de oleo", "Descricao", 150m));
-        context.Supplies.Add(new Supply("Filtro", 45m, 10));
+        context.Vehicles.Add(vehicle.ToEntity());
+        context.Services.Add(new Service("Troca de oleo", "Descricao", 150m).ToEntity());
+        context.Supplies.Add(new Supply("Filtro", 45m, 10).ToEntity());
         await context.SaveChangesAsync();
 
-        var vehicle = await context.Vehicles.OrderByDescending(x => x.Id).FirstAsync();
-        var service = await context.Services.OrderByDescending(x => x.Id).FirstAsync();
-        var supply = await context.Supplies.OrderByDescending(x => x.Id).FirstAsync();
+        var persistedVehicle = await context.Vehicles.OrderByDescending(x => x.Id).FirstAsync();
+        var persistedService = await context.Services.OrderByDescending(x => x.Id).FirstAsync();
+        var persistedSupply = await context.Supplies.OrderByDescending(x => x.Id).FirstAsync();
 
-        return (vehicle.Id, service.Id, supply.Id);
+        return (persistedVehicle.Id, persistedService.Id, persistedSupply.Id);
     }
 }

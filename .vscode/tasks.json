@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "/home/mateusnunespinheiro/.dotnet/dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/AutoRepairShop.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "/home/mateusnunespinheiro/.dotnet/dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/AutoRepairShop.sln",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "/home/mateusnunespinheiro/.dotnet/dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/AutoRepairShop.sln"
+            ],
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

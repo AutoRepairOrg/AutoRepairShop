@@ -8,14 +8,9 @@ namespace AutoRepairShop.Api.Controllers
 {
     [Route("api/customer")]
     [ApiController]
-    public class CustomerController : ControllerBase
+    public class CustomerController(ICustomerService customerService) : ControllerBase
     {
-        private readonly ICustomerService _customerService;
-
-        public CustomerController(ICustomerService customerService)
-        {
-            _customerService = customerService;
-        }
+        private readonly ICustomerService _customerService = customerService;
 
         [HttpGet]
         [Authorize(Roles = "Admin")]

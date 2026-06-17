@@ -127,7 +127,60 @@ namespace AutoRepairShop.Infrastructure.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrder", b =>
+            modelBuilder.Entity("AutoRepairShop.Domain.Entities.Vehicle", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Vehicles", (string)null);
+                });
+
+            modelBuilder.Entity("AutoRepairShop.Infrastructure.Data.Entities.ServiceEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Services", (string)null);
+                });
+
+            modelBuilder.Entity("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -163,7 +216,7 @@ namespace AutoRepairShop.Infrastructure.Migrations
                     b.ToTable("ServiceOrders", (string)null);
                 });
 
-            modelBuilder.Entity("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrderHistory", b =>
+            modelBuilder.Entity("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderHistoryEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,31 +244,40 @@ namespace AutoRepairShop.Infrastructure.Migrations
                     b.ToTable("ServiceOrderHistories", (string)null);
                 });
 
-            modelBuilder.Entity("Service", b =>
+            modelBuilder.Entity("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderServiceEntity", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("ServiceOrderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.HasKey("ServiceOrderId", "ServiceId");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.HasIndex("ServiceId");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("ServiceOrderServices", (string)null);
                 });
 
-            modelBuilder.Entity("Supply", b =>
+            modelBuilder.Entity("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderSupplyEntity", b =>
+                {
+                    b.Property<Guid>("ServiceOrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SupplyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("ServiceOrderId", "SupplyId");
+
+                    b.HasIndex("SupplyId");
+
+                    b.ToTable("ServiceOrderSupplies", (string)null);
+                });
+
+            modelBuilder.Entity("AutoRepairShop.Infrastructure.Data.Entities.SupplyEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -234,118 +296,10 @@ namespace AutoRepairShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Supplies");
+                    b.ToTable("Supplies", (string)null);
                 });
 
-            modelBuilder.Entity("Vehicle", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Brand")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("Vehicles", (string)null);
-                });
-
-            modelBuilder.Entity("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrder", b =>
-                {
-                    b.HasOne("AutoRepairShop.Domain.Entities.Customer", null)
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Vehicle", null)
-                        .WithMany()
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.OwnsMany("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrderService", "Services", b1 =>
-                        {
-                            b1.Property<Guid>("ServiceOrderId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<Guid>("ServiceId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.HasKey("ServiceOrderId", "ServiceId");
-
-                            b1.HasIndex("ServiceId");
-
-                            b1.ToTable("ServiceOrderServices", (string)null);
-
-                            b1.HasOne("Service", null)
-                                .WithMany()
-                                .HasForeignKey("ServiceId")
-                                .OnDelete(DeleteBehavior.Restrict)
-                                .IsRequired();
-
-                            b1.WithOwner()
-                                .HasForeignKey("ServiceOrderId");
-                        });
-
-                    b.OwnsMany("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrderSupply", "Supplies", b1 =>
-                        {
-                            b1.Property<Guid>("ServiceOrderId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<Guid>("SupplyId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Quantity")
-                                .HasColumnType("int");
-
-                            b1.HasKey("ServiceOrderId", "SupplyId");
-
-                            b1.HasIndex("SupplyId");
-
-                            b1.ToTable("ServiceOrderSupplies", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("ServiceOrderId");
-
-                            b1.HasOne("Supply", null)
-                                .WithMany()
-                                .HasForeignKey("SupplyId")
-                                .OnDelete(DeleteBehavior.Restrict)
-                                .IsRequired();
-                        });
-
-                    b.Navigation("Services");
-
-                    b.Navigation("Supplies");
-                });
-
-            modelBuilder.Entity("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrderHistory", b =>
-                {
-                    b.HasOne("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrder", null)
-                        .WithMany("History")
-                        .HasForeignKey("ServiceOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Vehicle", b =>
+            modelBuilder.Entity("AutoRepairShop.Domain.Entities.Vehicle", b =>
                 {
                     b.HasOne("AutoRepairShop.Domain.Entities.Customer", null)
                         .WithMany()
@@ -376,9 +330,67 @@ namespace AutoRepairShop.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AutoRepairShop.Domain.Entities.ServiceOrder.ServiceOrder", b =>
+            modelBuilder.Entity("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderEntity", b =>
+                {
+                    b.HasOne("AutoRepairShop.Domain.Entities.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AutoRepairShop.Domain.Entities.Vehicle", null)
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderHistoryEntity", b =>
+                {
+                    b.HasOne("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderEntity", null)
+                        .WithMany("History")
+                        .HasForeignKey("ServiceOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderServiceEntity", b =>
+                {
+                    b.HasOne("AutoRepairShop.Infrastructure.Data.Entities.ServiceEntity", null)
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderEntity", null)
+                        .WithMany("Services")
+                        .HasForeignKey("ServiceOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderSupplyEntity", b =>
+                {
+                    b.HasOne("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderEntity", null)
+                        .WithMany("Supplies")
+                        .HasForeignKey("ServiceOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AutoRepairShop.Infrastructure.Data.Entities.SupplyEntity", null)
+                        .WithMany()
+                        .HasForeignKey("SupplyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AutoRepairShop.Infrastructure.Data.Entities.ServiceOrderEntity", b =>
                 {
                     b.Navigation("History");
+
+                    b.Navigation("Services");
+
+                    b.Navigation("Supplies");
                 });
 #pragma warning restore 612, 618
         }

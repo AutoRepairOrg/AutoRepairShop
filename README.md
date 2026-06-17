@@ -17,6 +17,10 @@ AutoRepairShop
 │ ├── AutoRepairShop.Domain # Domínio (Entidades, VOs, Enums, Regras)
 │ └── AutoRepairShop.Infrastructure # Infraestrutura (EF Core, Repositórios, Migrations)
 │
+├── infra # Scripts Terraform
+|
+├── k8s # Manifestos Kubernets
+|
 ├── tests
 │ └── AutoRepairShop.Tests # Testes unitários e de integração
 │
@@ -183,6 +187,121 @@ dotnet test
 
 ---
 
+# 🚀 Infraestrutura com Terraform e Kubernetes
+
+Este repositório demonstra a **provisão de infraestrutura com Terraform** e o **deploy de uma aplicação em Kubernetes**, seguindo boas práticas de **Infrastructure as Code (IaC)**, versionamento e reprodutibilidade.
+
+---
+
+## 📌 Objetivo do Projeto
+
+- Demonstrar o uso do **Terraform** para criar e gerenciar infraestrutura
+- Orquestrar aplicações usando **Kubernetes**
+---
+## ⚙️ Pré-requisitos
+
+Instale as seguintes ferramentas em sua máquina:
+
+- **Terraform**
+- **kubectl**
+- **Minikube**
+
+### ✅ Validação das instalações
+
+Execute os comandos abaixo para confirmar que tudo está instalado corretamente:
+
+```bash
+terraform -v
+kubectl version --client
+minikube version
+```
+---
+
+## ▶️ Como Executar o Projeto
+### 1️⃣ Iniciar o cluster Kubernetes local
+
+O cluster local é provisionado via Minikube:
+
+
+```bash 
+minikube start
+```
+
+### 2️⃣ Inicializar o Terraform
+
+Acesse a pasta de infraestrutura e inicialize o Terraform:
+
+```bash 
+cd infra
+terraform init
+```
+
+Este comando irá:
+
+- Baixar os providers necessários 
+- Inicializar o backend de estado 
+- Preparar o ambiente para execução dos planos 
+
+### 3️⃣ Validar e testar a infraestrutura
+Validação da sintaxe e configuração
+
+```bash 
+terraform validate
+```
+Simulação das mudanças (dry-run)
+
+```bash 
+terraform plan
+```
+Neste passo é possível demonstrar claramente:
+
+- Quais recursos serão criados
+- Quais serão alterados
+- Quais seriam removidos, se aplicável
+
+Este comando não altera o ambiente, apenas simula o impacto do apply.
+
+### 4️⃣ Aplicar a infraestrutura
+
+Para provisionar os recursos definidos:
+
+```bash 
+terraform apply
+```
+
+Confirme a execução digitando yes quando solicitado.
+
+Este passo cria:
+
+- Recursos de infraestrutura definidos via Terraform
+- Base necessária para execução da aplicação no Kubernetes
+
+### 5️⃣ Aplicar os manifests Kubernetes
+
+Após a infraestrutura estar pronta, aplique os manifestos da aplicação:
+
+```bash 
+kubectl apply -f k8s/
+```
+
+Os manifests incluem:
+
+- Deployments
+- Services
+- ConfigMaps
+- Secrets
+- Horizontal Pod Autoscaler (HPA)
+
+### 6️⃣ Verificar os recursos criados
+
+Comandos para validação do ambiente:
+
+```bash 
+kubectl get pods
+kubectl get svc
+kubectl get deploy
+```
+
 ## 📦 Tecnologias Utilizadas
 
 - .NET 8
@@ -191,6 +310,8 @@ dotnet test
 - SQL Server 2022
 - Docker & Docker Compose
 - xUnit / FluentAssertions / Moq
+- Terraform
+- Kubernets
 
 ---
 
@@ -204,6 +325,8 @@ dotnet test
 ✔ Aggregate implementado
 ✔ Endpoints REST
 ✔ Testes finais
+✔ Infraestrutura escalável
+✔ Deploy automatizado
 
 ---
 
@@ -211,6 +334,5 @@ dotnet test
 
 Projeto desenvolvido por **Dhiulia da Silva e Mateus Pinheiro** como parte de avaliação técnica.
 
+#### [Swagger.json do projeto](https://github.com/dhiuliaantunes/AutoRepairShop/blob/master/src/AutoRepairShop.Api/swagger.json)
 ---
-
-

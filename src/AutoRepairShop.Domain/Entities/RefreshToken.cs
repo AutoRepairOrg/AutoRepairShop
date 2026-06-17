@@ -19,6 +19,20 @@
             IsRevoked = false;
         }
 
+        private RefreshToken(Guid id, Guid userId, string token, DateTime expiresAt, bool isRevoked)
+        {
+            Id = id;
+            UserId = userId;
+            Token = token;
+            ExpiresAt = expiresAt;
+            IsRevoked = isRevoked;
+        }
+
+        public static RefreshToken Restore(Guid id, Guid userId, string token, DateTime expiresAt, bool isRevoked)
+        {
+            return new RefreshToken(id, userId, token, expiresAt, isRevoked);
+        }
+
         public void Revoke()
         {
             IsRevoked = true;

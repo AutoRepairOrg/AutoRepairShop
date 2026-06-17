@@ -2,6 +2,7 @@
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Domain.ValueObjects;
 using AutoRepairShop.Infrastructure.Data;
+using AutoRepairShop.Infrastructure.Data.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 namespace AutoRepairShop.Infrastructure.Repositories
@@ -17,38 +18,50 @@ namespace AutoRepairShop.Infrastructure.Repositories
 
         public async Task AddAsync(Vehicle entity)
         {
-            _context.Vehicles.Add(entity);
+            _context.Vehicles.Add(entity.ToEntity());
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Vehicle entity)
         {
-            _context.Vehicles.Remove(entity);
+            var persisted = await _context.Vehicles.FirstOrDefaultAsync(c => c.Id == entity.Id);
+
+            if (persisted is null)
+                return;
+
+            _context.Vehicles.Remove(persisted);
             await _context.SaveChangesAsync();
         }
 
         public async Task<List<Vehicle>> GetAllAsync()
         {
-            return await _context.Vehicles.ToListAsync();
+            return [.. (await _context.Vehicles.ToListAsync()).Select(x => x.ToDomain())];
         }
 
         public async Task<Vehicle?> GetByIdAsync(Guid id)
         {
-            return await _context.Vehicles.FirstOrDefaultAsync(c => c.Id == id);
+            var entity = await _context.Vehicles.FirstOrDefaultAsync(c => c.Id == id);
+            return entity?.ToDomain();
         }
 
         public async Task<Vehicle?> GetByPlateAsync(string plate)
         {
-            VehiclePlate vehiclePlate = VehiclePlate.Create(plate);
-            Vehicle? vehicle = await _context.Vehicles.FirstOrDefaultAsync(c =>
-                c.Plate.Value == vehiclePlate.Value
-            );
-            return vehicle;
+            var entity = await _context.Vehicles.FirstOrDefaultAsync(c => c.Plate == plate);
+            return entity?.ToDomain();
         }
 
         public async Task UpdateAsync(Vehicle entity)
         {
-            _context.Vehicles.Update(entity);
+            var persisted = await _context.Vehicles.FirstOrDefaultAsync(c => c.Id == entity.Id);
+
+            if (persisted is null)
+                return;
+
+            persisted.Plate = entity.Plate.Value;
+            persisted.Brand = entity.Brand;
+            persisted.Model = entity.Model;
+            persisted.Year = entity.Year;
+
             await _context.SaveChangesAsync();
         }
     }

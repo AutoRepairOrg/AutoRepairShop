@@ -1,4 +1,5 @@
 using AutoRepairShop.Domain.Entities;
+using AutoRepairShop.Infrastructure.Data.Mappings;
 using AutoRepairShop.Infrastructure.Repositories;
 
 namespace AutoRepairShop.Tests.Repositories;
@@ -35,7 +36,7 @@ public class RefreshTokenRepositoryTests
         await using (var seedContext = database.CreateDbContext())
         {
             token = new RefreshToken(Guid.NewGuid(), "refresh-token", DateTime.UtcNow.AddDays(1));
-            seedContext.RefreshTokens.Add(token);
+            seedContext.RefreshTokens.Add(token.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 

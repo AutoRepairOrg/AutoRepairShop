@@ -1,5 +1,6 @@
 using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Models.Supply;
+using AutoRepairShop.Infrastructure.Data.Mappings;
 using AutoRepairShop.Infrastructure.Repositories;
 
 namespace AutoRepairShop.Tests.Repositories;
@@ -34,7 +35,7 @@ public class SupplyRepositoryTests
 
         await using (var seedContext = database.CreateDbContext())
         {
-            seedContext.Supplies.AddRange(available, unavailable);
+            seedContext.Supplies.AddRange(available.ToEntity(), unavailable.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 
@@ -62,7 +63,7 @@ public class SupplyRepositoryTests
         await using (var seedContext = database.CreateDbContext())
         {
             entity = new Supply("Filtro", 45m, 10);
-            seedContext.Supplies.Add(entity);
+            seedContext.Supplies.Add(entity.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 
@@ -92,7 +93,7 @@ public class SupplyRepositoryTests
         await using (var seedContext = database.CreateDbContext())
         {
             entity = new Supply("Filtro", 45m, 10);
-            seedContext.Supplies.Add(entity);
+            seedContext.Supplies.Add(entity.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 

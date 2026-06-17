@@ -1,4 +1,5 @@
 using AutoRepairShop.Domain.Entities;
+using AutoRepairShop.Infrastructure.Data.Mappings;
 using AutoRepairShop.Infrastructure.Repositories;
 
 namespace AutoRepairShop.Tests.Repositories;
@@ -34,7 +35,7 @@ public class ServiceRepositoryTests
 
         await using (var seedContext = database.CreateDbContext())
         {
-            seedContext.Services.AddRange(first, second, third);
+            seedContext.Services.AddRange(first.ToEntity(), second.ToEntity(), third.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 
@@ -58,7 +59,7 @@ public class ServiceRepositoryTests
         await using (var seedContext = database.CreateDbContext())
         {
             entity = new Service("Troca de oleo", "Descricao", 150m);
-            seedContext.Services.Add(entity);
+            seedContext.Services.Add(entity.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 
@@ -88,7 +89,7 @@ public class ServiceRepositoryTests
         await using (var seedContext = database.CreateDbContext())
         {
             entity = new Service("Troca de oleo", "Descricao", 150m);
-            seedContext.Services.Add(entity);
+            seedContext.Services.Add(entity.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 

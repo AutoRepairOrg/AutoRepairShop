@@ -25,6 +25,21 @@ public class Vehicle
         SetYear(year);
     }
 
+    private Vehicle(Guid id, Guid customerId, VehiclePlate plate, string brand, string model, int year)
+    {
+        Id = id;
+        SetCustomer(customerId);
+        SetPlate(plate);
+        SetBrand(brand);
+        SetModel(model);
+        SetYear(year);
+    }
+
+    public static Vehicle Restore(Guid id, Guid customerId, VehiclePlate plate, string brand, string model, int year)
+    {
+        return new Vehicle(id, customerId, plate, brand, model, year);
+    }
+
     public void Update(string brand, string model, int year)
     {
         SetBrand(brand);

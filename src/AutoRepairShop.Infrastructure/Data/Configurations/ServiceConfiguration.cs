@@ -1,12 +1,12 @@
-﻿using AutoRepairShop.Domain.Entities;
+﻿using AutoRepairShop.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AutoRepairShop.Infrastructure.Data.Configurations
 {
-    public class ServiceConfiguration : IEntityTypeConfiguration<Service>
+    public class ServiceConfiguration : IEntityTypeConfiguration<ServiceEntity>
     {
-        public void Configure(EntityTypeBuilder<Service> builder)
+        public void Configure(EntityTypeBuilder<ServiceEntity> builder)
         {
             builder.ToTable("Services");
 
@@ -16,7 +16,7 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
 
             builder.Property(c => c.Description).IsRequired().HasMaxLength(150);
 
-            builder.Property(c => c.Price).IsRequired();
+            builder.Property(c => c.Price).HasColumnType("decimal(18,2)").IsRequired();
         }
     }
 }
