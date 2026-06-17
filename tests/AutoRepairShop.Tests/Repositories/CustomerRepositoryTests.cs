@@ -1,5 +1,6 @@
 using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.ValueObjects;
+using AutoRepairShop.Infrastructure.Data.Mappings;
 using AutoRepairShop.Infrastructure.Repositories;
 
 namespace AutoRepairShop.Tests.Repositories;
@@ -72,7 +73,7 @@ public class CustomerRepositoryTests
                 "maria",
                 "hash"
             );
-            seedContext.Customers.Add(customer);
+            seedContext.Customers.Add(customer.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 
@@ -110,7 +111,7 @@ public class CustomerRepositoryTests
                 "maria",
                 "hash"
             );
-            seedContext.Customers.Add(customer);
+            seedContext.Customers.Add(customer.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 

@@ -1,5 +1,4 @@
-﻿using AutoRepairShop.Domain.Entities;
-using AutoRepairShop.Infrastructure.Data.Entities;
+﻿using AutoRepairShop.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,13 +25,13 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
             builder.Property(x => x.FinishedAt);
 
             builder
-                .HasOne<Customer>()
+                .HasOne<CustomerEntity>()
                 .WithMany()
                 .HasForeignKey(x => x.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder
-                .HasOne<Vehicle>()
+                .HasOne<VehicleEntity>()
                 .WithMany()
                 .HasForeignKey(x => x.VehicleId)
                 .OnDelete(DeleteBehavior.Restrict);

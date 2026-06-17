@@ -1,5 +1,6 @@
 using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.ValueObjects;
+using AutoRepairShop.Infrastructure.Data.Mappings;
 using AutoRepairShop.Infrastructure.Repositories;
 
 namespace AutoRepairShop.Tests.Repositories;
@@ -28,7 +29,7 @@ public class VehicleRepositoryTests
         var persisted = await assertionContext.Vehicles.FindAsync(entity.Id);
 
         Assert.NotNull(persisted);
-        Assert.Equal("ABC1234", persisted.Plate.Value);
+        Assert.Equal("ABC1234", persisted.Plate);
     }
 
     [Fact]
@@ -45,14 +46,14 @@ public class VehicleRepositoryTests
 
         await using (var seedContext = database.CreateDbContext())
         {
-            seedContext.Vehicles.Add(entity);
+            seedContext.Vehicles.Add(entity.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 
         await using var context = database.CreateDbContext();
         var repository = new VehicleRepository(context);
 
-        var result = await repository.GetByPlateAsync("abc-1234");
+        var result = await repository.GetByPlateAsync("ABC1234");
 
         Assert.NotNull(result);
         Assert.Equal(entity.Id, result.Id);
@@ -73,7 +74,7 @@ public class VehicleRepositoryTests
                 "Ka",
                 2022
             );
-            seedContext.Vehicles.Add(entity);
+            seedContext.Vehicles.Add(entity.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 
@@ -110,7 +111,7 @@ public class VehicleRepositoryTests
                 "Ka",
                 2022
             );
-            seedContext.Vehicles.Add(entity);
+            seedContext.Vehicles.Add(entity.ToEntity());
             await seedContext.SaveChangesAsync();
         }
 

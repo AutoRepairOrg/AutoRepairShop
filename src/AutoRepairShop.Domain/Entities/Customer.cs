@@ -6,12 +6,12 @@ namespace AutoRepairShop.Domain.Entities;
 
 public class Customer : IUser
 {
-    public string Name { get; set; } = string.Empty;
-    public Document Document { get; set; } = null!;
-    public string Phone { get; set; } = string.Empty;
-    public Guid Id { get; set; }
-    public string Username { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
+    public Guid Id { get; private set; }
+    public string Name { get; private set; } = string.Empty;
+    public Document Document { get; private set; } = null!;
+    public string Phone { get; private set; } = string.Empty;
+    public string Username { get; private set; } = string.Empty;
+    public string Password { get; private set; } = string.Empty;
 
     public Customer() { }
 
@@ -25,6 +25,21 @@ public class Customer : IUser
         SetPhone(phone);
         SetUserName(username);
         Password = password;
+    }
+
+    private Customer(Guid id, string name, Document document, string phone, string username, string password)
+    {
+        Id = id;
+        SetName(name);
+        Document = document ?? throw new DomainException("Document is required");
+        SetPhone(phone);
+        SetUserName(username);
+        Password = password;
+    }
+
+    public static Customer Restore(Guid id, string name, Document document, string phone, string username, string password)
+    {
+        return new Customer(id, name, document, phone, username, password);
     }
 
     public void Update(string name, string phone, string username, string password)
@@ -65,7 +80,5 @@ public class Customer : IUser
             throw new DomainException("UserName is required");
 
         Username = userName;
-
-        //TODO: Validar quantidade de caracteres, validação de senha
     }
 }

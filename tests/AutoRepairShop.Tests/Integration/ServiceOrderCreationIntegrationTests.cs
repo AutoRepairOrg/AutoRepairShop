@@ -101,7 +101,7 @@ public class ServiceOrderCreationIntegrationTests : IAsyncLifetime
         );
 
         Assert.NotNull(createdVehicle);
-        Assert.Equal("XYZ9999", createdVehicle.Plate.Value);
+        Assert.Equal("XYZ9999", createdVehicle.Plate);
         Assert.Equal("Toyota", createdVehicle.Brand);
         Assert.Equal("Corolla", createdVehicle.Model);
         Assert.Equal(2021, createdVehicle.Year);

@@ -242,23 +242,22 @@ public class ServiceOrderRepositoryTests
         if (await context.Vehicles.FindAsync(vehicleId) is not null)
             return (vehicleId, serviceId, supplyId);
 
-        context.Vehicles.Add(
-            new Vehicle(
-                CustomerId,
-                AutoRepairShop.Domain.ValueObjects.VehiclePlate.Create("ABC1234"),
-                "Ford",
-                "Ka",
-                2022
-            )
+        var vehicle = new Vehicle(
+            CustomerId,
+            AutoRepairShop.Domain.ValueObjects.VehiclePlate.Create("ABC1234"),
+            "Ford",
+            "Ka",
+            2022
         );
+        context.Vehicles.Add(vehicle.ToEntity());
         context.Services.Add(new Service("Troca de oleo", "Descricao", 150m).ToEntity());
         context.Supplies.Add(new Supply("Filtro", 45m, 10).ToEntity());
         await context.SaveChangesAsync();
 
-        var vehicle = await context.Vehicles.OrderByDescending(x => x.Id).FirstAsync();
-        var service = await context.Services.OrderByDescending(x => x.Id).FirstAsync();
-        var supply = await context.Supplies.OrderByDescending(x => x.Id).FirstAsync();
+        var persistedVehicle = await context.Vehicles.OrderByDescending(x => x.Id).FirstAsync();
+        var persistedService = await context.Services.OrderByDescending(x => x.Id).FirstAsync();
+        var persistedSupply = await context.Supplies.OrderByDescending(x => x.Id).FirstAsync();
 
-        return (vehicle.Id, service.Id, supply.Id);
+        return (persistedVehicle.Id, persistedService.Id, persistedSupply.Id);
     }
 }
