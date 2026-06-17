@@ -73,6 +73,8 @@ namespace AutoRepairShop.Infrastructure.Repositories
                 availableSupplies.Add(domainSupply);
             }
 
+            await _context.SaveChangesAsync();
+
             return availableSupplies;
         }
 

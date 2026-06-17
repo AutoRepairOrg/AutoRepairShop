@@ -6,6 +6,7 @@ using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Enums;
 using AutoRepairShop.Domain.Exceptions;
 using AutoRepairShop.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AutoRepairShop.Tests.Integration;
 
@@ -320,9 +321,10 @@ public class ServiceOrderCreationIntegrationTests : IAsyncLifetime
 
         // Assert
         using var context = _fixture.CreateDbContext();
-        var createdOrder = context.ServiceOrders.FirstOrDefault(o =>
-            o.CustomerId == customerId && o.Status == ServiceOrderStatus.Received
-        );
+        var createdOrder = context
+            .ServiceOrders.Include(o => o.Services)
+            .Include(o => o.Supplies)
+            .FirstOrDefault(o => o.CustomerId == customerId && o.Status == ServiceOrderStatus.Received);
 
         Assert.NotNull(createdOrder);
         Assert.Equal(3, createdOrder.Services.Count);

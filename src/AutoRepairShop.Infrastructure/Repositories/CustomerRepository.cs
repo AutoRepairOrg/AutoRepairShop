@@ -68,7 +68,8 @@ namespace AutoRepairShop.Infrastructure.Repositories
 
         public async Task<Customer?> GetByCpfCnpjAsync(string cpfCnpj)
         {
-            var entity = await _context.Customers.FirstOrDefaultAsync(c => c.Document == cpfCnpj);
+            var normalized = new string(cpfCnpj.Where(char.IsDigit).ToArray());
+            var entity = await _context.Customers.FirstOrDefaultAsync(c => c.Document == normalized);
             return entity?.ToDomain();
         }
     }
