@@ -297,9 +297,9 @@ Os manifests incluem:
 Comandos para validação do ambiente:
 
 ```bash 
-kubectl get pods
-kubectl get svc
-kubectl get deploy
+kubectl get pods -n oficina
+kubectl get svc -n oficina
+kubectl get deploy -n oficina
 ```
 
 ## 📦 Tecnologias Utilizadas
