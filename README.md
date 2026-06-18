@@ -275,14 +275,7 @@ Este passo cria:
 
 - Recursos de infraestrutura definidos via Terraform
 - Base necessária para execução da aplicação no Kubernetes
-
-### 5️⃣ Aplicar os manifests Kubernetes
-
-Após a infraestrutura estar pronta, aplique os manifestos da aplicação:
-
-```bash 
-kubectl apply -f k8s/
-```
+- Aplica os manifestos da aplicação
 
 Os manifests incluem:
 
@@ -292,7 +285,7 @@ Os manifests incluem:
 - Secrets
 - Horizontal Pod Autoscaler (HPA)
 
-### 6️⃣ Verificar os recursos criados
+### 5️⃣ Verificar os recursos criados
 
 Comandos para validação do ambiente:
 
