@@ -47,14 +47,14 @@ jobs:
           echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./src
           file: ./src/AutoRepairShop.Api/Dockerfile
@@ -64,7 +64,7 @@ jobs:
             ghcr.io/${{ steps.image-meta.outputs.owner_lower }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Setup kubectl
-        uses: azure/setup-kubectl@v4
+        uses: azure/setup-kubectl@v4.0.0
 
       - name: Configure kubeconfig
         run: |
@@ -79,8 +79,8 @@ jobs:
         run: |
           kubectl -n "${K8S_NAMESPACE}" create secret docker-registry ghcr-secret \
             --docker-server=ghcr.io \
-            --docker-username="${{ github.repository_owner }}" \
-            --docker-password="${{ secrets.GHCR_TOKEN }}" \
+            --docker-username="${{ github.actor }}" \
+            --docker-password="${{ secrets.GITHUB_TOKEN }}" \
             --docker-email="ci@local" \
             --dry-run=client -o yaml | kubectl apply -f -
 
