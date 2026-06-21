@@ -56,7 +56,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
-          context: ./src
+          context: .
           file: ./src/AutoRepairShop.Api/Dockerfile
           push: true
           tags: |
