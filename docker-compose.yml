@@ -15,8 +15,8 @@ services:
 
   api:
     build:
-      context: ./src
-      dockerfile: AutoRepairShop.Api/Dockerfile
+      context: .
+      dockerfile: src/AutoRepairShop.Api/Dockerfile
     container_name: autorepairshop-api
     depends_on:
       sqlserver:
