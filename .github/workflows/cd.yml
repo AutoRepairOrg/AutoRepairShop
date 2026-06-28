@@ -17,11 +17,7 @@ env:
 
 jobs:
   deploy:
-    runs-on:
-      - self-hosted
-      - linux
-      - x64
-      - minikube
+    runs-on: ubuntu-latest
     environment: production
 
     steps:
@@ -70,15 +66,11 @@ jobs:
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4.0.0
 
-      - name: Ensure minikube is running
+      - name: Configure kubeconfig
         run: |
-          minikube status || minikube start --driver=docker
-
-      - name: Select minikube context
-        run: |
-          kubectl config use-context minikube
-          kubectl cluster-info
-          kubectl get nodes
+          mkdir -p "$HOME/.kube"
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
 
       - name: Ensure namespace
         run: kubectl apply -f k8s/namespace.yaml
