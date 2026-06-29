@@ -3,15 +3,37 @@ name: CI
 on:
   pull_request:
     branches:
+      - development
       - master
-      - main
   push:
     branches:
+      - development
       - master
-      - main
 
 jobs:
-  build-and-test:
+  validate-pr-strategy:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate branch strategy
+        run: |
+          BASE="${{ github.base_ref }}"
+          HEAD="${{ github.head_ref }}"
+
+          if [ "$BASE" = "master" ] && [[ ! "$HEAD" =~ ^release/ ]]; then
+            echo "PRs para master devem vir de uma branch release/*"
+            exit 1
+          fi
+
+          if [ "$BASE" != "development" ] && [ "$BASE" != "master" ]; then
+            echo "PRs devem ter como destino development ou master"
+            exit 1
+          fi
+
+          echo "Branch strategy validada com sucesso"
+
+  restore:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,8 +48,34 @@ jobs:
       - name: Restore
         run: dotnet restore AutoRepairShop.sln
 
+  build:
+    needs: restore
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
       - name: Build
-        run: dotnet build AutoRepairShop.sln --configuration Release --no-restore
+        run: dotnet build AutoRepairShop.sln --configuration Release
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
 
       - name: Test
-        run: dotnet test AutoRepairShop.sln --configuration Release --no-build --verbosity normal
+        run: dotnet test AutoRepairShop.sln --configuration Release --verbosity normal
