@@ -92,7 +92,8 @@ jobs:
       - minikube
     environment: development
     env:
-      K8S_NAMESPACE: oficina-dev
+      K8S_NAMESPACE: oficina
+      MINIKUBE_PROFILE: dev
 
     steps:
       - name: Checkout
@@ -101,17 +102,17 @@ jobs:
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4.0.0
 
-      - name: Ensure minikube context
+      - name: Ensure minikube dev cluster
         run: |
-          if ! minikube status >/dev/null 2>&1; then
-            minikube start --driver=docker
+          if ! minikube status --profile "${MINIKUBE_PROFILE}" >/dev/null 2>&1; then
+            minikube start --profile "${MINIKUBE_PROFILE}" --driver=docker
           fi
-          kubectl config use-context minikube
+          kubectl config use-context "${MINIKUBE_PROFILE}"
           kubectl cluster-info
           kubectl get nodes
 
       - name: Ensure namespace
-        run: kubectl create namespace "${K8S_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+        run: kubectl apply -f k8s/namespace.yaml
 
       - name: Create image pull secret
         run: |
@@ -167,6 +168,7 @@ jobs:
     environment: production
     env:
       K8S_NAMESPACE: oficina
+      MINIKUBE_PROFILE: prod
 
     steps:
       - name: Checkout
@@ -175,17 +177,17 @@ jobs:
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4.0.0
 
-      - name: Ensure minikube context
+      - name: Ensure minikube prod cluster
         run: |
-          if ! minikube status >/dev/null 2>&1; then
-            minikube start --driver=docker
+          if ! minikube status --profile "${MINIKUBE_PROFILE}" >/dev/null 2>&1; then
+            minikube start --profile "${MINIKUBE_PROFILE}" --driver=docker
           fi
-          kubectl config use-context minikube
+          kubectl config use-context "${MINIKUBE_PROFILE}"
           kubectl cluster-info
           kubectl get nodes
 
       - name: Ensure namespace
-        run: kubectl create namespace "${K8S_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+        run: kubectl apply -f k8s/namespace.yaml
 
       - name: Create image pull secret
         run: |
