@@ -7,8 +7,3 @@ output "environment" {
   description = "Deployed environment"
   value       = var.environment
 }
-
-output "image" {
-  description = "Deployed image"
-  value       = var.image
-}

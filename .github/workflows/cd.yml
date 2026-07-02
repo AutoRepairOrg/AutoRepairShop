@@ -95,7 +95,6 @@ jobs:
       K8S_NAMESPACE: oficina
       MINIKUBE_PROFILE: dev
       TF_VAR_environment: development
-      TF_VAR_image: ${{ needs.publish-image.outputs.image }}
 
     steps:
       - name: Checkout
@@ -152,6 +151,10 @@ jobs:
       - name: Terraform Apply
         run: cd infra && terraform apply -auto-approve tfplan
 
+      - name: Update API image
+        run: |
+          kubectl -n "${K8S_NAMESPACE}" set image deployment/api api="${{ needs.publish-image.outputs.image }}"
+
       - name: Wait for deployments
         run: |
           kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=240s
@@ -170,7 +173,6 @@ jobs:
       K8S_NAMESPACE: oficina
       MINIKUBE_PROFILE: prod
       TF_VAR_environment: production
-      TF_VAR_image: ${{ needs.publish-image.outputs.image }}
 
     steps:
       - name: Checkout
@@ -226,6 +228,10 @@ jobs:
 
       - name: Terraform Apply
         run: cd infra && terraform apply -auto-approve tfplan
+
+      - name: Update API image
+        run: |
+          kubectl -n "${K8S_NAMESPACE}" set image deployment/api api="${{ needs.publish-image.outputs.image }}"
 
       - name: Wait for deployments
         run: |

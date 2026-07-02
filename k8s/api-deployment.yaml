@@ -17,7 +17,7 @@ spec:
         - name: ghcr-secret # Kubernetes deve usar o Secret ghcr-secret para autenticar no GitHub Container Registry (GHCR) ao baixar a imagem privada
       containers:
         - name: api # Define um container chamado api dentro do Pod
-          image: ${image} # Injetada pelo Terraform durante o deploy
+          image: ghcr.io/autorepairorg/autorepairshop-api:latest # Imagem padrão, será atualizada pelo CD
           resources:
             requests:
               cpu: "100m"
