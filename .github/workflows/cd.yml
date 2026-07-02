@@ -94,6 +94,8 @@ jobs:
     env:
       K8S_NAMESPACE: oficina
       MINIKUBE_PROFILE: dev
+      TF_VAR_environment: development
+      TF_VAR_image: ${{ needs.publish-image.outputs.image }}
 
     steps:
       - name: Checkout
@@ -101,6 +103,11 @@ jobs:
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4.0.0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
 
       - name: Ensure minikube dev cluster
         run: |
@@ -110,9 +117,6 @@ jobs:
           kubectl config use-context "${MINIKUBE_PROFILE}"
           kubectl cluster-info
           kubectl get nodes
-
-      - name: Ensure namespace
-        run: kubectl apply -f k8s/namespace.yaml
 
       - name: Create image pull secret
         run: |
@@ -139,22 +143,18 @@ jobs:
             --from-literal=Jwt__ExpiresInMinutes="${{ secrets.JWT_EXPIRES_IN_MINUTES }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Deploy database manifests
+      - name: Terraform Init
+        run: cd infra && terraform init
+
+      - name: Terraform Plan
+        run: cd infra && terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        run: cd infra && terraform apply -auto-approve tfplan
+
+      - name: Wait for deployments
         run: |
-          kubectl apply -f k8s/sqlserver-service.yaml
-          kubectl apply -f k8s/sqlserver-deployment.yaml
           kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=240s
-
-      - name: Deploy API manifests
-        run: |
-          kubectl apply -f k8s/api-configmap.yaml
-          kubectl apply -f k8s/api-service.yaml
-          kubectl apply -f k8s/api-deployment.yaml
-          kubectl apply -f k8s/api-hpa.yaml
-
-      - name: Update API image
-        run: |
-          kubectl -n "${K8S_NAMESPACE}" set image deployment/api api="${{ needs.publish-image.outputs.image }}"
           kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=300s
 
   deploy-production:
@@ -169,6 +169,8 @@ jobs:
     env:
       K8S_NAMESPACE: oficina
       MINIKUBE_PROFILE: prod
+      TF_VAR_environment: production
+      TF_VAR_image: ${{ needs.publish-image.outputs.image }}
 
     steps:
       - name: Checkout
@@ -176,6 +178,11 @@ jobs:
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4.0.0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
 
       - name: Ensure minikube prod cluster
         run: |
@@ -185,9 +192,6 @@ jobs:
           kubectl config use-context "${MINIKUBE_PROFILE}"
           kubectl cluster-info
           kubectl get nodes
-
-      - name: Ensure namespace
-        run: kubectl apply -f k8s/namespace.yaml
 
       - name: Create image pull secret
         run: |
@@ -214,20 +218,16 @@ jobs:
             --from-literal=Jwt__ExpiresInMinutes="${{ secrets.JWT_EXPIRES_IN_MINUTES }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Deploy database manifests
+      - name: Terraform Init
+        run: cd infra && terraform init
+
+      - name: Terraform Plan
+        run: cd infra && terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        run: cd infra && terraform apply -auto-approve tfplan
+
+      - name: Wait for deployments
         run: |
-          kubectl apply -f k8s/sqlserver-service.yaml
-          kubectl apply -f k8s/sqlserver-deployment.yaml
           kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=240s
-
-      - name: Deploy API manifests
-        run: |
-          kubectl apply -f k8s/api-configmap.yaml
-          kubectl apply -f k8s/api-service.yaml
-          kubectl apply -f k8s/api-deployment.yaml
-          kubectl apply -f k8s/api-hpa.yaml
-
-      - name: Update API image
-        run: |
-          kubectl -n "${K8S_NAMESPACE}" set image deployment/api api="${{ needs.publish-image.outputs.image }}"
           kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=300s
