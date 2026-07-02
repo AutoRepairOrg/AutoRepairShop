@@ -107,6 +107,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: latest
+          terraform_wrapper: false
 
       - name: Ensure minikube dev cluster
         run: |
@@ -185,6 +186,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: latest
+          terraform_wrapper: false
 
       - name: Ensure minikube prod cluster
         run: |
