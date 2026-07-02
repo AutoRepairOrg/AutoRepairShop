@@ -146,6 +146,11 @@ jobs:
       - name: Terraform Init
         run: cd infra && terraform init
 
+      - name: Fix provider permissions
+        run: |
+          if [ -d infra/.terraform ]; then
+            find infra/.terraform -type f -name 'terraform-provider-*' -exec chmod +x {} \; || true
+          fi
       - name: Terraform Plan
         run: cd infra && terraform plan -out=tfplan
 
@@ -225,6 +230,11 @@ jobs:
       - name: Terraform Init
         run: cd infra && terraform init
 
+      - name: Fix provider permissions
+        run: |
+          if [ -d infra/.terraform ]; then
+            find infra/.terraform -type f -name 'terraform-provider-*' -exec chmod +x {} \; || true
+          fi
       - name: Terraform Plan
         run: cd infra && terraform plan -out=tfplan
 
