@@ -118,8 +118,11 @@ jobs:
           kubectl cluster-info
           kubectl get nodes
 
-      - name: Create image pull secret
+      - name: Ensure namespace and image pull secret
         run: |
+          if ! kubectl get namespace "${K8S_NAMESPACE}" >/dev/null 2>&1; then
+            kubectl create namespace "${K8S_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+          fi
           kubectl -n "${K8S_NAMESPACE}" create secret docker-registry ghcr-secret \
             --docker-server=ghcr.io \
             --docker-username="${{ secrets.GHCR_USERNAME }}" \
@@ -203,8 +206,11 @@ jobs:
           kubectl cluster-info
           kubectl get nodes
 
-      - name: Create image pull secret
+      - name: Ensure namespace and image pull secret
         run: |
+          if ! kubectl get namespace "${K8S_NAMESPACE}" >/dev/null 2>&1; then
+            kubectl create namespace "${K8S_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+          fi
           kubectl -n "${K8S_NAMESPACE}" create secret docker-registry ghcr-secret \
             --docker-server=ghcr.io \
             --docker-username="${{ secrets.GHCR_USERNAME }}" \
