@@ -122,9 +122,9 @@ jobs:
         run: |
           kubectl -n "${K8S_NAMESPACE}" create secret docker-registry ghcr-secret \
             --docker-server=ghcr.io \
-            --docker-username="${{ github.actor }}" \
+            --docker-username="${{ secrets.GHCR_USERNAME }}" \
             --docker-password="${{ secrets.GHCR_PAT }}" \
-            --docker-email="ci@local" \
+            --docker-email="${{ secrets.GHCR_EMAIL }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       # moved creation of k8s application secrets to after Terraform apply
@@ -207,9 +207,9 @@ jobs:
         run: |
           kubectl -n "${K8S_NAMESPACE}" create secret docker-registry ghcr-secret \
             --docker-server=ghcr.io \
-            --docker-username="${{ github.actor }}" \
+            --docker-username="${{ secrets.GHCR_USERNAME }}" \
             --docker-password="${{ secrets.GHCR_PAT }}" \
-            --docker-email="ci@local" \
+            --docker-email="${{ secrets.GHCR_EMAIL }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       # moved creation of k8s application secrets to after Terraform apply
