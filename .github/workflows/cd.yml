@@ -94,6 +94,7 @@ jobs:
     env:
       K8S_NAMESPACE: oficina
       MINIKUBE_PROFILE: dev
+      TF_VAR_environment: development
 
     steps:
       - name: Checkout
@@ -101,6 +102,12 @@ jobs:
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4.0.0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+          terraform_wrapper: false
 
       - name: Ensure minikube dev cluster
         run: |
@@ -111,17 +118,29 @@ jobs:
           kubectl cluster-info
           kubectl get nodes
 
-      - name: Ensure namespace
-        run: kubectl apply -f k8s/namespace.yaml
-
       - name: Create image pull secret
         run: |
           kubectl -n "${K8S_NAMESPACE}" create secret docker-registry ghcr-secret \
             --docker-server=ghcr.io \
-            --docker-username="${{ github.actor }}" \
-            --docker-password="${{ secrets.GITHUB_TOKEN }}" \
-            --docker-email="ci@local" \
-            --dry-run=client -o yaml | kubectl apply -f -
+            --docker-username="${{ secrets.GHCR_USERNAME }}" \
+            --docker-password="${{ secrets.GHCR_PAT }}" \
+            --docker-email="${{ secrets.GHCR_EMAIL }}" -n oficina
+
+      # moved creation of k8s application secrets to after Terraform apply
+
+      - name: Terraform Init
+        run: cd infra && terraform init
+
+      - name: Fix provider permissions
+        run: |
+          if [ -d infra/.terraform ]; then
+            find infra/.terraform -type f -name 'terraform-provider-*' -exec chmod +x {} \; || true
+          fi
+      - name: Terraform Plan
+        run: cd infra && terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        run: cd infra && terraform apply -auto-approve tfplan
 
       - name: Create SQL Server secret
         run: |
@@ -138,24 +157,14 @@ jobs:
             --from-literal=Jwt__Audience="${{ secrets.JWT_AUDIENCE }}" \
             --from-literal=Jwt__ExpiresInMinutes="${{ secrets.JWT_EXPIRES_IN_MINUTES }}" \
             --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Deploy database manifests
-        run: |
-          kubectl apply -f k8s/sqlserver-service.yaml
-          kubectl apply -f k8s/sqlserver-deployment.yaml
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=240s
-
-      - name: Deploy API manifests
-        run: |
-          kubectl apply -f k8s/api-configmap.yaml
-          kubectl apply -f k8s/api-service.yaml
-          kubectl apply -f k8s/api-deployment.yaml
-          kubectl apply -f k8s/api-hpa.yaml
-
       - name: Update API image
         run: |
           kubectl -n "${K8S_NAMESPACE}" set image deployment/api api="${{ needs.publish-image.outputs.image }}"
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=300s
+
+      - name: Wait for deployments
+        run: |
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=60s
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=60s
 
   deploy-production:
     if: github.ref == 'refs/heads/master'
@@ -169,6 +178,7 @@ jobs:
     env:
       K8S_NAMESPACE: oficina
       MINIKUBE_PROFILE: prod
+      TF_VAR_environment: production
 
     steps:
       - name: Checkout
@@ -176,6 +186,12 @@ jobs:
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4.0.0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+          terraform_wrapper: false
 
       - name: Ensure minikube prod cluster
         run: |
@@ -186,17 +202,29 @@ jobs:
           kubectl cluster-info
           kubectl get nodes
 
-      - name: Ensure namespace
-        run: kubectl apply -f k8s/namespace.yaml
-
       - name: Create image pull secret
         run: |
           kubectl -n "${K8S_NAMESPACE}" create secret docker-registry ghcr-secret \
             --docker-server=ghcr.io \
-            --docker-username="${{ github.actor }}" \
-            --docker-password="${{ secrets.GITHUB_TOKEN }}" \
-            --docker-email="ci@local" \
+            --docker-username="${{ secrets.GHCR_USERNAME }}" \
+            --docker-password="${{ secrets.GHCR_PAT }}" \
+            --docker-email="${{ secrets.GHCR_EMAIL }}" \
             --dry-run=client -o yaml | kubectl apply -f -
+
+      # moved creation of k8s application secrets to after Terraform apply
+      - name: Terraform Init
+        run: cd infra && terraform init
+
+      - name: Fix provider permissions
+        run: |
+          if [ -d infra/.terraform ]; then
+            find infra/.terraform -type f -name 'terraform-provider-*' -exec chmod +x {} \; || true
+          fi
+      - name: Terraform Plan
+        run: cd infra && terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        run: cd infra && terraform apply -auto-approve tfplan
 
       - name: Create SQL Server secret
         run: |
@@ -213,21 +241,11 @@ jobs:
             --from-literal=Jwt__Audience="${{ secrets.JWT_AUDIENCE }}" \
             --from-literal=Jwt__ExpiresInMinutes="${{ secrets.JWT_EXPIRES_IN_MINUTES }}" \
             --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Deploy database manifests
-        run: |
-          kubectl apply -f k8s/sqlserver-service.yaml
-          kubectl apply -f k8s/sqlserver-deployment.yaml
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=240s
-
-      - name: Deploy API manifests
-        run: |
-          kubectl apply -f k8s/api-configmap.yaml
-          kubectl apply -f k8s/api-service.yaml
-          kubectl apply -f k8s/api-deployment.yaml
-          kubectl apply -f k8s/api-hpa.yaml
-
       - name: Update API image
         run: |
           kubectl -n "${K8S_NAMESPACE}" set image deployment/api api="${{ needs.publish-image.outputs.image }}"
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=300s
+
+      - name: Wait for deployments
+        run: |
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=60s
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=60s
