@@ -124,8 +124,7 @@ jobs:
             --docker-server=ghcr.io \
             --docker-username="${{ secrets.GHCR_USERNAME }}" \
             --docker-password="${{ secrets.GHCR_PAT }}" \
-            --docker-email="${{ secrets.GHCR_EMAIL }}" \
-            --dry-run=client -o yaml | kubectl apply -f -
+            --docker-email="${{ secrets.GHCR_EMAIL }}" -n oficina
 
       # moved creation of k8s application secrets to after Terraform apply
 
@@ -164,8 +163,8 @@ jobs:
 
       - name: Wait for deployments
         run: |
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=240s
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=300s
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=60s
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=60s
 
   deploy-production:
     if: github.ref == 'refs/heads/master'
@@ -248,5 +247,5 @@ jobs:
 
       - name: Wait for deployments
         run: |
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=240s
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=300s
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=60s
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=60s
