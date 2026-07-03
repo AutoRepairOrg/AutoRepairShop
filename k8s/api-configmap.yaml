@@ -4,8 +4,8 @@ metadata:
   name: api-config
   namespace: oficina # ConfigMap chamado api-config no namespace oficina.
 data:
-  ASPNETCORE_ENVIRONMENT: "Production" # Diz a aplicação .NET que ela está rodando em ambiente de produção
-  
+  ASPNETCORE_ENVIRONMENT: "Development" # Diz a aplicação .NET que ela está rodando em ambiente de produção
+
   DB_HOST: "sqlserver" # Configurações de banco de dados
   DB_PORT: "1433"
   DB_NAME: "AutoRepairShopDb"
