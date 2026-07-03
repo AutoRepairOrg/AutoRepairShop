@@ -124,7 +124,8 @@ jobs:
             --docker-server=ghcr.io \
             --docker-username="${{ secrets.GHCR_USERNAME }}" \
             --docker-password="${{ secrets.GHCR_PAT }}" \
-            --docker-email="${{ secrets.GHCR_EMAIL }}" -n oficina
+            --docker-email="${{ secrets.GHCR_EMAIL }}" \
+            --dry-run=client -o yaml | kubectl apply -f -
 
       # moved creation of k8s application secrets to after Terraform apply
 
