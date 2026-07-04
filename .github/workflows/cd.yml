@@ -6,9 +6,6 @@ on:
       - CI
     types:
       - completed
-    branches:
-      - development
-      - master
 
 permissions:
   contents: read
@@ -19,7 +16,7 @@ env:
 
 jobs:
   validate:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && (github.event.workflow_run.head_branch == 'development' || github.event.workflow_run.head_branch == 'master') }}
     runs-on:
       - self-hosted
       - linux
