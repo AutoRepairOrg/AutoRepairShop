@@ -17,10 +17,10 @@ spec:
         - name: ghcr-secret # Kubernetes deve usar o Secret ghcr-secret para autenticar no GitHub Container Registry (GHCR) ao baixar a imagem privada
       containers:
         - name: api # Define um container chamado api dentro do Pod
-          image: ghcr.io/dhiuliaantunes/autorepairshop-api:latest # Baixa a imagem mais atualizada
+          image: ghcr.io/autorepairorg/autorepairshop-api:latest # Imagem padrão, será atualizada pelo CD
           resources:
             requests:
-              cpu: "100m"     
+              cpu: "100m"
               memory: "128Mi"  # O Kubernetes reserva no mínimo: 0.1 CPU e 128 MB RAM
             limits:
               cpu: "500m"

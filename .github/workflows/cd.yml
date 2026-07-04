@@ -120,6 +120,9 @@ jobs:
 
       - name: Create image pull secret
         run: |
+          if ! kubectl get namespace "${K8S_NAMESPACE}" >/dev/null 2>&1; then
+            kubectl create namespace "${K8S_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+          fi
           kubectl -n "${K8S_NAMESPACE}" create secret docker-registry ghcr-secret \
             --docker-server=ghcr.io \
             --docker-username="${{ secrets.GHCR_USERNAME }}" \
@@ -142,14 +145,14 @@ jobs:
       - name: Terraform Apply
         run: cd infra && terraform apply -auto-approve tfplan
 
-      - name: Create SQL Server secret
+      - name: Ensure sqlserver-secret
         run: |
           kubectl -n "${K8S_NAMESPACE}" create secret generic sqlserver-secret \
             --from-literal=SA_PASSWORD="${{ secrets.DB_PASSWORD }}" \
             --from-literal=DB_NAME="AutoRepairShopDb" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Create API secrets
+      - name: Ensure api-secrets
         run: |
           kubectl -n "${K8S_NAMESPACE}" create secret generic api-secrets \
             --from-literal=Jwt__Key="${{ secrets.JWT_KEY }}" \
@@ -204,6 +207,9 @@ jobs:
 
       - name: Create image pull secret
         run: |
+          if ! kubectl get namespace "${K8S_NAMESPACE}" >/dev/null 2>&1; then
+            kubectl create namespace "${K8S_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+          fi
           kubectl -n "${K8S_NAMESPACE}" create secret docker-registry ghcr-secret \
             --docker-server=ghcr.io \
             --docker-username="${{ secrets.GHCR_USERNAME }}" \
@@ -233,7 +239,7 @@ jobs:
             --from-literal=DB_NAME="AutoRepairShopDb" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Create API secrets
+      - name: Ensure api-secrets
         run: |
           kubectl -n "${K8S_NAMESPACE}" create secret generic api-secrets \
             --from-literal=Jwt__Key="${{ secrets.JWT_KEY }}" \

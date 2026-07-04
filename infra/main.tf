@@ -1,6 +1,8 @@
 resource "kubectl_manifest" "k8s" {
-  for_each  = fileset("../k8s", "*.yaml")
-  yaml_body = file("../k8s/${each.value}")
-}
+  for_each  = fileset("${path.module}/../k8s", "*.yaml")
+  yaml_body = file("${path.module}/../k8s/${each.value}")
 
-# Aplique TODOS os YAMLs da pasta k8s/
+  depends_on = [
+    kubernetes_namespace.oficina
+  ]
+}
