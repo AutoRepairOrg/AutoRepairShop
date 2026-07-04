@@ -1,11 +1,11 @@
 name: CD
 
 on:
-  workflow_run:
-    workflows:
-      - CI
-    types:
-      - completed
+  workflow_dispatch:
+  push:
+    branches:
+      - development
+      - master
 
 permissions:
   contents: read
@@ -16,7 +16,6 @@ env:
 
 jobs:
   validate:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && (github.event.workflow_run.head_branch == 'development' || github.event.workflow_run.head_branch == 'master') }}
     runs-on:
       - self-hosted
       - linux
@@ -26,8 +25,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -59,14 +56,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Set image metadata
         id: image-meta
         run: |
           OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          IMAGE="ghcr.io/${OWNER_LOWER}/${IMAGE_NAME}:${{ github.event.workflow_run.head_sha }}"
+          IMAGE="ghcr.io/${OWNER_LOWER}/${IMAGE_NAME}:${GITHUB_SHA}"
           echo "owner_lower=${OWNER_LOWER}" >> "$GITHUB_OUTPUT"
           echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
 
@@ -88,7 +83,7 @@ jobs:
             ghcr.io/${{ steps.image-meta.outputs.owner_lower }}/${{ env.IMAGE_NAME }}:latest
 
   deploy-development:
-    if: github.event.workflow_run.head_branch == 'development'
+    if: github.ref == 'refs/heads/development'
     needs: publish-image
     runs-on:
       - self-hosted
@@ -104,8 +99,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4.0.0
@@ -254,7 +247,7 @@ jobs:
           kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api-dev --timeout=60s
 
   deploy-production:
-    if: github.event.workflow_run.head_branch == 'master'
+    if: github.ref == 'refs/heads/master'
     needs: publish-image
     runs-on:
       - self-hosted
@@ -270,8 +263,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4.0.0
