@@ -26,3 +26,10 @@ spec:
                 secretKeyRef:
                   name: sqlserver-secret
                   key: SA_PASSWORD
+          volumeMounts:
+            - name: sqlserver-data
+              mountPath: /var/opt/mssql
+      volumes:
+        - name: sqlserver-data
+          persistentVolumeClaim:
+            claimName: sqlserver-pvc

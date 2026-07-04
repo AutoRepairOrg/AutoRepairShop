@@ -231,6 +231,13 @@ jobs:
                           secretKeyRef:
                             name: sqlserver-secret
                             key: SA_PASSWORD
+                    volumeMounts:
+                      - name: sqlserver-data
+                        mountPath: /var/opt/mssql
+                volumes:
+                  - name: sqlserver-data
+                    persistentVolumeClaim:
+                      claimName: sqlserver-pvc
           EOF
 
           kubectl -n "${K8S_NAMESPACE}" patch service api --type merge -p '{"spec":{"selector":{"app":"api-dev"}}}'
