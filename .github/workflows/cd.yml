@@ -130,7 +130,25 @@ jobs:
             --docker-email="${{ secrets.GHCR_EMAIL }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      # moved creation of k8s application secrets to after Terraform apply
+      - name: Ensure sqlserver-secret
+        run: |
+          kubectl -n "${K8S_NAMESPACE}" create secret generic sqlserver-secret \
+            --from-literal=SA_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            --from-literal=DB_NAME="AutoRepairShopDb" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Ensure api-secrets
+        run: |
+          kubectl -n "${K8S_NAMESPACE}" create secret generic api-secrets \
+            --from-literal=Jwt__Key="${{ secrets.JWT_KEY }}" \
+            --from-literal=Jwt__Issuer="${{ secrets.JWT_ISSUER }}" \
+            --from-literal=Jwt__Audience="${{ secrets.JWT_AUDIENCE }}" \
+            --from-literal=Jwt__ExpiresInMinutes="${{ secrets.JWT_EXPIRES_IN_MINUTES }}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Validate required secrets
+        run: |
+          kubectl -n "${K8S_NAMESPACE}" get secret ghcr-secret sqlserver-secret api-secrets
 
       - name: Terraform Init
         run: cd infra && terraform init
@@ -146,29 +164,14 @@ jobs:
       - name: Terraform Apply
         run: cd infra && terraform apply -auto-approve tfplan
 
-      - name: Create SQL Server secret
-        run: |
-          kubectl -n "${K8S_NAMESPACE}" create secret generic sqlserver-secret \
-            --from-literal=SA_PASSWORD="${{ secrets.DB_PASSWORD }}" \
-            --from-literal=DB_NAME="AutoRepairShopDb" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Create API secrets
-        run: |
-          kubectl -n "${K8S_NAMESPACE}" create secret generic api-secrets \
-            --from-literal=Jwt__Key="${{ secrets.JWT_KEY }}" \
-            --from-literal=Jwt__Issuer="${{ secrets.JWT_ISSUER }}" \
-            --from-literal=Jwt__Audience="${{ secrets.JWT_AUDIENCE }}" \
-            --from-literal=Jwt__ExpiresInMinutes="${{ secrets.JWT_EXPIRES_IN_MINUTES }}" \
-            --dry-run=client -o yaml | kubectl apply -f -
       - name: Update API image
         run: |
           kubectl -n "${K8S_NAMESPACE}" set image deployment/api api="${{ needs.publish-image.outputs.image }}"
 
       - name: Wait for deployments
         run: |
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=60s
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=60s
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=150s
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=150s
 
   deploy-production:
     if: github.ref == 'refs/heads/master'
@@ -218,7 +221,25 @@ jobs:
             --docker-email="${{ secrets.GHCR_EMAIL }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      # moved creation of k8s application secrets to after Terraform apply
+      - name: Ensure sqlserver-secret
+        run: |
+          kubectl -n "${K8S_NAMESPACE}" create secret generic sqlserver-secret \
+            --from-literal=SA_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            --from-literal=DB_NAME="AutoRepairShopDb" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Ensure api-secrets
+        run: |
+          kubectl -n "${K8S_NAMESPACE}" create secret generic api-secrets \
+            --from-literal=Jwt__Key="${{ secrets.JWT_KEY }}" \
+            --from-literal=Jwt__Issuer="${{ secrets.JWT_ISSUER }}" \
+            --from-literal=Jwt__Audience="${{ secrets.JWT_AUDIENCE }}" \
+            --from-literal=Jwt__ExpiresInMinutes="${{ secrets.JWT_EXPIRES_IN_MINUTES }}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Validate required secrets
+        run: |
+          kubectl -n "${K8S_NAMESPACE}" get secret ghcr-secret sqlserver-secret api-secrets
       - name: Terraform Init
         run: cd infra && terraform init
 
@@ -233,26 +254,11 @@ jobs:
       - name: Terraform Apply
         run: cd infra && terraform apply -auto-approve tfplan
 
-      - name: Create SQL Server secret
-        run: |
-          kubectl -n "${K8S_NAMESPACE}" create secret generic sqlserver-secret \
-            --from-literal=SA_PASSWORD="${{ secrets.DB_PASSWORD }}" \
-            --from-literal=DB_NAME="AutoRepairShopDb" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Create API secrets
-        run: |
-          kubectl -n "${K8S_NAMESPACE}" create secret generic api-secrets \
-            --from-literal=Jwt__Key="${{ secrets.JWT_KEY }}" \
-            --from-literal=Jwt__Issuer="${{ secrets.JWT_ISSUER }}" \
-            --from-literal=Jwt__Audience="${{ secrets.JWT_AUDIENCE }}" \
-            --from-literal=Jwt__ExpiresInMinutes="${{ secrets.JWT_EXPIRES_IN_MINUTES }}" \
-            --dry-run=client -o yaml | kubectl apply -f -
       - name: Update API image
         run: |
           kubectl -n "${K8S_NAMESPACE}" set image deployment/api api="${{ needs.publish-image.outputs.image }}"
 
       - name: Wait for deployments
         run: |
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=60s
-          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=60s
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/sqlserver --timeout=150s
+          kubectl -n "${K8S_NAMESPACE}" rollout status deployment/api --timeout=150s
