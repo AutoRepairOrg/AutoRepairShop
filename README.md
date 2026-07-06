@@ -40,6 +40,17 @@ AutoRepairShop
 
 ---
 
+## Banco de dados
+
+A escolha por um banco de dados relacional para o sistema AutoRepairShop foi motivada pelas características do domínio e pelos requisitos de consistência, integridade e rastreabilidade das informações.
+O domínio do sistema possui relacionamentos bem definidos e fortemente estruturados, como:
+- Clientes e seus veículos;
+- Ordens de serviço associadas a clientes, veículos e serviços;
+- Controle de status e histórico de execução das ordens.
+Essas relações possuem regras de negócio claras, dependências entre entidades e necessidade de integridade referencial, o que torna o modelo relacional uma escolha natural e adequada.
+
+---
+
 ## 🧩 Principais Funcionalidades
 
 ### Ordem de Serviço (Service Order)
@@ -190,6 +201,9 @@ dotnet test
 # 🚀 Infraestrutura com Terraform e Kubernetes
 
 Este repositório demonstra a **provisão de infraestrutura com Terraform** e o **deploy de uma aplicação em Kubernetes**, seguindo boas práticas de **Infrastructure as Code (IaC)**, versionamento e reprodutibilidade.
+
+<img width="800" height="533" alt="image" src="https://github.com/user-attachments/assets/84e654cf-10df-4659-94ed-4d836a131ec9" />
+
 
 ---
 
