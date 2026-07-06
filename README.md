@@ -203,7 +203,7 @@ dotnet test
 
 Este repositório demonstra a **provisão de infraestrutura com Terraform** e o **deploy de uma aplicação em Kubernetes**, seguindo boas práticas de **Infrastructure as Code (IaC)**, versionamento e reprodutibilidade.
 
-<img width="800" height="533" alt="image" src="https://github.com/user-attachments/assets/84e654cf-10df-4659-94ed-4d836a131ec9" />
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/bbe1b586-03eb-4330-8052-13470df8ebda" />
 
 
 ---
