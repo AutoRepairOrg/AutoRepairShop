@@ -40,6 +40,18 @@ AutoRepairShop
 
 ---
 
+## Banco de dados
+
+A escolha por um banco de dados relacional para o sistema AutoRepairShop foi motivada pelas características do domínio e pelos requisitos de consistência, integridade e rastreabilidade das informações.
+O domínio do sistema possui relacionamentos bem definidos e fortemente estruturados, como:
+- Clientes e seus veículos;
+- Ordens de serviço associadas a clientes, veículos e serviços;
+- Controle de status e histórico de execução das ordens.
+  
+Essas relações possuem regras de negócio claras, dependências entre entidades e necessidade de integridade referencial, o que torna o modelo relacional uma escolha natural e adequada.
+
+---
+
 ## 🧩 Principais Funcionalidades
 
 ### Ordem de Serviço (Service Order)
@@ -191,6 +203,9 @@ dotnet test
 
 Este repositório demonstra a **provisão de infraestrutura com Terraform** e o **deploy de uma aplicação em Kubernetes**, seguindo boas práticas de **Infrastructure as Code (IaC)**, versionamento e reprodutibilidade.
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/bbe1b586-03eb-4330-8052-13470df8ebda" />
+
+
 ---
 
 ## 📌 Objetivo do Projeto
@@ -275,14 +290,7 @@ Este passo cria:
 
 - Recursos de infraestrutura definidos via Terraform
 - Base necessária para execução da aplicação no Kubernetes
-
-### 5️⃣ Aplicar os manifests Kubernetes
-
-Após a infraestrutura estar pronta, aplique os manifestos da aplicação:
-
-```bash 
-kubectl apply -f k8s/
-```
+- Aplica os manifestos da aplicação
 
 Os manifests incluem:
 
@@ -292,14 +300,14 @@ Os manifests incluem:
 - Secrets
 - Horizontal Pod Autoscaler (HPA)
 
-### 6️⃣ Verificar os recursos criados
+### 5️⃣ Verificar os recursos criados
 
 Comandos para validação do ambiente:
 
 ```bash 
-kubectl get pods
-kubectl get svc
-kubectl get deploy
+kubectl get pods -n oficina
+kubectl get svc -n oficina
+kubectl get deploy -n oficina
 ```
 
 ## 📦 Tecnologias Utilizadas
