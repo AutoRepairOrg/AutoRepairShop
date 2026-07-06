@@ -356,6 +356,26 @@ jobs:
             --from-literal=Jwt__Audience="${{ secrets.JWT_AUDIENCE }}" \
             --from-literal=Jwt__ExpiresInMinutes="${{ secrets.JWT_EXPIRES_IN_MINUTES }}" \
             --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Install metrics-server
+        run: |
+          kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+      - name: Patch metrics-server insecure tls
+        run: |
+          kubectl patch deployment metrics-server \
+            -n kube-system \
+            --type='json' \
+            -p='[
+              {
+                "op": "add",
+                "path": "/spec/template/spec/containers/0/args/-",
+                "value": "--kubelet-insecure-tls"
+              }
+            ]'
+      - name: Wait metrics-server
+        run: |
+          kubectl rollout status deployment metrics-server -n kube-system
+
       - name: Update API image
         run: |
           kubectl -n "${K8S_NAMESPACE}" set image deployment/api api="${{ needs.publish-image.outputs.image }}"
