@@ -47,6 +47,7 @@ O domínio do sistema possui relacionamentos bem definidos e fortemente estrutur
 - Clientes e seus veículos;
 - Ordens de serviço associadas a clientes, veículos e serviços;
 - Controle de status e histórico de execução das ordens.
+  
 Essas relações possuem regras de negócio claras, dependências entre entidades e necessidade de integridade referencial, o que torna o modelo relacional uma escolha natural e adequada.
 
 ---
