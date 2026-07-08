@@ -36,7 +36,7 @@ public class ServiceOrderServiceTests
         );
         var vehicle = new Vehicle(
             customer.Id,
-            Domain.ValueObjects.VehiclePlate.Create("ABC1234"),
+            AutoRepairShop.Domain.ValueObjects.VehiclePlate.Create("ABC1234"),
             "Ford",
             "Ka",
             2022

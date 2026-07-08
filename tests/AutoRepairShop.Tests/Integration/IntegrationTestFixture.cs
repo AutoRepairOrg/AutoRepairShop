@@ -9,18 +9,17 @@ using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
 using AutoRepairShop.Infrastructure.Data.Mappings;
 using AutoRepairShop.Infrastructure.Repositories;
-using AutoRepairShop.Tests.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AutoRepairShop.Tests.Integration;
 
 public sealed class IntegrationTestFixture : IAsyncDisposable
 {
-    private readonly SqliteRepositoryTestContext _dbContext;
+    private readonly SqlServerIntegrationTestContext _dbContext;
     private readonly ServiceProvider _serviceProvider;
 
     private IntegrationTestFixture(
-        SqliteRepositoryTestContext dbContext,
+        SqlServerIntegrationTestContext dbContext,
         ServiceProvider serviceProvider
     )
     {
@@ -30,7 +29,7 @@ public sealed class IntegrationTestFixture : IAsyncDisposable
 
     public static async Task<IntegrationTestFixture> CreateAsync()
     {
-        var dbContext = await SqliteRepositoryTestContext.CreateAsync();
+        var dbContext = await SqlServerIntegrationTestContext.CreateAsync();
 
         var services = new ServiceCollection();
 

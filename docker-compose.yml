@@ -7,6 +7,8 @@ services:
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
+    volumes:
+      - autorepairshop-sql-data:/var/opt/mssql
     healthcheck:
       test: ["CMD-SHELL", "bash -c '>/dev/tcp/localhost/1433'"]
       interval: 10s
@@ -37,3 +39,6 @@ services:
       JWT__ISSUER: ${JWT_ISSUER}
       JWT__AUDIENCE: ${JWT_AUDIENCE}
       JWT__EXPIRESINMINUTES: ${JWT_EXPIRES_IN_MINUTES}
+
+volumes:
+  autorepairshop-sql-data:
