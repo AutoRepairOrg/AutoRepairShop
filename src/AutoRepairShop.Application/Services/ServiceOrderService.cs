@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoRepairShop.Application.DTOs.Email.Messages;
 using AutoRepairShop.Application.DTOs.ServiceOrder;
 using AutoRepairShop.Application.DTOs.ServiceOrder.Request;
 using AutoRepairShop.Application.DTOs.ServiceOrder.Response;
@@ -9,6 +10,7 @@ using AutoRepairShop.Domain.Entities.ServiceOrder;
 using AutoRepairShop.Domain.Enums;
 using AutoRepairShop.Domain.Exceptions;
 using AutoRepairShop.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AutoRepairShop.Application.Services
@@ -19,7 +21,9 @@ namespace AutoRepairShop.Application.Services
         IVehicleService vehicleService,
         IServiceService serviceService,
         ISupplyService supplyService,
-        IMapper mapper
+        IEmailService emailService,
+        IMapper mapper,
+        ILogger<ServiceOrderService> logger
     ) : IServiceOrderService
     {
         private readonly IServiceOrderRepository _repository = repository;
@@ -27,7 +31,9 @@ namespace AutoRepairShop.Application.Services
         private readonly IVehicleService _vehicleService = vehicleService;
         private readonly IServiceService _serviceService = serviceService;
         private readonly ISupplyService _supplyService = supplyService;
+        private readonly IEmailService _emailService = emailService;
         private readonly IMapper _mapper = mapper;
+        private readonly ILogger<ServiceOrderService> _logger = logger;
 
         public async Task CreateServiceOrderAsync(
             CreateServiceOrderRequest request,
@@ -69,6 +75,7 @@ namespace AutoRepairShop.Application.Services
             serviceOrder.AddHistory(serviceOrder.Status, createdById);
 
             await _repository.AddAsync(serviceOrder);
+            await NotifyCustomerStatusChangedAsync(serviceOrder);
         }
 
         public async Task UpdateInDiagnosisAndAdvanceAsync(
@@ -151,8 +158,11 @@ namespace AutoRepairShop.Application.Services
 
             serviceOrder.RequestApproval();
             serviceOrder.AddHistory(serviceOrder.Status, changedById);
-            await SimulateEmailNotificationAsync(serviceOrder);
             await _repository.UpdateAsync(serviceOrder);
+            await NotifyCustomerStatusChangedAsync(
+                serviceOrder,
+                includeSummary: serviceOrder.Status == ServiceOrderStatus.WaitingApproval
+            );
         }
 
         public async Task<GetServiceOrderResponse> GetByIdAsync(Guid serviceOrderId)
@@ -174,7 +184,7 @@ namespace AutoRepairShop.Application.Services
 
         public async Task AdvanceStatusAsync(Guid serviceOrderId, Guid changedById)
         {
-            var serviceOrder =
+            ServiceOrder serviceOrder =
                 await _repository.GetByIdAsync(serviceOrderId)
                 ?? throw new DomainException("Service order not found.");
 
@@ -184,7 +194,6 @@ namespace AutoRepairShop.Application.Services
                     serviceOrder.StartDiagnosis();
                     break;
                 case ServiceOrderStatus.InDiagnosis:
-                    await SimulateEmailNotificationAsync(serviceOrder);
                     serviceOrder.RequestApproval();
                     break;
                 case ServiceOrderStatus.InExecution:
@@ -208,6 +217,10 @@ namespace AutoRepairShop.Application.Services
             serviceOrder.AddHistory(serviceOrder.Status, changedById);
 
             await _repository.UpdateAsync(serviceOrder);
+            await NotifyCustomerStatusChangedAsync(
+                serviceOrder,
+                includeSummary: serviceOrder.Status == ServiceOrderStatus.WaitingApproval
+            );
         }
 
         public async Task ProcessApprovalDecisionAsync(
@@ -240,6 +253,7 @@ namespace AutoRepairShop.Application.Services
             serviceOrder.AddHistory(serviceOrder.Status, changedById);
 
             await _repository.UpdateAsync(serviceOrder);
+            await NotifyCustomerStatusChangedAsync(serviceOrder);
         }
 
         public async Task<AverageExecutionTimeResponse> GetAverageExecutionTimeAsync()
@@ -258,18 +272,34 @@ namespace AutoRepairShop.Application.Services
             };
         }
 
-        private async Task SimulateEmailNotificationAsync(ServiceOrder serviceOrder)
+        private async Task NotifyCustomerStatusChangedAsync(
+            ServiceOrder serviceOrder,
+            bool includeSummary = false
+        )
         {
             try
             {
-                var summary = await BuildServiceOrderSummaryAsync(serviceOrder);
-                Console.WriteLine(
-                    $"[EMAIL SIMULATION] Service Order Total: ${summary.TotalAmount:F2}"
+                var customer = await _customerService.GetEntityByIdAsync(serviceOrder.CustomerId);
+
+                ServiceOrderSummary? summary = includeSummary
+                    ? await BuildServiceOrderSummaryAsync(serviceOrder)
+                    : null;
+
+                var message = new ServiceOrderStatusChangedEmailMessage(
+                    customer,
+                    serviceOrder,
+                    summary
                 );
+
+                await _emailService.SendAsync(message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in email simulation: {ex.Message}");
+                _logger.LogError(
+                    ex,
+                    "Failed to send status change email for service order {ServiceOrderId}",
+                    serviceOrder.Id
+                );
             }
         }
 

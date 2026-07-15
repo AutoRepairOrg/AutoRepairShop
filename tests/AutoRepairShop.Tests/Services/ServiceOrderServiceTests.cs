@@ -3,6 +3,7 @@ using AutoRepairShop.Application.DTOs.ServiceOrder.Request;
 using AutoRepairShop.Application.DTOs.ServiceOrder.Response;
 using AutoRepairShop.Application.DTOs.Supply;
 using AutoRepairShop.Application.DTOs.Vehicle;
+using AutoRepairShop.Application.Interfaces.Messages;
 using AutoRepairShop.Application.Interfaces.Services;
 using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Entities.ServiceOrder;
@@ -10,6 +11,7 @@ using AutoRepairShop.Domain.Enums;
 using AutoRepairShop.Domain.Exceptions;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace AutoRepairShop.Tests.Services;
@@ -21,7 +23,9 @@ public class ServiceOrderServiceTests
     private readonly Mock<IVehicleService> _vehicleServiceMock = new();
     private readonly Mock<IServiceService> _serviceServiceMock = new();
     private readonly Mock<ISupplyService> _supplyServiceMock = new();
+    private readonly Mock<IEmailService> _emailServiceMock = new();
     private readonly Mock<IMapper> _mapperMock = new();
+    private readonly Mock<ILogger<AutoRepairShop.Application.Services.ServiceOrderService>> _loggerMock = new();
 
     [Fact]
     public async Task CreateServiceOrderAsync_WhenServicesOrSuppliesExist_ShouldPersistOrderWithHistory()
@@ -31,6 +35,7 @@ public class ServiceOrderServiceTests
             "Maria",
             Document.Create("12345678909"),
             "11999999999",
+            "maria@email.com",
             "maria",
             "hash"
         );
@@ -87,6 +92,7 @@ public class ServiceOrderServiceTests
             "Maria",
             Document.Create("12345678909"),
             "11999999999",
+            "maria@email.com",
             "maria",
             "hash"
         );
@@ -561,13 +567,31 @@ public class ServiceOrderServiceTests
 
     private AutoRepairShop.Application.Services.ServiceOrderService CreateSut()
     {
+        var defaultCustomer = new Customer(
+            "Maria",
+            Document.Create("12345678909"),
+            "11999999999",
+            "maria@email.com",
+            "maria",
+            "hash"
+        );
+
+        _customerServiceMock
+            .Setup(service => service.GetEntityByIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(defaultCustomer);
+        _emailServiceMock
+            .Setup(service => service.SendAsync(It.IsAny<IEmailMessage>()))
+            .Returns(Task.CompletedTask);
+
         return new AutoRepairShop.Application.Services.ServiceOrderService(
             _repositoryMock.Object,
             _customerServiceMock.Object,
             _vehicleServiceMock.Object,
             _serviceServiceMock.Object,
             _supplyServiceMock.Object,
-            _mapperMock.Object
+            _emailServiceMock.Object,
+            _mapperMock.Object,
+            _loggerMock.Object
         );
     }
 

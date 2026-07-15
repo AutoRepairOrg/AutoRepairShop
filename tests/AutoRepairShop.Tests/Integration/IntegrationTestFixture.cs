@@ -1,15 +1,17 @@
-using AutoMapper;
 using AutoRepairShop.Application.Interfaces;
 using AutoRepairShop.Application.Interfaces.Services;
 using AutoRepairShop.Application.Mapping;
 using AutoRepairShop.Application.Security;
 using AutoRepairShop.Application.Services;
+using AutoRepairShop.Application.Settings;
 using AutoRepairShop.Domain.Entities;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
 using AutoRepairShop.Infrastructure.Data.Mappings;
 using AutoRepairShop.Infrastructure.Repositories;
+using AutoRepairShop.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace AutoRepairShop.Tests.Integration;
 
@@ -55,6 +57,17 @@ public sealed class IntegrationTestFixture : IAsyncDisposable
         services.AddScoped<IServiceOrderService, ServiceOrderService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+        services.Configure<EmailSettings>(options =>
+        {
+            options.SmtpHost = "localhost";
+            options.SmtpPort = 1025;
+            options.FromAddress = "noreply@autorepairshop.local";
+            options.FromName = "Auto Repair Shop";
+            options.UseSsl = false;
+        });
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddLogging();
 
         var serviceProvider = services.BuildServiceProvider();
 

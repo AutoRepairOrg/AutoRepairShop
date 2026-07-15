@@ -36,6 +36,7 @@ namespace AutoRepairShop.Infrastructure.Data
                         Name = "Cliente Demo",
                         Document = "52998224725",
                         Phone = "51999999999",
+                        Email = "customer@demo.com",
                         Username = "customer",
                         Password = PasswordSeed.Hash,
                     }

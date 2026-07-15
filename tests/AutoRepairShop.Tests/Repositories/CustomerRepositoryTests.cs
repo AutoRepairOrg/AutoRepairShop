@@ -15,6 +15,7 @@ public class CustomerRepositoryTests
             "Maria",
             Document.Create("11144477735"),
             "11999999999",
+            "maria@email.com",
             "maria",
             "hash"
         );
@@ -70,6 +71,7 @@ public class CustomerRepositoryTests
                 "Maria",
                 Document.Create("11144477735"),
                 "11999999999",
+                "maria@email.com",
                 "maria",
                 "hash"
             );
@@ -82,7 +84,7 @@ public class CustomerRepositoryTests
             var repository = new CustomerRepository(updateContext);
             var entity = await repository.GetByIdAsync(customer.Id);
             Assert.NotNull(entity);
-            entity.Update("Maria Silva", "11888888888", "maria.silva", "new-hash");
+            entity.Update("Maria Silva", "11888888888", "maria.silva@email.com", "maria.silva", "new-hash");
             await repository.UpdateAsync(entity);
         }
 
@@ -108,6 +110,7 @@ public class CustomerRepositoryTests
                 "Maria",
                 Document.Create("11144477735"),
                 "11999999999",
+                "maria@email.com",
                 "maria",
                 "hash"
             );

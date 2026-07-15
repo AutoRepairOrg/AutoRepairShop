@@ -23,6 +23,7 @@ public class CustomerServiceTests
             Name = "Maria",
             Document = "12345678909",
             Phone = "11999999999",
+            Email = "maria@email.com",
             Username = "maria",
             Password = "secret",
         };
@@ -84,7 +85,7 @@ public class CustomerServiceTests
     {
         var customers = new List<Customer>
         {
-            new("Maria", Document.Create("12345678909"), "11999999999", "maria", "hash"),
+            new("Maria", Document.Create("12345678909"), "11999999999", "maria@email.com", "maria", "hash"),
         };
         IEnumerable<CustomerResponse> response =
         [
@@ -129,6 +130,7 @@ public class CustomerServiceTests
             "Maria",
             Document.Create("12345678909"),
             "11999999999",
+            "maria@email.com",
             "maria",
             "old-hash"
         );
@@ -137,6 +139,7 @@ public class CustomerServiceTests
             Id = customer.Id,
             Name = "Maria Silva",
             Phone = "11888888888",
+            Email = "maria.silva@email.com",
             Username = "maria.silva",
             Password = "new-secret",
         };
@@ -160,6 +163,7 @@ public class CustomerServiceTests
         Assert.Same(response, result);
         Assert.Equal(request.Name, customer.Name);
         Assert.Equal(request.Phone, customer.Phone);
+        Assert.Equal(request.Email, customer.Email);
         Assert.Equal(request.Username, customer.Username);
         Assert.Equal("new-hash", customer.Password);
         _repositoryMock.Verify(repository => repository.UpdateAsync(customer), Times.Once);
