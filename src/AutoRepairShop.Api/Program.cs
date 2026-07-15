@@ -6,9 +6,11 @@ using AutoRepairShop.Application.Interfaces.Services;
 using AutoRepairShop.Application.Mapping;
 using AutoRepairShop.Application.Security;
 using AutoRepairShop.Application.Services;
+using AutoRepairShop.Application.Settings;
 using AutoRepairShop.Domain.Interfaces.Repositories;
 using AutoRepairShop.Infrastructure.Data;
 using AutoRepairShop.Infrastructure.Repositories;
+using AutoRepairShop.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -82,6 +84,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(EmailSettings.SectionName));
+
 // Dependency Injection
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -94,6 +98,8 @@ builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 
 builder.Services.AddScoped<ISupplyService, SupplyService>();
 builder.Services.AddScoped<ISupplyRepository, SupplyRepository>();
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<IServiceOrderRepository, ServiceOrderRepository>();
 builder.Services.AddScoped<IServiceOrderService, ServiceOrderService>();

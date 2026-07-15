@@ -15,6 +15,7 @@ public static class PersistenceMappingExtensions
             Name = domain.Name,
             Document = domain.Document.Value,
             Phone = domain.Phone,
+            Email = domain.Email,
             Username = domain.Username,
             Password = domain.Password,
         };
@@ -27,6 +28,7 @@ public static class PersistenceMappingExtensions
             entity.Name,
             Document.Create(entity.Document),
             entity.Phone,
+            entity.Email,
             entity.Username,
             entity.Password
         );

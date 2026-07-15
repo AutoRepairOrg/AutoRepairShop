@@ -54,6 +54,7 @@ namespace AutoRepairShop.Infrastructure.Repositories
             persisted.Name = entity.Name;
             persisted.Document = entity.Document.Value;
             persisted.Phone = entity.Phone;
+            persisted.Email = entity.Email;
             persisted.Username = entity.Username;
             persisted.Password = entity.Password;
 

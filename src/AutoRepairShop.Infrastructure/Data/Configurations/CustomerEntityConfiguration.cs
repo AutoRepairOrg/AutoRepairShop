@@ -18,6 +18,8 @@ namespace AutoRepairShop.Infrastructure.Data.Configurations
 
             builder.Property(c => c.Phone).IsRequired();
 
+            builder.Property(c => c.Email).IsRequired().HasMaxLength(150);
+
             builder.Property(c => c.Username).IsRequired();
 
             builder.Property(c => c.Password).IsRequired();
