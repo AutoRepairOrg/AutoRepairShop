@@ -25,6 +25,7 @@ public class AuthServiceTests
             "Maria",
             Document.Create("12345678909"),
             "11999999999",
+            "maria@email.com",
             request.Username,
             "hashed-password"
         );
@@ -91,6 +92,7 @@ public class AuthServiceTests
             "Maria",
             Document.Create("12345678909"),
             "11999999999",
+            "maria@email.com",
             request.Username,
             "hashed-password"
         );

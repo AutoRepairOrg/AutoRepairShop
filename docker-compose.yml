@@ -7,6 +7,8 @@ services:
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
+    volumes:
+      - autorepairshop-sql-data:/var/opt/mssql
     healthcheck:
       test: ["CMD-SHELL", "bash -c '>/dev/tcp/localhost/1433'"]
       interval: 10s
@@ -21,6 +23,8 @@ services:
     depends_on:
       sqlserver:
         condition: service_healthy
+      mailhog:
+        condition: service_started
     ports:
       - "5000:8080"
     environment:
@@ -37,3 +41,19 @@ services:
       JWT__ISSUER: ${JWT_ISSUER}
       JWT__AUDIENCE: ${JWT_AUDIENCE}
       JWT__EXPIRESINMINUTES: ${JWT_EXPIRES_IN_MINUTES}
+
+      Email__SmtpHost: mailhog
+      Email__SmtpPort: 1025
+      Email__FromAddress: noreply@autorepairshop.local
+      Email__FromName: Auto Repair Shop
+      Email__UseSsl: "false"
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: autorepairshop-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  autorepairshop-sql-data:

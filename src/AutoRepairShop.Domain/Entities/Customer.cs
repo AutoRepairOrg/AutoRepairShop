@@ -1,4 +1,5 @@
-﻿using AutoRepairShop.Domain.Exceptions;
+﻿using System.Net.Mail;
+using AutoRepairShop.Domain.Exceptions;
 using AutoRepairShop.Domain.Interfaces;
 using AutoRepairShop.Domain.ValueObjects;
 
@@ -10,12 +11,20 @@ public class Customer : IUser
     public string Name { get; private set; } = string.Empty;
     public Document Document { get; private set; } = null!;
     public string Phone { get; private set; } = string.Empty;
+    public string Email { get; private set; } = string.Empty;
     public string Username { get; private set; } = string.Empty;
     public string Password { get; private set; } = string.Empty;
 
     public Customer() { }
 
-    public Customer(string name, Document document, string phone, string username, string password)
+    public Customer(
+        string name,
+        Document document,
+        string phone,
+        string email,
+        string username,
+        string password
+    )
     {
         Id = Guid.NewGuid();
 
@@ -23,29 +32,48 @@ public class Customer : IUser
         Document = document ?? throw new DomainException("Document is required");
 
         SetPhone(phone);
+        SetEmail(email);
         SetUserName(username);
         Password = password;
     }
 
-    private Customer(Guid id, string name, Document document, string phone, string username, string password)
+    private Customer(
+        Guid id,
+        string name,
+        Document document,
+        string phone,
+        string email,
+        string username,
+        string password
+    )
     {
         Id = id;
         SetName(name);
         Document = document ?? throw new DomainException("Document is required");
         SetPhone(phone);
+        SetEmail(email);
         SetUserName(username);
         Password = password;
     }
 
-    public static Customer Restore(Guid id, string name, Document document, string phone, string username, string password)
+    public static Customer Restore(
+        Guid id,
+        string name,
+        Document document,
+        string phone,
+        string email,
+        string username,
+        string password
+    )
     {
-        return new Customer(id, name, document, phone, username, password);
+        return new Customer(id, name, document, phone, email, username, password);
     }
 
-    public void Update(string name, string phone, string username, string password)
+    public void Update(string name, string phone, string email, string username, string password)
     {
         SetName(name);
         SetPhone(phone);
+        SetEmail(email);
         SetUserName(username);
         Password = password;
     }
@@ -72,6 +100,25 @@ public class Customer : IUser
             throw new DomainException("Phone must have 10 or 11 digits");
 
         Phone = phone;
+    }
+
+    private void SetEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            throw new DomainException("Email is required");
+
+        email = email.Trim();
+
+        try
+        {
+            _ = new MailAddress(email);
+        }
+        catch (FormatException)
+        {
+            throw new DomainException("Invalid email format");
+        }
+
+        Email = email;
     }
 
     private void SetUserName(string userName)

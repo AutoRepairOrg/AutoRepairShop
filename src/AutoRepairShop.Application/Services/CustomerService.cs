@@ -26,6 +26,7 @@ namespace AutoRepairShop.Application.Services
                 request.Name,
                 Document.Create(request.Document),
                 request.Phone,
+                request.Email,
                 request.Username,
                 hash
             );
@@ -59,6 +60,12 @@ namespace AutoRepairShop.Application.Services
             return customer;
         }
 
+        public async Task<Customer> GetEntityByIdAsync(Guid id)
+        {
+            return await _repository.GetByIdAsync(id)
+                ?? throw new Exception("Customer not found.");
+        }
+
         public async Task<CustomerResponse> GetByIdAsync(Guid id)
         {
             var result = await _repository.GetByIdAsync(id);
@@ -76,7 +83,7 @@ namespace AutoRepairShop.Application.Services
 
             var hash = _passwordHasher.Hash(request.Password);
 
-            result.Update(request.Name, request.Phone, request.Username, hash);
+            result.Update(request.Name, request.Phone, request.Email, request.Username, hash);
 
             await _repository.UpdateAsync(result);
 

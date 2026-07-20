@@ -33,7 +33,6 @@ namespace AutoRepairShop.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<IActionResult> GetStatus(Guid id)
         {
             try
